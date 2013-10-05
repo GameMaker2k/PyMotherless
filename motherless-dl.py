@@ -13,23 +13,41 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 05/11/2013 Ver. 1.2.0 RC 1 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 05/11/2013 Ver. 1.2.0 RC 2 - Author: cooldude2k $
 '''
 
 import re, os, sys, httplib, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 
+__version_info__ = (1, 2, 0, "RC 2");
+if(__version_info__[3]!=None):
+ __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
+if(__version_info__[3]==None):
+ __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2]);
+
 parser = argparse.ArgumentParser();
 parser.add_argument("url", help="motherless url");
+parser.add_argument("--user-agent", nargs="?", default="Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0", help="specify a custom user agent");
+parser.add_argument("--referer", nargs="?", default="http://motherless.com/", help="specify a custom referer, use if the video access");
+parser.add_argument("--verbose", action='store_true', help="print various debugging information");
+parser.add_argument("--dump-user-agent", action='store_true', help="display the current browser identification");
+parser.add_argument("--version", action='store_true', help="print program version and exit");
+parser.add_argument("--update", action='store_true', help="update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)");
 getargs = parser.parse_args();
+if(getargs.version==True):
+ print(__version__);
+ sys.exit();
+if(getargs.dump_user_agent==True):
+ print(getargs.user_agent);
+ sys.exit();
 mlessvid = getargs.url;
 mregex_text = re.escape("http://motherless.com/")+"([\w\/]+)";
 if(re.findall(mregex_text, mlessvid)):
  mlessvid = re.findall(mregex_text, mlessvid);
  mlessvid = mlessvid[0];
-fakeua = "Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0";
+fakeua = getargs.user_agent;
 geturls_cj = cookielib.CookieJar();
 geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(geturls_cj));
-geturls_opener.addheaders = [("Referer", "http://motherless.com/"), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en-CA,en-GB,en-UK,en-AU,en-NZ,en-ZA,en;q=0.5"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
+geturls_opener.addheaders = [("Referer", getargs.referer), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en-CA,en-GB,en-UK,en-AU,en-NZ,en-ZA,en;q=0.5"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
 per_gal_sleep = 8;
 per_url_sleep = 4;
 mlessvidid = urlparse.urlparse(mlessvid).path.split('/');
@@ -96,15 +114,17 @@ while(curusrgal<numusrgal):
    if(mlessext=="mp4" or mlessext=="flv"):
     mlesslink = mlesslink+"?start=0";
    print(mlesslink);
-  time.sleep(per_url_sleep);
+  if(curlurl<(numlist - 1)):
+   time.sleep(per_url_sleep);
   curlurl = curlurl + 1;
- time.sleep(per_gal_sleep);
+ if(curusrgal<(numusrgal - 1)):
+  time.sleep(per_gal_sleep);
  curusrgal = curusrgal + 1;
 
  '''
  getvidurls_cj = cookielib.CookieJar();
  getvidurls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(getvidurls_cj));
- getvidurls_opener.addheaders = [("Referer", "http://motherless.com/"+mlessvid), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en-CA,en-GB,en-UK,en-AU,en-NZ,en-ZA,en;q=0.5"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
+ getvidurls_opener.addheaders = [("Referer", getargs.referer+mlessvid), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en-CA,en-GB,en-UK,en-AU,en-NZ,en-ZA,en;q=0.5"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
  getvidurls_text = getvidurls_opener.open(mlesslink);
  def chunk_report(bytes_so_far, chunk_size, total_size):
   percent = float(bytes_so_far) / total_size;
