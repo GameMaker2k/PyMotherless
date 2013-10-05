@@ -16,7 +16,7 @@
     $FileInfo: motherless-dl.py - Last Update: 05/11/2013 Ver. 1.0.5 RC 5 - Author: cooldude2k $
 '''
 
-import re, os, sys, httplib, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse;
+import re, os, sys, httplib, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 
 parser = argparse.ArgumentParser();
 parser.add_argument("url", help="motherless url");
@@ -29,7 +29,7 @@ if(re.findall(mregex_text, mlessvid)):
 fakeua = "Mozilla/5.0 (Windows NT 5.1; rv:20.0) Gecko/20100101 Firefox/20.0";
 geturls_cj = cookielib.CookieJar();
 geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(geturls_cj));
-geturls_opener.addheaders = [("Referer", "http://motherless.com/videos"), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en-CA,en-GB,en-UK,en-AU,en-NZ,en-ZA,en;q=0.5"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
+geturls_opener.addheaders = [("Referer", "http://motherless.com/"), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en-CA,en-GB,en-UK,en-AU,en-NZ,en-ZA,en;q=0.5"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
 geturls_text = geturls_opener.open("http://motherless.com/"+mlessvid);
 if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
  strbuf = StringIO.StringIO(geturls_text.read());
@@ -37,11 +37,41 @@ if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().ge
  out_text = gzstrbuf.read()[:];
 if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
  out_text = geturls_text.read()[:];
-regex_text = re.escape("__fileurl = '")+"(.*)"+re.escape("';");
-post_text = re.findall(regex_text, out_text);
-if(post_text>0):
- mlesslink = post_text[0]+"?start=0";
- print(mlesslink);
+
+mlessvidid = urlparse.urlparse(mlessvid).path.split('/');
+mlessurllist = [];
+if(re.match("^G", mlessvidid[0]) and len(mlessvidid)==1):
+ regex_text = re.escape("<a href=\"")+"([\w\/]+)"+re.escape("\" class=\"img-container\" target=\"_self\">");
+ post_text = re.findall(regex_text, out_text);
+ numurls = len(post_text);
+ cururl = 0;
+ while(cururl<numurls):
+  mlessurllist.append(post_text[cururl]);
+  cururl = cururl + 1;
+if(not re.match("^G", mlessvidid[0]) or len(mlessvidid)>1):
+ mlessurllist.append(mlessvid);
+
+numlist = len(mlessurllist);
+curlurl = 0;
+while(curlurl<numlist):
+ geturls_text = geturls_opener.open("http://motherless.com/"+mlessurllist[curlurl]);
+ if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
+  strbuf = StringIO.StringIO(geturls_text.read());
+  gzstrbuf = gzip.GzipFile(fileobj=strbuf);
+  subout_text = gzstrbuf.read()[:];
+ if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
+  subout_text = geturls_text.read()[:];
+ regex_text = re.escape("__fileurl = '")+"(.*)"+re.escape("';");
+ post_text = re.findall(regex_text, subout_text);
+ if(post_text>0):
+  mlesslink = post_text[0];
+  mlessext = os.path.splitext(urlparse.urlparse(mlesslink).path)[1];
+  mlessext = mlessext.replace(".", "");
+  mlessext = mlessext.lower();
+  if(mlessext=="mp4" or mlessext=="flv"):
+   mlesslink = mlesslink+"?start=0";
+  print(mlesslink);
+ curlurl = curlurl + 1;
  '''
  getvidurls_cj = cookielib.CookieJar();
  getvidurls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(getvidurls_cj));
