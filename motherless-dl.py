@@ -13,12 +13,12 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 05/11/2013 Ver. 1.3.0 RC 2 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 05/11/2013 Ver. 1.4.0 RC 1 - Author: cooldude2k $
 '''
 
 import re, os, sys, httplib, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 
-__version_info__ = (1, 3, 0, "RC 2");
+__version_info__ = (1, 3, 0, "RC 3");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -40,10 +40,16 @@ if(getargs.dump_user_agent==True):
  print(getargs.user_agent);
  sys.exit();
 mlessvid = getargs.url;
+mlessvid = re.sub(re.escape("http://motherless.com/"), "", mlessvid);
+mlessvid = re.sub(re.escape("http://www.motherless.com/"), "", mlessvid);
+mlessvid = re.sub(re.escape("motherless.com/"), "", mlessvid);
+mlessvid = re.sub(re.escape("www.motherless.com/"), "", mlessvid);
+mlessvid = re.sub("^"+re.escape("/"), "", mlessvid);
+mlessvid = "http://motherless.com/"+mlessvid;
 mregex_text = re.escape("http://motherless.com/")+"([\w\/]+)";
 if(re.findall(mregex_text, mlessvid)):
  mlessvid = re.findall(mregex_text, mlessvid);
- mlessvid = mlessvid[0];
+ mlessvid = "/"+mlessvid[0];
 fakeua = getargs.user_agent;
 geturls_cj = cookielib.CookieJar();
 geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(geturls_cj));
@@ -52,14 +58,22 @@ per_gal_sleep = 0;
 per_url_sleep = 0;
 mlessvidid = urlparse.urlparse(mlessvid).path.split('/');
 mlessgallist = [];
-if((re.match("^galleries", mlessvidid[0]) and len(mlessvidid)==3) or (re.match("^f", mlessvidid[0]) and re.match("^galleries", mlessvidid[-1]) and len(mlessvidid)==3)):
- geturls_text = geturls_opener.open("http://motherless.com/"+mlessvid+"?page=1");
+if((re.match("^random", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^random", mlessvidid[1]) and len(mlessvidid)==3) and (re.match("^image", mlessvidid[2]) or re.match("^video", mlessvidid[2]))):
+ geturls_text = geturls_opener.open("http://motherless.com"+mlessvid);
+ mlessvid = geturls_text.geturl();
+ if(re.findall(mregex_text, mlessvid)):
+  mlessvid = re.findall(mregex_text, mlessvid);
+  mlessvid = mlessvid[0];
+if((re.match("^galleries", mlessvidid[1]) and len(mlessvidid)==4) or (re.match("^f", mlessvidid[1]) and re.match("^galleries", mlessvidid[2]) and len(mlessvidid)==4)):
+ geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page=1");
  if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
   strbuf = StringIO.StringIO(geturls_text.read());
   gzstrbuf = gzip.GzipFile(fileobj=strbuf);
   out_text = gzstrbuf.read()[:];
  if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
   out_text = geturls_text.read()[:];
+ out_text = re.sub(re.escape("http://motherless.com"), "", out_text);
+ out_text = re.sub(re.escape("http://www.motherless.com"), "", out_text);
  regex_ptext = re.escape("class=\"pop\" rel=\"")+"([0-9]+)"+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
  page_text = re.findall(regex_ptext, out_text);
  try:
@@ -76,7 +90,9 @@ if((re.match("^galleries", mlessvidid[0]) and len(mlessvidid)==3) or (re.match("
     out_text = gzstrbuf.read()[:];
    if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
     out_text = geturls_text.read()[:];
-  regex_text = re.escape("<a href=\"")+"([\w\/]+)"+re.escape("\" class=\"img-container\" target=\"_self\">");
+   out_text = re.sub(re.escape("http://motherless.com"), "", out_text);
+   out_text = re.sub(re.escape("http://www.motherless.com"), "", out_text);
+  regex_text = re.escape("")+"([\w\/]+)"+re.escape("\" class=\"img-container\" target=\"_self\">");
   post_text = re.findall(regex_text, out_text);
   numgal = len(post_text);
   curgal = 0;
@@ -84,7 +100,7 @@ if((re.match("^galleries", mlessvidid[0]) and len(mlessvidid)==3) or (re.match("
    mlessgallist.append(post_text[curgal]);
    curgal = curgal + 1;
   curpage = curpage + 1;
-if(not re.match("^galleries", mlessvidid[0]) or (re.match("^galleries", mlessvidid[0]) and len(mlessvidid)<3) or (re.match("^galleries", mlessvidid[0]) and len(mlessvidid)>3)):
+if(not re.match("^galleries", mlessvidid[1]) or (re.match("^galleries", mlessvidid[1]) and len(mlessvidid)<4) or (re.match("^galleries", mlessvidid[1]) and len(mlessvidid)>5)):
  mlessgallist.append(mlessvid);
 numusrgal = len(mlessgallist);
 curusrgal = 0;
@@ -94,7 +110,7 @@ while(curusrgal<numusrgal):
   mlessvid = "/"+mlessvid;
  mlessvidid = urlparse.urlparse(mlessvid).path.split('/');
  mlessurllist = [];
- if((re.match("^G", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^g", mlessvidid[1]) and len(mlessvidid)==3) or (re.match("^f", mlessvidid[1]) and re.match("^videos", mlessvidid[-1])) or (re.match("^f", mlessvidid[1]) and re.match("^images", mlessvidid[-1]))):
+ if((re.match("^G", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^g", mlessvidid[1]) and len(mlessvidid)==3) or (re.match("^f", mlessvidid[1]) and len(mlessvidid)==4 and (re.match("^videos", mlessvidid[3]) or re.match("^images", mlessvidid[3]))) or (re.match("^live", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^images", mlessvidid[2]) or re.match("^videos", mlessvidid[2]))) or (re.match("^images", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2]))) or (re.match("^videos", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2])))):
   geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page=1");
   if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
    strbuf = StringIO.StringIO(geturls_text.read());
@@ -102,6 +118,8 @@ while(curusrgal<numusrgal):
    out_text = gzstrbuf.read()[:];
   if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
    out_text = geturls_text.read()[:];
+  out_text = re.sub(re.escape("http://motherless.com"), "", out_text);
+  out_text = re.sub(re.escape("http://www.motherless.com"), "", out_text);
   regex_ptext = re.escape("class=\"pop\" rel=\"")+"([0-9]+)"+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
   page_text = re.findall(regex_ptext, out_text);
   try:
@@ -118,7 +136,9 @@ while(curusrgal<numusrgal):
      out_text = gzstrbuf.read()[:];
     if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
      out_text = geturls_text.read()[:];
-   regex_text = re.escape("<a href=\"")+"([\w\/]+)"+re.escape("\" class=\"img-container\" target=\"_self\">");
+   out_text = re.sub(re.escape("http://motherless.com"), "", out_text);
+   out_text = re.sub(re.escape("http://www.motherless.com"), "", out_text);
+   regex_text = re.escape("")+"([\w\/]+)"+re.escape("\" class=\"img-container\" target=\"_self\">");
    post_text = re.findall(regex_text, out_text);
    numurls = len(post_text);
    cururl = 0;
@@ -138,6 +158,8 @@ while(curusrgal<numusrgal):
    subout_text = gzstrbuf.read()[:];
   if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
    subout_text = geturls_text.read()[:];
+  subout_text = re.sub(re.escape("http://motherless.com"), "", subout_text);
+  subout_text = re.sub(re.escape("http://www.motherless.com"), "", subout_text);
   regex_text = re.escape("__fileurl = '")+"(.*)"+re.escape("';");
   post_text = re.findall(regex_text, subout_text);
   if(post_text>0):
