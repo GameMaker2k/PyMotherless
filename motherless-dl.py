@@ -13,12 +13,12 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 05/11/2013 Ver. 1.4.0 RC 2 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 05/11/2013 Ver. 1.4.0 RC 3 - Author: cooldude2k $
 '''
 
 import re, os, sys, httplib, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 
-__version_info__ = (1, 4, 0, "RC 2");
+__version_info__ = (1, 4, 0, "RC 3");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -139,6 +139,8 @@ while(curusrgal<numusrgal):
    out_text = re.sub(re.escape("http://motherless.com"), "", out_text);
    out_text = re.sub(re.escape("http://www.motherless.com"), "", out_text);
    if(re.match("^V", mlessvidid[1])):
+    out_text = re.sub(re.escape("class=\"img-container\" target=\"_self\""), "title=\"motherless link\"", out_text);
+    out_text = re.sub(re.escape("class=\"pop plain\" target=\"_blank\""), "title=\"motherless link\"", out_text);
     regex_text = re.escape("<a href=\"")+"([\w\/]+)"+re.escape("\" title=\"motherless link\">");
    if(not re.match("^V", mlessvidid[1])):
     regex_text = re.escape("")+"([\w\/]+)"+re.escape("\" class=\"img-container\" target=\"_self\">");
