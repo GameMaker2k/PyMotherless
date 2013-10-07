@@ -187,6 +187,12 @@ while(cururlarg<numurlarg):
    mlessthumb = thumb_text[0];
    regex_text = re.escape("__fileurl = '")+"(.*)"+re.escape("';");
    post_text = re.findall(regex_text, subout_text);
+   regex_img = re.escape("<meta property=\"og:image\" content=\"")+"(.*)"+re.escape("\">");
+   img_text = re.findall(regex_img, subout_text);
+   mlessimg = img_text[0];
+   regex_altimg = re.escape("<link rel=\"image_src\" type=\"image/")+"(.*)"+re.escape("\" href=\"")+"(.*)"+re.escape("\">");
+   altimg_text = re.findall(regex_altimg, subout_text);
+   mlessaltimg = altimg_text[0][1];
    mlessid = re.sub("^"+re.escape("/"), "", mlessurllist[curlurl]);
    if(post_text>0):
     mlesslink = post_text[0];
@@ -194,8 +200,29 @@ while(cururlarg<numurlarg):
     mlessext = mlessext.replace(".", "");
     mlessext = mlessext.lower();
     mlessfname = urlparse.urlsplit(mlesslink).path.split('/')[-1];
+    if(not mlessext=="mp4" and not mlessext=="flv"):
+     imginfo = {};
+     regex_ii_dimensions = re.escape("style=\"width: ")+"([0-9]+)"+re.escape("px; height: ")+"([0-9]+)"+re.escape("px; border: none;\"");
+     post_ii_dimensions = re.findall(regex_ii_dimensions, subout_text);
+     post_ii_width = post_ii_dimensions[0][0];
+     post_ii_height = post_ii_dimensions[0][1];
+     imginfo = {"height": int(post_ii_width), "width": int(post_ii_height)};
     if(mlessext=="mp4" or mlessext=="flv"):
+     vidinfo = {};
      mlesslink = mlesslink+"?start=0";
+     regex_vi_file = re.escape("\"file\"      : \"")+"(.*)"+re.escape("\",");
+     post_vi_file = re.findall(regex_vi_file, subout_text);
+     regex_vi_image = re.escape("\"image\"     : \"")+"(.*)"+re.escape("\",");
+     post_vi_image = re.findall(regex_vi_image, subout_text);
+     regex_vi_height = re.escape("\"height\"    : ")+"([0-9]+)"+re.escape(",");
+     post_vi_height = re.findall(regex_vi_height, subout_text);
+     regex_vi_width = re.escape("\"width\"     : ")+"([0-9]+)"+re.escape(",");
+     post_vi_width = re.findall(regex_vi_width, subout_text);
+     regex_vi_filethumb = re.escape("\"file\": ")+"(.*)"+re.escape(",");
+     post_vi_filethumb = re.findall(regex_vi_filethumb, subout_text);
+     regex_vi_kind = re.escape("\"kind\": \"")+"(.*)"+re.escape("\"");
+     post_vi_kind = re.findall(regex_vi_kind, subout_text);
+     vidinfo = {"file": post_vi_file[0], "image": post_vi_image[0], "height": int(post_vi_height[0]), "width": int(post_vi_width[0]), "filethumb": post_vi_filethumb[0], "kind": post_vi_kind[0]};
     if(getargs.get_id==True):
      print(mlessid);
     if(getargs.get_title==True):
@@ -206,6 +233,8 @@ while(cururlarg<numurlarg):
      print(mlessfname);
     if(getargs.get_thumbnail==True):
      print(mlessthumb);
+     if(mlessext=="mp4" or mlessext=="flv"):
+      print(mlessimg);
     if(getargs.get_url==True or (getargs.get_id==False and getargs.get_title==False and getargs.get_format==False and getargs.get_filename==False and getargs.get_thumbnail==False)):
 	 print(mlesslink);
    if(curlurl<(numlist - 1)):
