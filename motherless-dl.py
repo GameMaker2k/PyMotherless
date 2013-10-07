@@ -13,12 +13,12 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/07/2013 Ver. 1.4.5 RC 2 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/07/2013 Ver. 1.5.0 RC 1 - Author: cooldude2k $
 '''
 
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 
-__version_info__ = (1, 4, 5, "RC 2");
+__version_info__ = (1, 5, 0, "RC 1");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -26,12 +26,18 @@ if(__version_info__[3]==None):
 
 parser = argparse.ArgumentParser();
 parser.add_argument("url", nargs="*", help="motherless url");
-parser.add_argument("--user-agent", nargs="?", default="Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0", help="specify a custom user agent");
-parser.add_argument("--referer", nargs="?", default="http://motherless.com/", help="specify a custom referer, use if the video access");
-parser.add_argument("--verbose", action='store_true', help="print various debugging information");
-parser.add_argument("--dump-user-agent", action='store_true', help="display the current browser identification");
 parser.add_argument("--version", action='store_true', help="print program version and exit");
 parser.add_argument("--update", action='store_true', help="update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)");
+parser.add_argument("--dump-user-agent", action='store_true', help="display the current browser identification");
+parser.add_argument("--user-agent", nargs="?", default="Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0", help="specify a custom user agent");
+parser.add_argument("--referer", nargs="?", default="http://motherless.com/", help="specify a custom referer, use if the video access");
+parser.add_argument("--get-url", action='store_true', help="simulate, quiet but print URL");
+parser.add_argument("--get-title", action='store_true', help="simulate, quiet but print title");
+parser.add_argument("--get-id", action='store_true', help="simulate, quiet but print id");
+parser.add_argument("--get-thumbnail", action='store_true', help="simulate, quiet but print thumbnail URL");
+parser.add_argument("--get-filename", action='store_true', help="simulate, quiet but print output filename");
+parser.add_argument("--get-format", action='store_true', help="simulate, quiet but print output format");
+parser.add_argument("--verbose", action='store_true', help="print various debugging information");
 getargs = parser.parse_args();
 if(getargs.version==True):
  print(__version__);
@@ -173,16 +179,35 @@ while(cururlarg<numurlarg):
     subout_text = geturls_text.read()[:];
    subout_text = re.sub(re.escape("http://motherless.com"), "", subout_text);
    subout_text = re.sub(re.escape("http://www.motherless.com"), "", subout_text);
+   regex_title = re.escape("<title>")+"(.*)"+re.escape("</title>");
+   title_text = re.findall(regex_title, subout_text);
+   mlesstitle = re.sub(re.escape(" - MOTHERLESS.COM"), "", title_text[0]);
+   regex_thumb = re.escape("src=&quot;")+"(.*)"+re.escape("&quot;");
+   thumb_text = re.findall(regex_thumb, subout_text);
+   mlessthumb = thumb_text[0];
    regex_text = re.escape("__fileurl = '")+"(.*)"+re.escape("';");
    post_text = re.findall(regex_text, subout_text);
+   mlessid = re.sub("^"+re.escape("/"), "", mlessurllist[curlurl]);
    if(post_text>0):
     mlesslink = post_text[0];
     mlessext = os.path.splitext(urlparse.urlparse(mlesslink).path)[1];
     mlessext = mlessext.replace(".", "");
     mlessext = mlessext.lower();
+    mlessfname = urlparse.urlsplit(mlesslink).path.split('/')[-1];
     if(mlessext=="mp4" or mlessext=="flv"):
      mlesslink = mlesslink+"?start=0";
-    print(mlesslink);
+    if(getargs.get_id==True):
+     print(mlessid);
+    if(getargs.get_title==True):
+     print(mlesstitle);
+    if(getargs.get_format==True):
+     print(mlessext);
+    if(getargs.get_filename==True):
+     print(mlessfname);
+    if(getargs.get_thumbnail==True):
+     print(mlessthumb);
+    if(getargs.get_url==True or (getargs.get_id==False and getargs.get_title==False and getargs.get_format==False and getargs.get_filename==False and getargs.get_thumbnail==False)):
+	 print(mlesslink);
    if(curlurl<(numlist - 1)):
     time.sleep(per_url_sleep);
    curlurl = curlurl + 1;
