@@ -13,10 +13,10 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: videarn-dl.py - Last Update: 05/11/2013 Ver. 1.0.5 RC 5 - Author: cooldude2k $
+    $FileInfo: videarn-dl.py - Last Update: 10/07/2013 Ver. 1.0.5 RC 6 - Author: cooldude2k $
 '''
 
-import re, os, sys, httplib, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse;
+import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 
 parser = argparse.ArgumentParser();
 parser.add_argument("url", help="videarn url");
@@ -26,7 +26,7 @@ mregex_text = re.escape("http://videarn.com/video.php?id=")+"([a-zA-Z0-9\/]+)";
 if(re.findall(mregex_text, mlessvid)):
  mlessvid = re.findall(mregex_text, mlessvid);
  mlessvid = mlessvid[0];
-fakeua = "Mozilla/5.0 (Windows NT 5.1; rv:20.0) Gecko/20100101 Firefox/20.0";
+fakeua = "Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0"";
 geturls_cj = cookielib.CookieJar();
 geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(geturls_cj));
 geturls_opener.addheaders = [("Referer", "http://videarn.com/browse.php"), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en-CA,en-GB,en-UK,en-AU,en-NZ,en-ZA,en;q=0.5"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
