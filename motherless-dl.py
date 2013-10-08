@@ -13,12 +13,12 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/07/2013 Ver. 1.5.0 RC 1 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/07/2013 Ver. 1.5.2 RC 1 - Author: cooldude2k $
 '''
 
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 
-__version_info__ = (1, 5, 0, "RC 1");
+__version_info__ = (1, 5, 2, "RC 1");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -31,12 +31,15 @@ parser.add_argument("--update", action='store_true', help="update this program t
 parser.add_argument("--dump-user-agent", action='store_true', help="display the current browser identification");
 parser.add_argument("--user-agent", nargs="?", default="Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0", help="specify a custom user agent");
 parser.add_argument("--referer", nargs="?", default="http://motherless.com/", help="specify a custom referer, use if the video access");
+parser.add_argument("--id", action='store_true', help="use only video ID in file name");
 parser.add_argument("--get-url", action='store_true', help="simulate, quiet but print URL");
+parser.add_argument("--get-pageurl", action='store_true', help="simulate, quiet but print URL");
 parser.add_argument("--get-title", action='store_true', help="simulate, quiet but print title");
 parser.add_argument("--get-id", action='store_true', help="simulate, quiet but print id");
 parser.add_argument("--get-thumbnail", action='store_true', help="simulate, quiet but print thumbnail URL");
 parser.add_argument("--get-filename", action='store_true', help="simulate, quiet but print output filename");
 parser.add_argument("--get-format", action='store_true', help="simulate, quiet but print output format");
+parser.add_argument("--get-username", action='store_true', help="simulate, quiet but print uploaders username");
 parser.add_argument("--verbose", action='store_true', help="print various debugging information");
 getargs = parser.parse_args();
 if(getargs.version==True):
@@ -70,7 +73,7 @@ while(cururlarg<numurlarg):
  if(re.findall(mregex_text, mlessvid)):
   mlessvid = re.findall(mregex_text, mlessvid);
   mlessvid = "/"+mlessvid[0];
- mlessvidid = urlparse.urlparse(mlessvid).path.split('/');
+ mlessvidid = urlparse.urlparse(mlessvid).path.split("/");
  mlessgallist = [];
  if((re.match("^random", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^random", mlessvidid[1]) and len(mlessvidid)==3) and (re.match("^image", mlessvidid[2]) or re.match("^video", mlessvidid[2]))):
   geturls_text = geturls_opener.open("http://motherless.com"+mlessvid);
@@ -78,7 +81,7 @@ while(cururlarg<numurlarg):
   if(re.findall(mregex_text, mlessvid)):
    mlessvid = re.findall(mregex_text, mlessvid);
    mlessvid = mlessvid[0];
- if((re.match("^galleries", mlessvidid[1]) and len(mlessvidid)==4) or (re.match("^f", mlessvidid[1]) and re.match("^galleries", mlessvidid[2]) and len(mlessvidid)==4)):
+ if((re.match("^galleries", mlessvidid[1]) and len(mlessvidid)==4) or (re.match("^f", mlessvidid[1]) and re.match("^galleries", mlessvidid[2]) and len(mlessvidid)==4) or (re.match("^term", mlessvidid[1]) and re.match("^galleries", mlessvidid[2]) and len(mlessvidid)==4)):
   geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page=1");
   if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
    strbuf = StringIO.StringIO(geturls_text.read());
@@ -122,9 +125,9 @@ while(cururlarg<numurlarg):
   mlessvid = mlessgallist[curusrgal];
   if(not re.match("^\/", mlessvid)):
    mlessvid = "/"+mlessvid;
-  mlessvidid = urlparse.urlparse(mlessvid).path.split('/');
+  mlessvidid = urlparse.urlparse(mlessvid).path.split("/");
   mlessurllist = [];
-  if((re.match("^G", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^V", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^g", mlessvidid[1]) and len(mlessvidid)==3) or (re.match("^f", mlessvidid[1]) and len(mlessvidid)==4 and (re.match("^videos", mlessvidid[3]) or re.match("^images", mlessvidid[3]))) or (re.match("^live", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^images", mlessvidid[2]) or re.match("^videos", mlessvidid[2]))) or (re.match("^images", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2]))) or (re.match("^videos", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2])))):
+  if((re.match("^G", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^V", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^live", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^g", mlessvidid[1]) and len(mlessvidid)==3) or (re.match("^term", mlessvidid[1]) and (re.match("^videos", mlessvidid[2]) or re.match("^images", mlessvidid[2])) and len(mlessvidid)==4) or (re.match("^f", mlessvidid[1]) and len(mlessvidid)==4 and (re.match("^videos", mlessvidid[3]) or re.match("^images", mlessvidid[3]))) or (re.match("^live", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^images", mlessvidid[2]) or re.match("^videos", mlessvidid[2]))) or (re.match("^images", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2]))) or (re.match("^videos", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2])))):
    geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page=1");
    if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
     strbuf = StringIO.StringIO(geturls_text.read());
@@ -193,13 +196,20 @@ while(cururlarg<numurlarg):
    regex_altimg = re.escape("<link rel=\"image_src\" type=\"image/")+"(.*)"+re.escape("\" href=\"")+"(.*)"+re.escape("\">");
    altimg_text = re.findall(regex_altimg, subout_text);
    mlessaltimg = altimg_text[0][1];
+   regex_usrname = re.escape("<a href=\"/u/")+"([\w]+)"+re.escape("\" class=\"pop plain thumb-member-link-uploads\">Uploads</a>");
+   usrname_text = re.findall(regex_usrname, subout_text);
+   mlessusrname = usrname_text[0];
    mlessid = re.sub("^"+re.escape("/"), "", mlessurllist[curlurl]);
+   mlesspurl = "http://motherless.com"+mlessurllist[curlurl];
    if(post_text>0):
     mlesslink = post_text[0];
     mlessext = os.path.splitext(urlparse.urlparse(mlesslink).path)[1];
     mlessext = mlessext.replace(".", "");
     mlessext = mlessext.lower();
-    mlessfname = urlparse.urlsplit(mlesslink).path.split('/')[-1];
+    if(getargs.id==False):
+     mlessfname = urlparse.urlsplit(mlesslink).path.split("/")[-1];
+    if(getargs.id==True):
+     mlessfname = re.sub(re.escape("/"), "_", mlessid)+"."+mlessext;
     if(not mlessext=="mp4" and not mlessext=="flv"):
      imginfo = {};
      regex_ii_dimensions = re.escape("style=\"width: ")+"([0-9]+)"+re.escape("px; height: ")+"([0-9]+)"+re.escape("px; border: none;\"");
@@ -235,7 +245,11 @@ while(cururlarg<numurlarg):
      print(mlessthumb);
      if(mlessext=="mp4" or mlessext=="flv"):
       print(mlessimg);
-    if(getargs.get_url==True or (getargs.get_id==False and getargs.get_title==False and getargs.get_format==False and getargs.get_filename==False and getargs.get_thumbnail==False)):
+    if(getargs.get_username==True):
+     print(mlessusrname);
+    if(getargs.get_pageurl==True):
+     print(mlesspurl);
+    if(getargs.get_url==True or (getargs.get_id==False and getargs.get_title==False and getargs.get_format==False and getargs.get_filename==False and getargs.get_thumbnail==False and getargs.get_username==False and getargs.get_pageurl==False)):
 	 print(mlesslink);
    if(curlurl<(numlist - 1)):
     time.sleep(per_url_sleep);
