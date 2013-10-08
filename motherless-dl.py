@@ -13,12 +13,12 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/07/2013 Ver. 1.5.2 RC 2 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/08/2013 Ver. 1.5.2 RC 3 - Author: cooldude2k $
 '''
 
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 
-__version_info__ = (1, 5, 2, "RC 2");
+__version_info__ = (1, 5, 2, "RC 3");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -51,14 +51,12 @@ if(getargs.dump_user_agent==True):
 if(len(getargs.url)==0):
  parser.print_help();
  sys.exit();
-
 fakeua = getargs.user_agent;
 geturls_cj = cookielib.CookieJar();
 geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(geturls_cj));
 geturls_opener.addheaders = [("Referer", getargs.referer), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en-CA,en-GB,en-UK,en-AU,en-NZ,en-ZA,en;q=0.5"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
 per_gal_sleep = 0;
 per_url_sleep = 0;
-
 numurlarg = len(getargs.url);
 cururlarg = 0;
 while(cururlarg<numurlarg):
@@ -69,10 +67,11 @@ while(cururlarg<numurlarg):
  mlessvid = re.sub(re.escape("www.motherless.com/"), "", mlessvid);
  mlessvid = re.sub("^"+re.escape("/"), "", mlessvid);
  mlessvid = "http://motherless.com/"+mlessvid;
- mregex_text = re.escape("http://motherless.com/")+"([\w\/]+)";
+ mregex_text = re.escape("http://motherless.com/")+"([\w\/\?\&\=]+)";
  if(re.findall(mregex_text, mlessvid)):
   mlessvid = re.findall(mregex_text, mlessvid);
   mlessvid = "/"+mlessvid[0];
+ mlessvidqstr = urlparse.parse_qs(urlparse.urlparse(mlessvid).query);
  mlessvidid = urlparse.urlparse(mlessvid).path.split("/");
  mlessgallist = [];
  if((re.match("^random", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^random", mlessvidid[1]) and len(mlessvidid)==3) and (re.match("^image", mlessvidid[2]) or re.match("^video", mlessvidid[2]))):
@@ -125,10 +124,22 @@ while(cururlarg<numurlarg):
   mlessvid = mlessgallist[curusrgal];
   if(not re.match("^\/", mlessvid)):
    mlessvid = "/"+mlessvid;
+  mlessvidqstr = urlparse.parse_qs(urlparse.urlparse(mlessvid).query);
   mlessvidid = urlparse.urlparse(mlessvid).path.split("/");
   mlessurllist = [];
-  if((re.match("^G", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^H", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^V", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^live", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^g", mlessvidid[1]) and len(mlessvidid)==3) or (re.match("^term", mlessvidid[1]) and (re.match("^videos", mlessvidid[2]) or re.match("^images", mlessvidid[2])) and len(mlessvidid)==4) or (re.match("^f", mlessvidid[1]) and len(mlessvidid)==4 and (re.match("^videos", mlessvidid[3]) or re.match("^images", mlessvidid[3]))) or (re.match("^live", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^images", mlessvidid[2]) or re.match("^videos", mlessvidid[2]))) or (re.match("^images", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2]))) or (re.match("^videos", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2])))):
-   geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page=1");
+  if((re.match("^G", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^H", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^V", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^live", mlessvidid[1]) and len(mlessvidid)==2) or (re.match("^g", mlessvidid[1]) and len(mlessvidid)==3) or (re.match("^u", mlessvidid[1]) and len(mlessvidid)==3) or (re.match("^term", mlessvidid[1]) and (re.match("^videos", mlessvidid[2]) or re.match("^images", mlessvidid[2])) and len(mlessvidid)==4) or (re.match("^f", mlessvidid[1]) and len(mlessvidid)==4 and (re.match("^videos", mlessvidid[3]) or re.match("^images", mlessvidid[3]))) or (re.match("^live", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^images", mlessvidid[2]) or re.match("^videos", mlessvidid[2]))) or (re.match("^images", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2]))) or (re.match("^videos", mlessvidid[1]) and len(mlessvidid)==3 and (re.match("^favorited", mlessvidid[2]) or re.match("^viewed", mlessvidid[2]) or re.match("^commented", mlessvidid[2]) or re.match("^popular", mlessvidid[2])))):
+   addtvar = False;
+   tvaradd = "";
+   if(re.match("^u", mlessvidid[1]) and len(mlessvidid)==3):
+    try:
+     if(mlessvidqstr["t"][0]=="i" or mlessvidqstr["t"][0]=="v"):
+      tvaradd = "&t="+mlessvidqstr["t"][0];
+      addtvar = True;
+    except KeyError:
+     addtvar = False;
+    except IndexError:
+     addtvar = False;
+   geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page=1"+tvaradd);
    if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
     strbuf = StringIO.StringIO(geturls_text.read());
     gzstrbuf = gzip.GzipFile(fileobj=strbuf);
@@ -146,7 +157,7 @@ while(cururlarg<numurlarg):
    curpage = 1;
    while(curpage<=numpages):
     if(curpage>1):
-     geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page="+str(curpage));
+     geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page="+str(curpage)+tvaradd);
      if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
       strbuf = StringIO.StringIO(geturls_text.read());
       gzstrbuf = gzip.GzipFile(fileobj=strbuf);
