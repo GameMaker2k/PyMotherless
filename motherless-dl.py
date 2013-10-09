@@ -13,13 +13,13 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/09/2013 Ver. 1.6.0 RC 2 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/09/2013 Ver. 1.6.0 RC 3 - Author: cooldude2k $
 '''
 
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
-'''sys.tracebacklimit = 0;'''
+sys.tracebacklimit = 0;
 
-__version_info__ = (1, 6, 0, "RC 2");
+__version_info__ = (1, 6, 0, "RC 3");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -69,7 +69,15 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
    mregex_text = re.escape("http://motherless.com/")+"([\w\/\?\&\=]+)";
    if(re.findall(mregex_text, mlessvid)):
     mlessvid = re.findall(mregex_text, mlessvid);
-    mlessvid = mlessvid[0];
+    mlessvid = "http://motherless.com/"+mlessvid[0];
+  if(re.match("^"+re.escape("thumbs.motherlessmedia.com"), urlparse.urlparse(mlessvid).hostname)):
+   mlessvid = re.sub(re.escape("-zoom"), "", mlessvid);
+   mlessvidtmp = urlparse.urlparse(mlessvid).path.split("/");
+   mlessvid = "http://motherless.com/"+mlessvidtmp[2];
+   mregex_text = re.escape("http://motherless.com/")+"([\w\/\?\&\=]+)";
+   if(re.findall(mregex_text, mlessvid)):
+    mlessvid = re.findall(mregex_text, mlessvid);
+    mlessvid = "http://motherless.com/"+mlessvid[0];
   mlessvid = re.sub(re.escape("http://motherless.com/"), "", mlessvid);
   mlessvid = re.sub(re.escape("http://www.motherless.com/"), "", mlessvid);
   mlessvid = re.sub(re.escape("motherless.com/"), "", mlessvid);
@@ -276,7 +284,6 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
    curusrgal = curusrgal + 1;
   cururlarg = cururlarg + 1;
  return mlessoutlist;
-
 mtlesslinks = motherless_dl();
 mtlesslncount = len(mtlesslinks);
 mtlesscurln = 0;
