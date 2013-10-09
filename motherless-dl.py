@@ -13,13 +13,13 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/09/2013 Ver. 1.6.0 RC 1 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/09/2013 Ver. 1.6.0 RC 2 - Author: cooldude2k $
 '''
 
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 '''sys.tracebacklimit = 0;'''
 
-__version_info__ = (1, 6, 0, "RC 1");
+__version_info__ = (1, 6, 0, "RC 2");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -63,6 +63,13 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
  cururlarg = 0;
  while(cururlarg<numurlarg):
   mlessvid = mtlessgetargs["url"][cururlarg];
+  if(re.match("^s([0-9]+)"+re.escape(".motherlessmedia.com"), urlparse.urlparse(mlessvid).hostname)):
+   geturls_text = geturls_opener.open("http://motherless.com/mogile_api.php?path="+urllib.quote_plus(mlessvid)+"&redirect=1");
+   mlessvid = geturls_text.geturl();
+   mregex_text = re.escape("http://motherless.com/")+"([\w\/\?\&\=]+)";
+   if(re.findall(mregex_text, mlessvid)):
+    mlessvid = re.findall(mregex_text, mlessvid);
+    mlessvid = mlessvid[0];
   mlessvid = re.sub(re.escape("http://motherless.com/"), "", mlessvid);
   mlessvid = re.sub(re.escape("http://www.motherless.com/"), "", mlessvid);
   mlessvid = re.sub(re.escape("motherless.com/"), "", mlessvid);
