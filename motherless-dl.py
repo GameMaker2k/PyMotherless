@@ -13,13 +13,13 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/09/2013 Ver. 1.6.0 RC 3 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/09/2013 Ver. 1.6.2 RC 1 - Author: cooldude2k $
 '''
 
+from __future__ import division, absolute_import, print_function;
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 sys.tracebacklimit = 0;
-
-__version_info__ = (1, 6, 0, "RC 3");
+__version_info__ = (1, 6, 2, "RC 1");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -39,8 +39,16 @@ parser.add_argument("--get-title", action='store_true', help="simulate, quiet bu
 parser.add_argument("--get-id", action='store_true', help="simulate, quiet but print id");
 parser.add_argument("--get-thumbnail", action='store_true', help="simulate, quiet but print thumbnail URL");
 parser.add_argument("--get-filename", action='store_true', help="simulate, quiet but print output filename");
-parser.add_argument("--get-format", action='store_true', help="simulate, quiet but print output format");
+parser.add_argument("--get-format", action='store_true', help="simulate, quiet but print file format");
+parser.add_argument("--get-type", action='store_true', help="simulate, quiet but print file type");
 parser.add_argument("--get-username", action='store_true', help="simulate, quiet but print uploaders username");
+parser.add_argument("--get-bbcode", action='store_true', help="simulate, quiet but print bbcode");
+parser.add_argument("--get-html", action='store_true', help="simulate, quiet but print html code");
+parser.add_argument("--get-dimensions", action='store_true', help="simulate, quiet but print dimensions (width x height)");
+parser.add_argument("--get-width", action='store_true', help="simulate, quiet but print width");
+parser.add_argument("--get-height", action='store_true', help="simulate, quiet but print height");
+parser.add_argument("--get-views", action='store_true', help="simulate, quiet but print number of views");
+parser.add_argument("--get-favorites", action='store_true', help="simulate, quiet but print number of favorites");
 parser.add_argument("--verbose", action='store_true', help="print various debugging information");
 getargs = parser.parse_args();
 if(getargs.version==True):
@@ -72,6 +80,7 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
     mlessvid = "http://motherless.com/"+mlessvid[0];
   if(re.match("^"+re.escape("thumbs.motherlessmedia.com"), urlparse.urlparse(mlessvid).hostname)):
    mlessvid = re.sub(re.escape("-zoom"), "", mlessvid);
+   mlessvid = re.sub(re.escape("-strip"), "", mlessvid);
    mlessvidtmp = urlparse.urlparse(mlessvid).path.split("/");
    mlessvid = "http://motherless.com/"+mlessvidtmp[2];
    mregex_text = re.escape("http://motherless.com/")+"([\w\/\?\&\=]+)";
@@ -230,6 +239,14 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
     mlessusrname = usrname_text[0];
     mlessid = re.sub("^"+re.escape("/"), "", mlessurllist[curlurl]);
     mlesspurl = "http://motherless.com"+mlessurllist[curlurl];
+    regex_numviews = re.escape("<strong>Views</strong>")+"\n+\t+([0-9\,]+)\t+"+re.escape("</h2>");
+    numviews_text = re.findall(regex_numviews, subout_text);
+    mlessnumviews = numviews_text[0];
+    mlessnumviews = re.sub(re.escape(","), "", mlessnumviews);
+    regex_numfavs = re.escape("<strong>Favorited</strong>")+"\n+\t+([0-9\,]+)\t+"+re.escape("</h2>");
+    numfavs_text = re.findall(regex_numfavs, subout_text);
+    mlessnumfavs = numfavs_text[0];
+    mlessnumfavs = re.sub(re.escape(","), "", mlessnumfavs);
     if(post_text>0):
      mlesslink = post_text[0];
      mlessext = os.path.splitext(urlparse.urlparse(mlesslink).path)[1];
@@ -245,7 +262,7 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
       post_ii_dimensions = re.findall(regex_ii_dimensions, subout_text);
       post_ii_width = post_ii_dimensions[0][0];
       post_ii_height = post_ii_dimensions[0][1];
-      imginfo = {"height": int(post_ii_width), "width": int(post_ii_height)};
+      imginfo = {"width": int(post_ii_height), "height": int(post_ii_width), "views": int(mlessnumviews), "favorites": int(mlessnumfavs)};
      if(mlessext=="mp4" or mlessext=="flv"):
       vidinfo = {};
       mlesslink = mlesslink+"?start=0";
@@ -261,7 +278,7 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
       post_vi_filethumb = re.findall(regex_vi_filethumb, subout_text);
       regex_vi_kind = re.escape("\"kind\": \"")+"(.*)"+re.escape("\"");
       post_vi_kind = re.findall(regex_vi_kind, subout_text);
-      vidinfo = {"file": post_vi_file[0], "image": post_vi_image[0], "height": int(post_vi_height[0]), "width": int(post_vi_width[0]), "filethumb": post_vi_filethumb[0], "kind": post_vi_kind[0]};
+      vidinfo = {"file": post_vi_file[0], "image": post_vi_image[0], "width": int(post_vi_width[0]), "height": int(post_vi_height[0]), "views": int(mlessnumviews), "favorites": int(mlessnumfavs), "filethumb": post_vi_filethumb[0], "thumbstrip": "http://thumbs.motherlessmedia.com/thumbs/"+mlessid+"-strip.jpg", "kind": post_vi_kind[0]};
      mlesslistitms = {};
      mlesslistitms.update({"id": mlessid});
      mlesslistitms.update({"title": mlesstitle});
@@ -270,8 +287,22 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
      mlesslistitms.update({"thumbnail": mlessthumb});
      if(not mlessext=="mp4" and not mlessext=="flv"):
       mlesslistitms.update({"vidpic": mlesslink});
+      mlesslistitms.update({"type": "image"});
+      mlesslistitms.update({"info": imginfo});
+      mlesslistitms.update({"dimensions": str(imginfo["width"])+"x"+str(imginfo["height"])});
+      mlesslistitms.update({"width": imginfo["width"]});
+      mlesslistitms.update({"height": imginfo["height"]});
+      mlesslistitms.update({"views": imginfo["views"]});
+      mlesslistitms.update({"favorites": imginfo["favorites"]});
      if(mlessext=="mp4" or mlessext=="flv"):
       mlesslistitms.update({"vidpic": mlessimg});
+      mlesslistitms.update({"type": "video"});
+      mlesslistitms.update({"info": vidinfo});
+      mlesslistitms.update({"dimensions": str(vidinfo["width"])+"x"+str(vidinfo["height"])});
+      mlesslistitms.update({"width": vidinfo["width"]});
+      mlesslistitms.update({"height": vidinfo["height"]});
+      mlesslistitms.update({"views": vidinfo["views"]});
+      mlesslistitms.update({"favorites": vidinfo["favorites"]});
      mlesslistitms.update({"username": mlessusrname});
      mlesslistitms.update({"pageurl": mlesspurl});
      mlesslistitms.update({"url": mlesslink});
@@ -294,6 +325,8 @@ while(mtlesscurln<mtlesslncount):
   print(mtlesslinks[mtlesscurln]["title"]);
  if(getargs.get_format==True):
   print(mtlesslinks[mtlesscurln]["format"]);
+ if(getargs.get_type==True):
+  print(mtlesslinks[mtlesscurln]["type"]);
  if(getargs.get_filename==True):
   print(mtlesslinks[mtlesscurln]["filename"]);
  if(getargs.get_thumbnail==True):
@@ -304,6 +337,20 @@ while(mtlesscurln<mtlesslncount):
   print(mtlesslinks[mtlesscurln]["username"]);
  if(getargs.get_pageurl==True):
   print(mtlesslinks[mtlesscurln]["pageurl"]);
- if(getargs.get_url==True or (getargs.get_id==False and getargs.get_title==False and getargs.get_format==False and getargs.get_filename==False and getargs.get_thumbnail==False and getargs.get_username==False and getargs.get_pageurl==False)):
+ if(getargs.get_bbcode==True):
+  print("[URL="+mtlesslinks[mtlesscurln]["pageurl"]+"][IMG]"+mtlesslinks[mtlesscurln]["thumbnail"]+"[/IMG][/URL]");
+ if(getargs.get_html==True):
+  print("<a href=\""+mtlesslinks[mtlesscurln]["pageurl"]+"\"><img src=\""+mtlesslinks[mtlesscurln]["thumbnail"]+"\"></a>");
+ if(getargs.get_dimensions==True):
+  print(mtlesslinks[mtlesscurln]["dimensions"]);
+ if(getargs.get_width==True):
+  print(str(mtlesslinks[mtlesscurln]["width"]));
+ if(getargs.get_height==True):
+  print(str(mtlesslinks[mtlesscurln]["height"]));
+ if(getargs.get_views==True):
+  print(mtlesslinks[mtlesscurln]["views"]);
+ if(getargs.get_favorites==True):
+  print(mtlesslinks[mtlesscurln]["favorites"]);
+ if(getargs.get_url==True or (getargs.get_id==False and getargs.get_title==False and getargs.get_format==False and getargs.get_filename==False and getargs.get_thumbnail==False and getargs.get_username==False and getargs.get_pageurl==False and getargs.get_bbcode==False and getargs.get_html==False and getargs.get_dimensions==False and getargs.get_width==False and getargs.get_height==False and getargs.get_views==False and getargs.get_favorites==False and getargs.get_type==False)):
   print(mtlesslinks[mtlesscurln]["url"]);
  mtlesscurln = mtlesscurln + 1;
