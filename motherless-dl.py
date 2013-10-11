@@ -13,13 +13,13 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/11/2013 Ver. 1.6.4 RC 2 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/11/2013 Ver. 1.6.4 RC 3 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 sys.tracebacklimit = 0;
-__version_info__ = (1, 6, 4, "RC 2");
+__version_info__ = (1, 6, 4, "RC 3");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -248,13 +248,15 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
     numfavs_text = re.findall(regex_numfavs, subout_text);
     mlessnumfavs = numfavs_text[0];
     mlessnumfavs = re.sub(re.escape(","), "", mlessnumfavs);
-    regex_postdata = re.escape("<div class=\"media-comment-contents\">")+"\n\t+"+re.escape("<h4>")+"\n\t+"+re.escape("<a href=\"/m/")+"([\w]+)"+re.escape("\" class=\"pop plain\" target=\"_blank\">")+"\n\t+([\w]+)\t+"+re.escape("</a>")+"\n\t+"+re.escape("</h4>")+"\n\t+"+re.escape("<div class=\"media-comment-meta\">")+"\n\t+([!-%'-?A-~ ]+)\t+"+re.escape("</div>")+"\n\t+"+re.escape("<div style=\"text-align: justify;\">")+"\n\t+([!-%'-?A-~ ]+)\t+"+re.escape("</div>");
+    regex_postdata = re.escape("<div class=\"media-comment-contents\">")+"\n\t+"+re.escape("<h4>")+"\n\t+"+re.escape("<a href=\"/m/")+"([\w]+)"+re.escape("\" class=\"pop plain\" target=\"_blank\">")+"\n\t+([\w]+)\t+"+re.escape("</a>")+"\n\t+"+re.escape("</h4>")+"\n\t+"+re.escape("<div class=\"media-comment-meta\">")+"\n\t+([!-%'-?A-~ ]+)\t+"+re.escape("</div>")+"\n\t+"+re.escape("<div style=\"text-align: justify;\">")+"\n\t+([!-%'-?A-~ \<\>\"\'\@\#]+)\t+"+re.escape("</div>");
     postdata_text = re.findall(regex_postdata, subout_text);
     numpost = len(postdata_text);
     curpost = 0;
     mlesspostlist = [];
+    ''' From Amber @ http://stackoverflow.com/a/9662362 '''
+    TAG_RE = re.compile(r'<[^>]+>');
     while(numpost>0 and curpost<numpost):
-     mlesspostlist.append({"username": postdata_text[curpost][0], "avatar": "http://avatars.motherlessmedia.com/avatars/member/"+postdata_text[curpost][0]+".jpg", "smallavatar": "http://avatars.motherlessmedia.com/avatars/member/"+postdata_text[curpost][0]+"-small.jpg", "post": postdata_text[curpost][3]});
+     mlesspostlist.append({"username": postdata_text[curpost][0], "avatar": "http://avatars.motherlessmedia.com/avatars/member/"+postdata_text[curpost][0]+".jpg", "smallavatar": "http://avatars.motherlessmedia.com/avatars/member/"+postdata_text[curpost][0]+"-small.jpg", "post": TAG_RE.sub('', postdata_text[curpost][3])});
      curpost = curpost + 1;
     if(post_text>0):
      mlesslink = post_text[0];
