@@ -13,13 +13,13 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/09/2013 Ver. 1.6.2 RC 1 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/11/2013 Ver. 1.6.4 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 sys.tracebacklimit = 0;
-__version_info__ = (1, 6, 2, "RC 1");
+__version_info__ = (1, 6, 4, "RC 1");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -36,6 +36,7 @@ parser.add_argument("--id", action='store_true', help="use only video ID in file
 parser.add_argument("--get-url", action='store_true', help="simulate, quiet but print URL");
 parser.add_argument("--get-pageurl", action='store_true', help="simulate, quiet but print URL");
 parser.add_argument("--get-title", action='store_true', help="simulate, quiet but print title");
+parser.add_argument("--get-posts", action='store_true', help="simulate, quiet but print user posts");
 parser.add_argument("--get-id", action='store_true', help="simulate, quiet but print id");
 parser.add_argument("--get-thumbnail", action='store_true', help="simulate, quiet but print thumbnail URL");
 parser.add_argument("--get-filename", action='store_true', help="simulate, quiet but print output filename");
@@ -247,6 +248,14 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
     numfavs_text = re.findall(regex_numfavs, subout_text);
     mlessnumfavs = numfavs_text[0];
     mlessnumfavs = re.sub(re.escape(","), "", mlessnumfavs);
+    regex_postdata = re.escape("<div class=\"media-comment-contents\">")+"\n\t+"+re.escape("<h4>")+"\n\t+"+re.escape("<a href=\"/m/")+"([\w]+)"+re.escape("\" class=\"pop plain\" target=\"_blank\">")+"\n\t+([\w]+)\t+"+re.escape("</a>")+"\n\t+"+re.escape("</h4>")+"\n\t+"+re.escape("<div class=\"media-comment-meta\">")+"\n\t+([\w ]+)\t+"+re.escape("</div>")+"\n\t+"+re.escape("<div style=\"text-align: justify;\">")+"\n\t+([!-%'-?A-~ ]+)\t+"+re.escape("</div>");
+    postdata_text = re.findall(regex_postdata, subout_text);
+    numpost = len(postdata_text);
+    curpost = 0;
+    mlesspostlist = [];
+    while(numpost>0 and curpost<numpost):
+     mlesspostlist.append({"username": postdata_text[curpost][0], "avatar": "http://avatars.motherlessmedia.com/avatars/member/"+postdata_text[curpost][0]+".jpg", "smallavatar": "http://avatars.motherlessmedia.com/avatars/member/"+postdata_text[curpost][0]+"-small.jpg", "post": postdata_text[curpost][3]});
+     curpost = curpost + 1;
     if(post_text>0):
      mlesslink = post_text[0];
      mlessext = os.path.splitext(urlparse.urlparse(mlesslink).path)[1];
@@ -304,6 +313,9 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
       mlesslistitms.update({"views": vidinfo["views"]});
       mlesslistitms.update({"favorites": vidinfo["favorites"]});
      mlesslistitms.update({"username": mlessusrname});
+     mlesslistitms.update({"avatar": "http://avatars.motherlessmedia.com/avatars/member/"+mlessusrname+".jpg"});
+     mlesslistitms.update({"smallavatar": "http://avatars.motherlessmedia.com/avatars/member/"+mlessusrname+"-small.jpg"});
+     mlesslistitms.update({"posts": mlesspostlist});
      mlesslistitms.update({"pageurl": mlesspurl});
      mlesslistitms.update({"url": mlesslink});
      mlessoutlist.append(mlesslistitms);
@@ -323,6 +335,13 @@ while(mtlesscurln<mtlesslncount):
   print(mtlesslinks[mtlesscurln]["id"]);
  if(getargs.get_title==True):
   print(mtlesslinks[mtlesscurln]["title"]);
+ if(getargs.get_posts==True):
+  numpost = len(mtlesslinks[mtlesscurln]["posts"]);
+  curpost = 0;
+  mlesspostlist = [];
+  while(numpost>0 and curpost<numpost):
+   print(mtlesslinks[mtlesscurln]["posts"][curpost]["username"]+": "+mtlesslinks[mtlesscurln]["posts"][curpost]["post"]);
+   curpost = curpost + 1;
  if(getargs.get_format==True):
   print(mtlesslinks[mtlesscurln]["format"]);
  if(getargs.get_type==True):
@@ -351,6 +370,6 @@ while(mtlesscurln<mtlesslncount):
   print(mtlesslinks[mtlesscurln]["views"]);
  if(getargs.get_favorites==True):
   print(mtlesslinks[mtlesscurln]["favorites"]);
- if(getargs.get_url==True or (getargs.get_id==False and getargs.get_title==False and getargs.get_format==False and getargs.get_filename==False and getargs.get_thumbnail==False and getargs.get_username==False and getargs.get_pageurl==False and getargs.get_bbcode==False and getargs.get_html==False and getargs.get_dimensions==False and getargs.get_width==False and getargs.get_height==False and getargs.get_views==False and getargs.get_favorites==False and getargs.get_type==False)):
+ if(getargs.get_url==True or (getargs.get_id==False and getargs.get_title==False and getargs.get_posts==False and getargs.get_format==False and getargs.get_filename==False and getargs.get_thumbnail==False and getargs.get_username==False and getargs.get_pageurl==False and getargs.get_bbcode==False and getargs.get_html==False and getargs.get_dimensions==False and getargs.get_width==False and getargs.get_height==False and getargs.get_views==False and getargs.get_favorites==False and getargs.get_type==False)):
   print(mtlesslinks[mtlesscurln]["url"]);
  mtlesscurln = mtlesscurln + 1;
