@@ -13,14 +13,14 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/11/2013 Ver. 1.6.4 RC 5 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/11/2013 Ver. 1.6.5 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
-__version_info__ = (1, 6, 4, "RC 5");
+__version_info__ = (1, 6, 5, "RC 1");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -233,7 +233,7 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
        print(post_text[cururl]);
       cururl = cururl + 1;
      curpage = curpage + 1;
-   if((re.match("^G", mlessvidid[1]) and len(mlessvidid)==3 and re.match("([0-9A-F]+)", mlessvidid[2])) or (len(mlessvidid)==2 and re.match("([0-9A-F]+)", mlessvidid[1]))):
+   if((re.match("^G", mlessvidid[1]) and len(mlessvidid)==3 and re.match("([0-9A-F]+)", mlessvidid[2])) or (re.match("^g", mlessvidid[1]) and len(mlessvidid)==4) or (len(mlessvidid)==2 and re.match("([0-9A-F]+)", mlessvidid[1]))):
     mlessurllist.append(mlessvid);
    numlist = len(mlessurllist);
    curlurl = 0;
