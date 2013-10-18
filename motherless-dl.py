@@ -13,14 +13,14 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/11/2013 Ver. 1.6.5 RC 1 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/18/2013 Ver. 1.6.5 RC 2 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
-__version_info__ = (1, 6, 5, "RC 1");
+__version_info__ = (1, 6, 5, "RC 2");
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -266,6 +266,8 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
      regex_img = re.escape("<meta property=\"og:image\" content=\"")+"(.*)"+re.escape("\">");
      img_text = re.findall(regex_img, subout_text);
      mlessimg = img_text[0];
+     regex_mediatype = re.escape("__mediatype = '")+"(.*)"+re.escape("',");
+     mediatype_text = re.findall(regex_mediatype, subout_text);
      regex_altimg = re.escape("<link rel=\"image_src\" type=\"image/")+"(.*)"+re.escape("\" href=\"")+"(.*)"+re.escape("\">");
      altimg_text = re.findall(regex_altimg, subout_text);
      mlessaltimg = altimg_text[0][1];
@@ -286,6 +288,10 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
      regex_postdata = re.escape("<div class=\"media-comment-contents\">")+"\n\t+"+re.escape("<h4>")+"\n\t+"+re.escape("<a href=\"/m/")+"([\w]+)"+re.escape("\" class=\"pop plain\" target=\"_blank\">")+"\n\t+([^\t]+)\t+"+re.escape("</a>")+"\n\t+"+re.escape("</h4>")+"\n\t+"+re.escape("<div class=\"media-comment-meta\">")+"\n\t+([^\t]+)\t+"+re.escape("</div>")+"\n\t+"+re.escape("<div style=\"text-align: justify;\">")+"\n\t+([^\t]+)\t+"+re.escape("</div>");
      postdata_text = re.findall(regex_postdata, subout_text);
      numpost = len(postdata_text);
+     regex_servsecs = re.escape("Served by web")+"([0-9]+)"+re.escape(" in ")+"([0-9\.]+)"+re.escape(" seconds");
+     servsecs_text = re.findall(regex_servsecs, subout_text);
+     servname = "web"+servsecs_text[0][0];
+     servsecs = float(servsecs_text[0][1]);
      curpost = 0;
      mlesspostlist = [];
      ''' From Amber @ http://stackoverflow.com/a/9662362 '''
@@ -338,6 +344,9 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
       mlesslistitms.update({"format": mlessext});
       mlesslistitms.update({"filename": mlessfname});
       mlesslistitms.update({"thumbnail": mlessthumb});
+      mlesslistitms.update({"servername": servname});
+      mlesslistitms.update({"servingtime": servsecs});
+      mlesslistitms.update({"mediatype": mediatype_text[0]});
       if(not mlessext=="mp4" and not mlessext=="flv"):
        mlesslistitms.update({"vidpic": mlesslink});
        mlesslistitms.update({"type": "image"});
