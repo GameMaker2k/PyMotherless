@@ -13,22 +13,23 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/18/2013 Ver. 1.6.5 RC 2 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 10/23/2013 Ver. 1.6.5 RC 3 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
 import re, os, sys, urllib, urllib2, cookielib, StringIO, gzip, time, datetime, argparse, urlparse;
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
-__version_info__ = (1, 6, 5, "RC 2");
+__version_info__ = (1, 6, 5, "RC 3");
+__version_date__ = "2013.10.23";
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2]);
 
-parser = argparse.ArgumentParser();
+parser = argparse.ArgumentParser(description="get urls of images/videos from motherless.com", conflict_handler="resolve", add_help=True);
 parser.add_argument("url", nargs="*", help="motherless url");
-parser.add_argument("--version", action='store_true', help="print program version and exit");
+parser.add_argument('-v', '--version', action='version', version=__version__)
 parser.add_argument("--update", action='store_true', help="update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)");
 parser.add_argument("--dump-user-agent", action='store_true', help="display the current browser identification");
 parser.add_argument("--user-agent", nargs="?", default="Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0", help="specify a custom user agent");
@@ -54,9 +55,44 @@ parser.add_argument("--get-views", action='store_true', help="simulate, quiet bu
 parser.add_argument("--get-favorites", action='store_true', help="simulate, quiet but print number of favorites");
 parser.add_argument("--verbose", action='store_true', help="print various debugging information");
 getargs = parser.parse_args();
-if(getargs.version==True):
- print(__version__);
+
+if(getargs.update==True):
+ from distutils.version import LooseVersion as VerCheck;
+ fakeua = getargs.user_agent;
+ proxycfg = None;
+ if(getargs.proxy!=None):
+  proxycfg = urllib2.ProxyHandler({"http": getargs.proxy});
+ geturls_cj = cookielib.CookieJar();
+ if(proxycfg==None):
+  geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(geturls_cj));
+ if(proxycfg!=None):
+  geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(geturls_cj), proxycfg);
+ geturls_opener.addheaders = [("Referer", "https://github.com/GameMaker2k/Python-Scripts/"), ("User-Agent", fakeua), ("Accept-Encoding", "gzip, deflate"), ("Accept-Language", "en-US,en;q=0.8,en-CA,en-GB;q=0.6"), ("Accept-Charset", "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7"), ("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"), ("Connection", "close")];
+ urllib2.install_opener(geturls_opener);
+ geturls_text = geturls_opener.open("https://raw.github.com/GameMaker2k/Python-Scripts/master/MiniScripts/motherless-dl.py");
+ if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
+  strbuf = StringIO.StringIO(geturls_text.read());
+  gzstrbuf = gzip.GzipFile(fileobj=strbuf);
+  pyfile_text = gzstrbuf.read()[:];
+ if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
+  pyfile_text = geturls_text.read()[:];
+ regex_finddate_text = re.escape("__version_date__ = \"")+"([0-9\.]+)"+re.escape("\"");
+ finddate_text = re.findall(regex_finddate_text, pyfile_text);
+ regex_findver_text = re.escape("__version_info__ = (")+"([0-9]+)"+re.escape(", ")+"([0-9]+)"+re.escape(", ")+"([0-9]+)"+re.escape(", \"")+"([A-Z0-9 ]+)"+re.escape("\");");
+ findver_text = re.findall(regex_findver_text, pyfile_text);
+ ProVerStr = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+__version_info__[3].replace(" ", "").lower();
+ ProVerCheck = VerCheck(ProVerStr);
+ ProDateCheck = VerCheck(__version_date__);
+ NewVerStr = findver_text[0][0]+"."+findver_text[0][1]+"."+findver_text[0][2]+findver_text[0][3].replace(" ", "").lower();
+ NewVerCheck = VerCheck(NewVerStr);
+ NewDateCheck = VerCheck(finddate_text[0]);
+ if(ProVerStr < NewVerCheck and ProDateCheck <= NewDateCheck):
+  fileopen = open(__file__, "w+");
+  fileopen.write(pyfile_text);
+  fileopen.close();
+ print();
  sys.exit();
+
 if(getargs.dump_user_agent==True):
  print(getargs.user_agent);
  sys.exit();
@@ -67,7 +103,7 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
  fakeua = mtlessgetargs["user_agent"];
  proxycfg = None;
  if(mtlessgetargs["proxy"]!=None):
-  proxycfg = urllib2.ProxyHandler({"http": getargs.proxy});
+  proxycfg = urllib2.ProxyHandler({"http": mtlessgetargs["proxy"]});
  geturls_cj = cookielib.CookieJar();
  if(proxycfg==None):
   geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(geturls_cj));
