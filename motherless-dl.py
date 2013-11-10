@@ -13,7 +13,7 @@
     Copyright 2013 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2013 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 10/23/2013 Ver. 1.6.5 RC 3 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 11/10/2013 Ver. 1.6.7 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -28,11 +28,13 @@ if(__version_info__[3]==None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2]);
 
 parser = argparse.ArgumentParser(description="get urls of images/videos from motherless.com", conflict_handler="resolve", add_help=True);
-parser.add_argument("url", nargs="*", help="motherless url");
-parser.add_argument('-v', '--version', action='version', version=__version__)
+parser.add_argument("url", nargs='*', help='motherless url');
+parser.add_argument('-v', '--version', action='version', version=__version__);
+parser.add_argument("--pages-start", nargs="*", help="start at page number");
+parser.add_argument("--pages-end", nargs="*", help="end at page number");
 parser.add_argument("--update", action='store_true', help="update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)");
 parser.add_argument("--dump-user-agent", action='store_true', help="display the current browser identification");
-parser.add_argument("--user-agent", nargs="?", default="Mozilla/5.0 (Windows NT 6.1; rv:24.0) Gecko/20100101 Firefox/24.0", help="specify a custom user agent");
+parser.add_argument("--user-agent", nargs="?", default="Mozilla/5.0 (Windows NT 7.0; rv:25.0) Gecko/20100101 Firefox/25.0", help="specify a custom user agent");
 parser.add_argument("--referer", nargs="?", default="http://motherless.com/", help="specify a custom referer, use if the video access");
 parser.add_argument("--proxy", nargs="?", default=None, help="Use the specified HTTP/HTTPS proxy");
 parser.add_argument("--id", action='store_true', help="use only video ID in file name");
@@ -55,7 +57,6 @@ parser.add_argument("--get-views", action='store_true', help="simulate, quiet bu
 parser.add_argument("--get-favorites", action='store_true', help="simulate, quiet but print number of favorites");
 parser.add_argument("--verbose", action='store_true', help="print various debugging information");
 getargs = parser.parse_args();
-
 if(getargs.update==True):
  from distutils.version import LooseVersion as VerCheck;
  fakeua = getargs.user_agent;
@@ -177,6 +178,14 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
    except IndexError:
     numpages = 1;
    curpage = 1;
+   if(not mtlessgetargs["pages_start"]==None and mtlessgetargs["pages_start"][0].isdigit()):
+    if(int(mtlessgetargs["pages_start"][0])<=numpages):
+     curpage = int(mtlessgetargs["pages_start"][0]);
+   if(not mtlessgetargs["pages_end"]==None and mtlessgetargs["pages_end"][0].isdigit()):
+    if(int(mtlessgetargs["pages_end"][0])>=curpage):
+     numpages = int(mtlessgetargs["pages_end"][0]);
+    if(int(mtlessgetargs["pages_end"][0])<=numpages):
+     numpages = int(mtlessgetargs["pages_end"][0]);
    while(curpage<=numpages):
     if(curpage>1):
      geturls_text = geturls_opener.open("http://motherless.com/"+mlessvid+"?page="+str(curpage));
@@ -241,6 +250,14 @@ def motherless_dl(mtlessgetargs=vars(getargs)):
     except IndexError:
      numpages = 1;
     curpage = 1;
+    if(not mtlessgetargs["pages_start"]==None and mtlessgetargs["pages_start"][0].isdigit()):
+     if(int(mtlessgetargs["pages_start"][0])<=numpages):
+      curpage = int(mtlessgetargs["pages_start"][0]);
+    if(not mtlessgetargs["pages_end"]==None and mtlessgetargs["pages_end"][0].isdigit()):
+     if(int(mtlessgetargs["pages_end"][0])>=curpage):
+      numpages = int(mtlessgetargs["pages_end"][0]);
+     if(int(mtlessgetargs["pages_end"][0])<=numpages):
+      numpages = int(mtlessgetargs["pages_end"][0]);
     while(curpage<=numpages):
      if(curpage>1):
       geturls_text = geturls_opener.open("http://motherless.com"+mlessvid+"?page="+str(curpage)+tvaradd);
