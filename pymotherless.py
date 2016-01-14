@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 1/14/2016 Ver. 0.2.4 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 1/14/2016 Ver. 0.2.5 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -32,7 +32,7 @@ if(sys.version[0]=="3"):
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 2, 4, "RC 1");
+__version_info__ = (0, 2, 5, "RC 1");
 __version_date__ = "2016.01.14";
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
@@ -268,9 +268,9 @@ def get_motherless_links(httpurl, httpheaders, httpcookie):
  returnval = False;
  mlesslinktype = get_motherless_get_link_type("http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2]);
  if(mlesslinkone[0][1]=="images"):
-  returnval = {'type': mlesslinkone[0][1], 'linktype': mlesslinktype, 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/thumbs/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension};
+  returnval = {'type': mlesslinkone[0][1], 'linktype': mlesslinktype, 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'orginurl': httpurl, 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/thumbs/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension};
  if(mlesslinkone[0][1]=="videos"):
-  returnval = {'type': mlesslinkone[0][1], 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[0][1]+"/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension};
+  returnval = {'type': mlesslinkone[0][1], 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'orginurl': httpurl, 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[0][1]+"/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension};
  return returnval;
 
 def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1, getlinks=[0, -1]):
@@ -308,6 +308,7 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1, get
  returnval.update({'curpage': page});
  returnval.update({'numoflinks': mlil});
  returnval.update({'numofalllinks': len(mlesslinkone)});
+ returnval.update({'orginurl': httpurl});
  mlessrootlinktype = get_motherless_get_link_type(httpurl);
  returnval.update({'linktype': mlessrootlinktype});
  while(mli<mlil):
@@ -341,6 +342,7 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, getlinks=[0, -
  mlil = getlinks[1];
  returnval = {'numoflinks': mlil};
  returnval.update({'numofalllinks': len(mlesslinkone)});
+ returnval.update({'orginurl': httpurl});
  mlessrootlinktype = get_motherless_get_link_type(httpurl);
  returnval.update({'linktype': mlessrootlinktype});
  while(mli<mlil):
@@ -382,6 +384,7 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, page=1, getl
  returnval.update({'numofalllinks': len(mlessuname)});
  returnval.update({'pages': lastpage});
  returnval.update({'curpage': page});
+ returnval.update({'orginurl': httpurl});
  mlessrootlinktype = get_motherless_get_link_type(httpurl);
  returnval.update({'linktype': mlessrootlinktype});
  while(mli<mlil):
@@ -411,6 +414,7 @@ def get_motherless_girls(httpurl, httpheaders, httpcookie, getlinks=[0, -1]):
  mlil = getlinks[1];
  returnval = {'numoflinks': mlil};
  returnval.update({'numofalllinks': len(mlessuname)});
+ returnval.update({'orginurl': httpurl});
  mlessrootlinktype = get_motherless_get_link_type(httpurl);
  returnval.update({'linktype': mlessrootlinktype});
  while(mli<mlil):
@@ -492,6 +496,7 @@ def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, sleep=
  returnval.update({'curpage': mlessgalleries['curpage']});
  returnval.update({'numoflinks': mlessgalleries['numoflinks']});
  returnval.update({'numofalllinks': mlessgalleries['numofalllinks']});
+ returnval.update({'orginurl': httpurl});
  while(mli<mlil):
   mlesslink = get_motherless_links(mlessgalleries[mli]['url'], httpheaders, httpcookie);
   outputname = mlesslink['fullfilename'];
@@ -502,7 +507,7 @@ def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, sleep=
    outputname = "-";
   if(usetitlename=="-" and not outfile=="-"):
    outputname = outfile;
-  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, outputname, outpath, sleep)}});
+  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, outputname, outpath, sleep), 'linkinfo': mlesslink}});
   mli = mli + 1;
  return returnval;
 
@@ -515,6 +520,7 @@ def download_get_motherless_boards_links(httpurl, httpheaders, httpcookie, sleep
  mlil = mlessgalleries['numoflinks'];
  returnval = {'numoflists': mlessgalleries['numoflinks']};
  returnval.update({'numofalllinks': mlessgalleries['numofalllinks']});
+ returnval.update({'orginurl': httpurl});
  while(mli<mlil):
   mlesslink = get_motherless_links(mlessgalleries[mli]['url'], httpheaders, httpcookie);
   outputname = mlesslink['fullfilename'];
@@ -525,7 +531,7 @@ def download_get_motherless_boards_links(httpurl, httpheaders, httpcookie, sleep
    outputname = "-";
   if(usetitlename=="-" and not outfile=="-"):
    outputname = outfile;
-  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, outputname, outpath, sleep)}});
+  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, outputname, outpath, sleep), 'linkinfo': mlesslink}});
   mli = mli + 1;
  return returnval;
 
