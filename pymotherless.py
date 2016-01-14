@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 1/7/2016 Ver. 0.2.0 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 1/14/2016 Ver. 0.2.2 RC 1 - Author: cooldude2k $
 '''
 
 # https://raw.githubusercontent.com/GameMaker2k/Python-Scripts/master/MiniScripts/motherless-dl.py
@@ -34,8 +34,8 @@ if(sys.version[0]=="3"):
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 2, 0, "RC 1");
-__version_date__ = "2016.01.07";
+__version_info__ = (0, 2, 2, "RC 1");
+__version_date__ = "2016.01.14";
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -284,7 +284,7 @@ def get_motherless_links_from_list(httpurl, httpheaders, httpcookie):
   mli = mli + 1;
  return returnval;
 
-def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1):
+def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1, getlinks=[0, -1]):
  mrtext = download_from_url(httpurl, httpheaders, httpcookie);
  mregex_getpagenum = re.escape("page=")+"([0-9]+)"+re.escape("\" class=\"pop\" rel=\"")+"([0-9]+)"+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
  mlesspagenum = re.findall(mregex_getpagenum, mrtext);
@@ -304,11 +304,21 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1):
  mlesslinkone = re.findall(mregex_geturlone, mrtext_tmp);
  mregex_geturltwo = re.escape("<img class=\"static\" src=\"http://cdn.thumbs.motherlessmedia.com/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" data-strip-src=\"http://cdn.thumbs.motherlessmedia.com/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" alt=\"")+"(.*)"+re.escape("\" />");
  mlesslinktwo = re.findall(mregex_geturltwo, mrtext);
- mli = 0;
- mlil = len(mlesslinkone);
+ if(getlinks[1]>len(mlesslinkone) or getlinks[1]==-1):
+  getlinks[1] = len(mlesslinkone);
+ if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
+  tmpgetlinks0 = getlinks[0];
+  tmpgetlinks1 = getlinks[1];
+  getlinks[0] = tmpgetlinks1;
+  getlinks[1] = tmpgetlinks0;
+ if(getlinks[0]<0):
+  getlinks[0] = 0;
+ mli = getlinks[0];
+ mlil = getlinks[1];
  returnval = {'pages': lastpage};
  returnval.update({'curpage': page});
  returnval.update({'numoflinks': mlil});
+ returnval.update({'numofalllinks': len(mlesslinkone)});
  mlessrootlinktype = get_motherless_get_link_type(httpurl);
  returnval.update({'linktype': mlessrootlinktype});
  while(mli<mlil):
@@ -321,16 +331,25 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1):
   mli = mli + 1;
  return returnval;
 
-def get_motherless_galleries_links_from_list(httpurl, httpheaders, httpcookie, page):
+def get_motherless_galleries_links_from_list(httpurl, httpheaders, httpcookie, page, getlinks):
  mli = 0;
  mlil = len(httpurl);
  returnval = {'numoflists': mlil};
  while(mli<mlil):
-  returnval.update({mli: get_motherless_galleries_links(httpurl[mli], httpheaders, httpcookie, page[mli])});
+  if(getlinks[mli][1]>len(mlesslinkone) or getlinks[mli][1]==-1):
+   getlinks[mli][1] = len(mlesslinkone);
+  if(getlinks[mli][0]>getlinks[mli][1] and not getlinks[mli][1]==-1):
+   tmpgetlinks0 = getlinks[mli][0];
+   tmpgetlinks1 = getlinks[mli][1];
+   getlinks[mli][0] = tmpgetlinks1;
+   getlinks[mli][1] = tmpgetlinks0;
+  if(getlinks[mli][0]<0):
+   getlinks[mli][0] = 0;
+  returnval.update({mli: get_motherless_galleries_links(httpurl[mli], httpheaders, httpcookie, page[mli], getlinks[mli])});
   mli = mli + 1;
  return returnval;
 
-def get_motherless_boards_links(httpurl, httpheaders, httpcookie):
+def get_motherless_boards_links(httpurl, httpheaders, httpcookie, getlinks=[0, -1]):
  mrtext = download_from_url(httpurl, httpheaders, httpcookie);
  mregex_geturlone = re.escape("<a href=\"/")+"([\w\/]+)"+re.escape("\" title=\"motherless link\">");
  mrtext_tmp = re.sub(re.escape("http://motherless.com"), "", mrtext);
@@ -338,9 +357,19 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie):
  mrtext_tmp = re.sub(re.escape("http://motherless.com"), "", mrtext_tmp);
  mrtext_tmp = re.sub(re.escape("http://www.motherless.com"), "", mrtext_tmp);
  mlesslinkone = re.findall(mregex_geturlone, mrtext_tmp);
- mli = 0;
- mlil = len(mlesslinkone);
+ if(getlinks[1]>len(mlesslinkone) or getlinks[1]==-1):
+  getlinks[1] = len(mlesslinkone);
+ if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
+  tmpgetlinks0 = getlinks[0];
+  tmpgetlinks1 = getlinks[1];
+  getlinks[0] = tmpgetlinks1;
+  getlinks[1] = tmpgetlinks0;
+ if(getlinks[0]<0):
+  getlinks[0] = 0;
+ mli = getlinks[0];
+ mlil = getlinks[1];
  returnval = {'numoflinks': mlil};
+ returnval.update({'numofalllinks': len(mlesslinkone)});
  mlessrootlinktype = get_motherless_get_link_type(httpurl);
  returnval.update({'linktype': mlessrootlinktype});
  while(mli<mlil):
@@ -358,7 +387,7 @@ def get_motherless_boards_links_from_list(httpurl, httpheaders, httpcookie, page
   mli = mli + 1;
  return returnval;
 
-def get_motherless_search_members(httpurl, httpheaders, httpcookie, page=1):
+def get_motherless_search_members(httpurl, httpheaders, httpcookie, page=1, getlinks=[0, -1]):
  mrtext = download_from_url(httpurl, httpheaders, httpcookie);
  mregex_getpagenum = re.escape("page=")+"([0-9]+)"+re.escape("\" class=\"pop\" rel=\"")+"([0-9]+)"+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
  mlesspagenum = re.findall(mregex_getpagenum, mrtext);
@@ -376,9 +405,19 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, page=1):
  mlessurlname = re.findall(mregex_geturlname, mrtext);
  mregex_getavatar = re.escape("<img\n    src=\"")+"(.*)"+re.escape("\"\n    class=\"avatar avatar-small\"");
  mlessavatar = re.findall(mregex_getavatar, mrtext);
- mli = 0;
- mlil = len(mlessuname);
+ if(getlinks[1]>len(mlesslinkone) or getlinks[1]==-1):
+  getlinks[1] = len(mlesslinkone);
+ if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
+  tmpgetlinks0 = getlinks[0];
+  tmpgetlinks1 = getlinks[1];
+  getlinks[0] = tmpgetlinks1;
+  getlinks[1] = tmpgetlinks0;
+ if(getlinks[0]<0):
+  getlinks[0] = 0;
+ mli = getlinks[0];
+ mlil = getlinks[1];
  returnval = {'numoflinks': mlil};
+ returnval.update({'numofalllinks': len(mlessuname)});
  returnval.update({'pages': lastpage});
  returnval.update({'curpage': page});
  mlessrootlinktype = get_motherless_get_link_type(httpurl);
@@ -400,15 +439,25 @@ def get_motherless_search_members_from_list(httpurl, httpheaders, httpcookie, pa
   mli = mli + 1;
  return returnval;
 
-def get_motherless_girls(httpurl, httpheaders, httpcookie):
+def get_motherless_girls(httpurl, httpheaders, httpcookie, getlinks=[0, -1]):
  mrtext = download_from_url(httpurl, httpheaders, httpcookie);
  mregex_getuname = re.escape("<a href=\"")+"(.*)"+re.escape("\" rev=\"")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" rel=\"")+"(.*)"+re.escape("\">");
  mlessuname = re.findall(mregex_getuname, mrtext);
  mregex_geturlname = re.escape("\n\t\t\t\t\t\t<a href=\"/m/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" target=\"_blank\">");
  mlessurlname = re.findall(mregex_geturlname, mrtext);
- mli = 0;
- mlil = len(mlessuname);
+ if(getlinks[1]>len(mlesslinkone) or getlinks[1]==-1):
+  getlinks[1] = len(mlesslinkone);
+ if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
+  tmpgetlinks0 = getlinks[0];
+  tmpgetlinks1 = getlinks[1];
+  getlinks[0] = tmpgetlinks1;
+  getlinks[1] = tmpgetlinks0;
+ if(getlinks[0]<0):
+  getlinks[0] = 0;
+ mli = getlinks[0];
+ mlil = getlinks[1];
  returnval = {'numoflinks': mlil};
+ returnval.update({'numofalllinks': len(mlessuname)});
  mlessrootlinktype = get_motherless_get_link_type(httpurl);
  returnval.update({'linktype': mlessrootlinktype});
  while(mli<mlil):
@@ -419,16 +468,25 @@ def get_motherless_girls(httpurl, httpheaders, httpcookie):
   mli = mli + 1;
  return returnval;
 
-def get_motherless_girls_from_list(httpurl, httpheaders, httpcookie):
+def get_motherless_girls_from_list(httpurl, httpheaders, httpcookie, getlinks):
  mli = 0;
  mlil = len(httpurl);
  returnval = {'numoflists': mlil};
  while(mli<mlil):
-  returnval.update({mli: get_motherless_girls(httpurl[mli], httpheaders, httpcookie)});
+  if(getlinks[mli][1]>len(mlesslinkone) or getlinks[mli][1]==-1):
+   getlinks[mli][1] = len(mlesslinkone);
+  if(getlinks[mli][0]>getlinks[mli][1] and not getlinks[mli][1]==-1):
+   tmpgetlinks0 = getlinks[mli][0];
+   tmpgetlinks1 = getlinks[mli][1];
+   getlinks[mli][0] = tmpgetlinks1;
+   getlinks[mli][1] = tmpgetlinks0;
+  if(getlinks[mli][0]<0):
+   getlinks[mli][0] = 0;
+  returnval.update({mli: get_motherless_girls(httpurl[mli], httpheaders, httpcookie, getlinks[mli])});
   mli = mli + 1;
  return returnval;
 
-def get_motherless_get_link_by_type(httpurl, httpheaders, httpcookie, page=1):
+def get_motherless_get_link_by_type(httpurl, httpheaders, httpcookie, page=1, getlinks=[0, -1]):
  returnval = False;
  if(get_motherless_get_link_type(httpurl)=="file"):
   returnval = get_motherless_links(httpurl, httpheaders, httpcookie);
@@ -489,7 +547,7 @@ def download_motherless_links(httpurl, httpheaders, httpcookie, sleep=-1, outfil
  returnval = download_from_url_to_file(mlessurl['url'], httpheaders, httpcookie, outputname, outpath, sleep);
  return returnval;
 
-def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, sleep=-1, outfile="-", outpath=os.getcwd(), usetitlename=False, page=1):
+def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, sleep=-1, outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -508,7 +566,7 @@ def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, sleep=-1
   returnval = mlessurl;
  return returnval;
 
-def download_motherless_links_by_type_from_list(httpurl, httpheaders, httpcookie, sleep=-1, outfile=("-"), outpath=(os.getcwd()), usetitlename=(False), page=(1)):
+def download_motherless_links_by_type_from_list(httpurl, httpheaders, httpcookie, sleep=-1, outfile=("-"), outpath=(os.getcwd()), usetitlename=(False), page=(1), getlinks=[[0,-1]]):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -516,7 +574,16 @@ def download_motherless_links_by_type_from_list(httpurl, httpheaders, httpcookie
  mlil = len(httpurl);
  returnval = {'numoflists': mlil};
  while(mli<mlil):
-  mlessurl = get_motherless_get_link_by_type(httpurl[mli], httpheaders, httpcookie, page[mli]);
+  if(getlinks[mli][1]>len(mlesslinkone) or getlinks[mli][1]==-1):
+   getlinks[mli][1] = len(mlesslinkone);
+  if(getlinks[mli][0]>getlinks[mli][1] and not getlinks[mli][1]==-1):
+   tmpgetlinks0 = getlinks[mli][0];
+   tmpgetlinks1 = getlinks[mli][1];
+   getlinks[mli][0] = tmpgetlinks1;
+   getlinks[mli][1] = tmpgetlinks0;
+  if(getlinks[mli][0]<0):
+   getlinks[mli][0] = 0;
+  mlessurl = get_motherless_get_link_by_type(httpurl[mli], httpheaders, httpcookie, page[mli], getlinks[mli]);
   if(mlessurl['linktype']=="download"):
    outputname = mlessurl['fullfilename'];
    outpathname = outpath[mli].rstrip(os.path.sep);

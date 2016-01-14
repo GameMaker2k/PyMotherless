@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: motherless-dl.py - Last Update: 1/7/2016 Ver. 0.2.0 RC 1 - Author: cooldude2k $
+    $FileInfo: motherless-dl.py - Last Update: 1/14/2016 Ver. 0.2.2 RC 1 - Author: cooldude2k $
 '''
 
 # https://raw.githubusercontent.com/GameMaker2k/Python-Scripts/master/MiniScripts/motherless-dl.py
