@@ -30,7 +30,7 @@ if(sys.version[0]=="3"):
  import urllib.parse as urlparse;
  import http.cookiejar as cookielib;
 #if(__name__ == "__main__"):
-# sys.tracebacklimit = 0;
+ sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
 __version_info__ = (0, 2, 8, "RC 1");
 __version_date__ = "2016.01.19";
