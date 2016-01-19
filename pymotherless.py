@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 1/15/2016 Ver. 0.2.6 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 1/19/2016 Ver. 0.2.8 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -29,11 +29,11 @@ if(sys.version[0]=="3"):
  import urllib.request as urllib2;
  import urllib.parse as urlparse;
  import http.cookiejar as cookielib;
-if(__name__ == "__main__"):
- sys.tracebacklimit = 0;
+#if(__name__ == "__main__"):
+# sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 2, 6, "RC 1");
-__version_date__ = "2016.01.15";
+__version_info__ = (0, 2, 8, "RC 1");
+__version_date__ = "2016.01.19";
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -312,6 +312,8 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1, get
  mlesslinkone = re.findall(mregex_geturlone, mrtext_tmp);
  mregex_geturltwo = re.escape("<img class=\"static\" src=\"http://cdn.thumbs.motherlessmedia.com/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" data-strip-src=\"http://cdn.thumbs.motherlessmedia.com/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" alt=\"")+"(.*)"+re.escape("\" />");
  mlesslinktwo = re.findall(mregex_geturltwo, mrtext);
+ mregex_getuserinfo = re.escape("<a class=\"caption left\" href=\"/m/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\">");
+ mlessuname = re.findall(mregex_getuserinfo, mrtext);
  if(getlinks[1]>len(mlesslinkone) or getlinks[1]==-1):
   getlinks[1] = len(mlesslinkone);
  if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
@@ -337,8 +339,44 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1, get
   thumbfilenameext = os.path.basename(urlparse.urljoin("http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][0], urlparse.urlparse("http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][0]).path));
   thumbfilename, thumbfileextension = os.path.splitext(thumbfilenameext);
   mlessurltype = get_motherless_get_link_type("http://motherless.com/"+mlesslinkone[mli]);
-  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlesslinkone[mli], 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][0], 'strip': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][1], 'title': mlesslinktwo[mli][2], 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'stripfullfilename': stripfilenameext, 'stripfilename': stripfilename, 'stripextension': stripfileextension} });
+  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlesslinkone[mli], 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][0], 'strip': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][1], 'title': mlesslinktwo[mli][2], 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'stripfullfilename': stripfilenameext, 'stripfilename': stripfilename, 'stripextension': stripfileextension, 'username': mlessuname[mli]} });
   mli = mli + 1;
+ return returnval;
+
+def get_motherless_random_links(httpheaders, httpcookie, linktype, getlinks=[0, 80]):
+ if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
+  tmpgetlinks0 = getlinks[0];
+  tmpgetlinks1 = getlinks[1];
+  getlinks[0] = tmpgetlinks1;
+  getlinks[1] = tmpgetlinks0;
+ if(getlinks[0]<0):
+  getlinks[0] = 0;
+ mli = getlinks[0];
+ mlil = getlinks[1];
+ if(linktype=="image"):
+  returnval = {'pages': 1};
+  returnval.update({'curpage': 1});
+  returnval.update({'numoflinks': 80});
+  returnval.update({'numofalllinks': mlil});
+  returnval.update({'orginurl': "http://motherless.com/random/image"});
+  returnval.update({'orginurltype': "gallery"});
+  returnval.update({'urltype': "gallery"});
+  while(mli<mlil):
+   get_links = get_motherless_links("http://motherless.com/random/image", httpheaders, httpcookie);
+   returnval.update({mli: {'urltype': get_motherless_get_link_type("http://motherless.com/"+get_links['filename']), 'url': "http://motherless.com/"+get_links['filename'], 'thumbnail': get_links['thumbnail'], 'strip': get_links['thumbnailalt'], 'title': get_links['title'], 'thumbfullfilename': get_links['thumbfullfilename'], 'thumbfilename': get_links['thumbfilename'], 'thumbextension': get_links['thumbextension'], 'stripfullfilename': get_links['thumbnailaltfullfilename'], 'stripfilename': get_links['thumbnailaltextension'], 'stripextension': get_links['thumbnailaltfilename'], 'username': get_links['username']} });
+   mli = mli + 1;
+ if(linktype=="video"):
+  returnval = {'pages': 1};
+  returnval.update({'curpage': 1});
+  returnval.update({'numoflinks': 80});
+  returnval.update({'numofalllinks': mlil});
+  returnval.update({'orginurl': "http://motherless.com/random/video"});
+  returnval.update({'orginurltype': "gallery"});
+  returnval.update({'urltype': "gallery"});
+  while(mli<mlil):
+   get_links = get_motherless_links("http://motherless.com/random/video", httpheaders, httpcookie);
+   returnval.update({mli: {'urltype': get_motherless_get_link_type("http://motherless.com/"+get_links['filename']), 'url': "http://motherless.com/"+get_links['filename'], 'thumbnail': get_links['thumbnail'], 'strip': get_links['thumbnailalt'], 'title': get_links['title'], 'thumbfullfilename': get_links['thumbfullfilename'], 'thumbfilename': get_links['thumbfilename'], 'thumbextension': get_links['thumbextension'], 'stripfullfilename': get_links['thumbnailaltfullfilename'], 'stripfilename': get_links['thumbnailaltextension'], 'stripextension': get_links['thumbnailaltfilename'], 'username': get_links['username']} });
+   mli = mli + 1;
  return returnval;
 
 def get_motherless_boards_links(httpurl, httpheaders, httpcookie, getlinks=[0, -1]):
@@ -450,13 +488,13 @@ def get_motherless_girls(httpurl, httpheaders, httpcookie, getlinks=[0, -1]):
 
 def get_motherless_sample_links(httpheaders, httpcookie, numoflinks=10, urltype="video"):
  if(urltype=="video"):
-  returnval = {'numoflinks': numoflinks, 'orginurl': "http://motherless.com/videos", 'orginurltype': get_motherless_get_link_type("http://motherless.com/videos"), 'videos': {'recent': get_motherless_galleries_links("http://motherless.com/videos/recent", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/videos/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/videos/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/videos/commented", httpheaders, httpcookie, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/videos/popular", httpheaders, httpcookie, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/videos", httpheaders, httpcookie, 1, [0, numoflinks])} };
+  returnval = {'numoflinks': numoflinks, 'orginurl': "http://motherless.com/videos", 'orginurltype': get_motherless_get_link_type("http://motherless.com/videos"), 'videos': {'recent': get_motherless_galleries_links("http://motherless.com/videos/recent", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/videos/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/videos/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/videos/commented", httpheaders, httpcookie, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/videos/popular", httpheaders, httpcookie, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/videos", httpheaders, httpcookie, 1, [0, numoflinks]), 'random': get_motherless_random_links(httpheaders, httpcookie, "video", [0, numoflinks])} };
  if(urltype=="image"):
-  returnval = {'numoflinks': numoflinks, 'orginurl': "http://motherless.com/images", 'orginurltype': get_motherless_get_link_type("http://motherless.com/images"), 'images': {'recent': get_motherless_galleries_links("http://motherless.com/images/recent", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/images/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/images/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/images/commented", httpheaders, httpcookie, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/images/popular", httpheaders, httpcookie, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/images", httpheaders, httpcookie, 1, [0, numoflinks])} };
+  returnval = {'numoflinks': numoflinks, 'orginurl': "http://motherless.com/images", 'orginurltype': get_motherless_get_link_type("http://motherless.com/images"), 'images': {'recent': get_motherless_galleries_links("http://motherless.com/images/recent", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/images/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/images/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/images/commented", httpheaders, httpcookie, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/images/popular", httpheaders, httpcookie, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/images", httpheaders, httpcookie, 1, [0, numoflinks]), 'random': get_motherless_random_links(httpheaders, httpcookie, "image", [0, numoflinks])} };
  if(urltype=="gallery"):
   returnval = {'numoflinks': numoflinks, 'orginurl': "http://motherless.com/galleries", 'orginurltype': get_motherless_get_link_type("http://motherless.com/galleries"), 'galleries': {'updated': get_motherless_galleries_links("http://motherless.com/galleries/updated", httpheaders, httpcookie, 1, [0, numoflinks]), 'created': get_motherless_galleries_links("http://motherless.com/galleries/created", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/galleries/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/galleries/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/galleries/commented", httpheaders, httpcookie, 1, [0, numoflinks])} };
  if(urltype=="all"):
-  returnval = {'numoflinks': numoflinks, 'orginurl': "http://motherless.com/", 'orginurltype': get_motherless_get_link_type("http://motherless.com/"), 'videos': {'recent': get_motherless_galleries_links("http://motherless.com/videos/recent", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/videos/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/videos/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/videos/commented", httpheaders, httpcookie, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/videos/popular", httpheaders, httpcookie, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/videos", httpheaders, httpcookie, 1, [0, numoflinks])}, 'images': {'recent': get_motherless_galleries_links("http://motherless.com/images/recent", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/images/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/images/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/images/commented", httpheaders, httpcookie, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/images/popular", httpheaders, httpcookie, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/images", httpheaders, httpcookie, 1, [0, numoflinks])}, 'galleries': {'updated': get_motherless_galleries_links("http://motherless.com/galleries/updated", httpheaders, httpcookie, 1, [0, numoflinks]), 'created': get_motherless_galleries_links("http://motherless.com/galleries/created", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/galleries/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/galleries/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/galleries/commented", httpheaders, httpcookie, 1, [0, numoflinks])} };
+  returnval = {'numoflinks': numoflinks, 'orginurl': "http://motherless.com/", 'orginurltype': get_motherless_get_link_type("http://motherless.com/"), 'videos': {'recent': get_motherless_galleries_links("http://motherless.com/videos/recent", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/videos/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/videos/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/videos/commented", httpheaders, httpcookie, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/videos/popular", httpheaders, httpcookie, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/videos", httpheaders, httpcookie, 1, [0, numoflinks]), 'random': get_motherless_random_links(httpheaders, httpcookie, "video", [0, numoflinks])}, 'images': {'recent': get_motherless_galleries_links("http://motherless.com/images/recent", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/images/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/images/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/images/commented", httpheaders, httpcookie, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/images/popular", httpheaders, httpcookie, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/images", httpheaders, httpcookie, 1, [0, numoflinks]), 'random': get_motherless_random_links(httpheaders, httpcookie, "image", [0, numoflinks])}, 'galleries': {'updated': get_motherless_galleries_links("http://motherless.com/galleries/updated", httpheaders, httpcookie, 1, [0, numoflinks]), 'created': get_motherless_galleries_links("http://motherless.com/galleries/created", httpheaders, httpcookie, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/galleries/viewed", httpheaders, httpcookie, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/galleries/favorited", httpheaders, httpcookie, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/galleries/commented", httpheaders, httpcookie, 1, [0, numoflinks])} };
  return returnval;
 
 def get_motherless_get_link_by_type(httpurl, httpheaders, httpcookie, page=1, getlinks=[0, -1]):
