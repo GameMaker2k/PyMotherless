@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 1/19/2016 Ver. 0.3.0 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 1/22/2016 Ver. 0.3.1 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -32,8 +32,9 @@ if(sys.version[0]=="3"):
 #if(__name__ == "__main__"):
 # sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 3, 0, "RC 1");
+__version_info__ = (0, 3, 1, "RC 1");
 __version_date__ = "2016.01.19";
+__version_date_plusrc__ = "2016.01.19-1";
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -245,6 +246,8 @@ def get_motherless_get_link_type(httpurl):
   returnval = "member";
  if(mlessvidid[1]=="girls" and len(mlessvidid)==2):
   returnval = "girls";
+ if(mlessvidid[1]=="referers" and len(mlessvidid)==2):
+  returnval = "referers";
  if(mlessvidid_parts.netloc=="cdn.images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn.videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn.thumbs.motherlessmedia.com"):
   returnval = "download";
  if(returnval==False and len(mlessvidid)==2):
@@ -497,6 +500,35 @@ def get_motherless_girls(httpheaders, httpcookie, getlinks=[0, -1]):
   returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlessuname[mli][1], 'username': mlessuname[mli][1], 'usernamealt': mlessuname[mli][2], 'avatarurl': mlessuname[mli][0], 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
   mli = mli + 1;
  return returnval;
+
+def get_motherless_top_referrers(httpheaders, httpcookie, getlinks=[0, -1]):
+ mrtext = download_from_url("http://motherless.com/referers", httpheaders, httpcookie);
+ mregex_geturlname = "([0-9]+)"+re.escape(". <a href=\"")+"(.*)"+re.escape(" class=\"pop\" target=\"_blank\" rel=\"nofollow\">\n						")+"(.*)"+re.escape("					</a>");
+ mlessurlname = re.findall(mregex_geturlname, mrtext);
+ if(getlinks[1]>len(mlessurlname) or getlinks[1]==-1):
+  getlinks[1] = len(mlessurlname);
+ if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
+  tmpgetlinks0 = getlinks[0];
+  tmpgetlinks1 = getlinks[1];
+  getlinks[0] = tmpgetlinks1;
+  getlinks[1] = tmpgetlinks0;
+ if(getlinks[0]<0):
+  getlinks[0] = 0;
+ mli = getlinks[0];
+ mlil = getlinks[1];
+ returnval = {'numoflinks': mlil};
+ returnval.update({'numofalllinks': len(mlessurlname)});
+ returnval.update({'orginurl': "http://motherless.com/referers"});
+ returnval.update({'orginurltype': get_motherless_get_link_type("http://motherless.com/referers")});
+ mlessrooturltype = get_motherless_get_link_type("http://motherless.com/referers");
+ returnval.update({'urltype': mlessrooturltype});
+ while(mli<mlil):
+  returnval.update({mli: {'urltype': "referer-links", 'url': mlessurlname[mli][1], 'title': mlessurlname[mli][2]} });
+  mli = mli + 1;
+ return returnval;
+
+def get_motherless_top_referers(httpheaders, httpcookie, getlinks=[0, -1]):
+ return get_motherless_top_referrers(httpheaders, httpcookie, getlinks);
 
 def get_motherless_sample_links(httpheaders, httpcookie, numoflinks=10, urltype="video"):
  if(urltype=="video"):

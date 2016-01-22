@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless-demo.py - Last Update: 1/19/2016 Ver. 0.3.0 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless-demo.py - Last Update: 1/22/2016 Ver. 0.3.1 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -23,6 +23,7 @@ __program_name__ = pymotherless.__program_name__;
 __version_info__ = pymotherless.__version_info__;
 __version_date__ = pymotherless.__version_date__;
 __version__ = pymotherless.__version__;
+__version_date_plusrc__ = pymotherless.__version_date_plusrc__;
 
 geturls_cj = pymotherless.geturls_cj;
 geturls_ua = pymotherless.geturls_ua;
