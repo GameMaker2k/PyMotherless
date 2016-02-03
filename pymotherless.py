@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 1/22/2016 Ver. 0.3.1 RC 3 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 2/3/2016 Ver. 0.3.2 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -32,8 +32,8 @@ if(sys.version[0]=="3"):
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 3, 1, "RC 3", 3);
-__version_date__ = "2016.01.19";
+__version_info__ = (0, 3, 2, "RC 1", 1);
+__version_date__ = "2016.02.03";
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_info__[4]);
 if(__version_info__[4]==None):
@@ -233,6 +233,8 @@ def get_motherless_get_link_type(httpurl):
   returnval = "gallery";
  if(mlessvidid[1]=="gi" and len(mlessvidid)==3):
   returnval = "gallery";
+ if(mlessvidid[1]=="gm" and len(mlessvidid)==3):
+  returnval = "member";
  if(mlessvidid[1]=="term" and len(mlessvidid)==3 and (mlessvidid[2]=="videos" or mlessvidid[2]=="images" or mlessvidid[2]=="galleries")):
   returnval = "gallery";
  if(mlessvidid[1]=="g" and len(mlessvidid)==4):
@@ -243,9 +245,15 @@ def get_motherless_get_link_type(httpurl):
   returnval = "board";
  if(re.match("^H", mlessvidid[1]) and len(mlessvidid)==2):
   returnval = "gallery";
+ if(re.match("^G", mlessvidid[1]) and len(mlessvidid)==2):
+  returnval = "gallery";
+ if(re.match("^G", mlessvidid[1]) and len(mlessvidid)==3):
+  returnval = "file";
+ if(re.match("^g", mlessvidid[1]) and len(mlessvidid)==4):
+  returnval = "file";
  if(mlessvidid[1]=="members" and len(mlessvidid)==2):
   returnval = "member";
- if(mlessvidid[1]=="members" and mlessvidid[2]=="search" and len(mlessvidid)==3):
+ if(mlessvidid[1]=="members" and len(mlessvidid)==3 and mlessvidid[2]=="search"):
   returnval = "member";
  if(mlessvidid[1]=="members" and len(mlessvidid)==4 and (mlessvidid[2]=="uploader" or mlessvidid[2]=="viewed" or mlessvidid[2]=="social" or mlessvidid[2]=="favorited" or mlessvidid[2]=="commented" or mlessvidid[2]=="mentioned" or mlessvidid[2]=="verified")):
   returnval = "member";
@@ -300,6 +308,49 @@ def get_motherless_links(httpurl, httpheaders, httpcookie):
   returnval = {'type': mlesslinkone[0][1], 'urltype': mlessurltype, 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'orginurl': httpurl, 'orginurltype': get_motherless_get_link_type(httpurl), 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/thumbs/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension};
  if(mlesslinkone[0][1]=="videos"):
   returnval = {'type': mlesslinkone[0][1], 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'orginurl': httpurl, 'orginurltype': get_motherless_get_link_type(httpurl), 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[0][1]+"/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension};
+ return returnval;
+
+def get_motherless_external_links(httpurl, httpheaders, httpcookie):
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie);
+ mregex_geturlinternal = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" rev=\"outbound\" rel=\"nofollow\" class=\"pop\" target=\"_blank\" title=\"motherless link\">");
+ mlesslinkinternal = re.findall(mregex_geturlinternal, mrtext);
+ mregex_geturlexternal = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" rev=\"outbound\" rel=\"nofollow\" class=\"pop\" target=\"_blank\" title=\"external link\">");
+ mlesslinkexternal = re.findall(mregex_geturlexternal, mrtext);
+ returnvalone = None;
+ if(len(mlesslinkinternal)>1):
+  mli = 0;
+  mlil = len(mlesslinkinternal);
+  returnvalone = {'numoflinks': mlil};
+  returnvalone.update({'numofalllinks': len(mlesslinkinternal)});
+  returnvalone.update({'orginurl': httpurl});
+  returnvalone.update({'orginurltype': get_motherless_get_link_type(httpurl)});
+  mlessrooturltype = get_motherless_get_link_type(httpurl);
+  returnvalone.update({'urltype': mlessrooturltype});
+  while(mli<mlil):
+   mlessurltype = get_motherless_get_link_type(mlesslinkinternal[mli]);
+   returnvalone.update({mli: {'urltype': mlessurltype, 'url': mlesslinkinternal[mli]} });
+   mli = mli + 1;
+ returnvaltwo = None;
+ if(len(mlesslinkexternal)>1):
+  mli = 0;
+  mlil = len(mlesslinkexternal);
+  returnvaltwo = {'numoflinks': mlil};
+  returnvaltwo.update({'numofalllinks': len(mlesslinkexternal)});
+  returnvaltwo.update({'orginurl': httpurl});
+  returnvaltwo.update({'orginurltype': get_motherless_get_link_type(httpurl)});
+  mlessrooturltype = get_motherless_get_link_type(httpurl);
+  returnvaltwo.update({'urltype': mlessrooturltype});
+  while(mli<mlil):
+   returnvaltwo.update({mli: {'urltype': "external", 'url': mlesslinkexternal[mli]} });
+   mli = mli + 1;
+ if(returnvalone==None and returnvaltwo==None):
+  returnval = {'internal': None, 'external': None};
+ if(not returnvalone==None and not returnvaltwo==None):
+  returnval = {'internal': returnvalone, 'external': returnvaltwo};
+ if(not returnvalone==None and returnvaltwo==None):
+  returnval = {'internal': returnvalone, 'external': None};
+ if(returnvalone==None and not returnvaltwo==None):
+  returnval = {'internal': None, 'external': returnvaltwo};
  return returnval;
 
 def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, page=1, getlinks=[0, -1]):
@@ -448,10 +499,10 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, page=1, getl
  mlessuname = re.findall(mregex_getuname, mrtext);
  mregex_geturlname = re.escape("<a href=\"/m/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" target=\"_blank\">\n            <img");
  mlessurlname = re.findall(mregex_geturlname, mrtext);
- mregex_getavatar = re.escape("<img\n    src=\"")+"(.*)"+re.escape("\"\n    class=\"avatar avatar-small\"");
+ mregex_getavatar = re.escape("<img\n    src=\"")+'?\'?([^"\'>]*)'+re.escape("\"\n    class=\"avatar avatar-small\"");
  mlessavatar = re.findall(mregex_getavatar, mrtext);
- if(getlinks[1]>len(mlesslinkone) or getlinks[1]==-1):
-  getlinks[1] = len(mlesslinkone);
+ if(getlinks[1]>len(mlessuname) or getlinks[1]==-1):
+  getlinks[1] = len(mlessuname);
  if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
   tmpgetlinks0 = getlinks[0];
   tmpgetlinks1 = getlinks[1];
@@ -479,12 +530,12 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, page=1, getl
 
 def get_motherless_girls(httpheaders, httpcookie, getlinks=[0, -1]):
  mrtext = download_from_url("http://motherless.com/girls", httpheaders, httpcookie);
- mregex_getuname = re.escape("<a href=\"")+"(.*)"+re.escape("\" rev=\"")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" rel=\"")+"(.*)"+re.escape("\">");
+ mregex_getuname = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" rev=\"")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" rel=\"")+"(.*)"+re.escape("\">");
  mlessuname = re.findall(mregex_getuname, mrtext);
  mregex_geturlname = re.escape("\n\t\t\t\t\t\t<a href=\"/m/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" target=\"_blank\">");
  mlessurlname = re.findall(mregex_geturlname, mrtext);
- if(getlinks[1]>len(mlesslinkone) or getlinks[1]==-1):
-  getlinks[1] = len(mlesslinkone);
+ if(getlinks[1]>len(mlessuname) or getlinks[1]==-1):
+  getlinks[1] = len(mlessuname);
  if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
   tmpgetlinks0 = getlinks[0];
   tmpgetlinks1 = getlinks[1];
@@ -514,7 +565,7 @@ def get_motherless_team(httpheaders, httpcookie, getlinks=[0, -1]):
  mlessuname = re.findall(mregex_getuname, mrtext);
  mlessuname_odd = mlessuname[1::2];
  mlessuname_even = mlessuname[::2];
- mregex_getavatar = re.escape("<img\n        src=\"")+"(.*)"+re.escape("\"\n        class=\"avatar avatar-")+"(full|medium)"+re.escape("\"");
+ mregex_getavatar = re.escape("<img\n        src=\"")+'?\'?([^"\'>]*)'+re.escape("\"\n        class=\"avatar avatar-")+"(full|medium)"+re.escape("\"");
  mlessavatar = re.findall(mregex_getavatar, mrtext);
  if(getlinks[1]>len(mlessuname_odd) or getlinks[1]==-1):
   getlinks[1] = len(mlessuname_odd);
@@ -543,7 +594,7 @@ def get_motherless_team(httpheaders, httpcookie, getlinks=[0, -1]):
 
 def get_motherless_top_referrers(httpheaders, httpcookie, getlinks=[0, -1]):
  mrtext = download_from_url("http://motherless.com/referers", httpheaders, httpcookie);
- mregex_geturlname = "([0-9]+)"+re.escape(". <a href=\"")+"(.*)"+re.escape(" class=\"pop\" target=\"_blank\" rel=\"nofollow\">\n						")+"(.*)"+re.escape("					</a>");
+ mregex_geturlname = "([0-9]+)"+re.escape(". <a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" class=\"pop\" target=\"_blank\" rel=\"nofollow\">\n						")+"(.*)"+re.escape("					</a>");
  mlessurlname = re.findall(mregex_geturlname, mrtext);
  if(getlinks[1]>len(mlessurlname) or getlinks[1]==-1):
   getlinks[1] = len(mlessurlname);
