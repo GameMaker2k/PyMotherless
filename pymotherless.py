@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 1/22/2016 Ver. 0.3.1 RC 2 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 1/22/2016 Ver. 0.3.1 RC 3 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -32,9 +32,12 @@ if(sys.version[0]=="3"):
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 3, 1, "RC 2");
+__version_info__ = (0, 3, 1, "RC 3", 3);
 __version_date__ = "2016.01.19";
-__version_date_plusrc__ = "2016.01.19-2";
+if(__version_info__[4]!=None):
+ __version_date_plusrc__ = __version_date__+"-"+str(__version_info__[4]);
+if(__version_info__[4]==None):
+ __version_date_plusrc__ = __version_date__;
 if(__version_info__[3]!=None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2])+" "+str(__version_info__[3]);
 if(__version_info__[3]==None):
@@ -238,6 +241,8 @@ def get_motherless_get_link_type(httpurl):
   returnval = "file";
  if(re.match("^V", mlessvidid[1]) and len(mlessvidid)==2):
   returnval = "board";
+ if(re.match("^H", mlessvidid[1]) and len(mlessvidid)==2):
+  returnval = "gallery";
  if(mlessvidid[1]=="members" and len(mlessvidid)==2):
   returnval = "member";
  if(mlessvidid[1]=="members" and mlessvidid[2]=="search" and len(mlessvidid)==3):
