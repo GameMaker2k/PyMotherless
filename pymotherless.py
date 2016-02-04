@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 02/03/2016 Ver. 0.3.2 RC 2 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 02/03/2016 Ver. 0.3.2 RC 3 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -40,8 +40,8 @@ if(sys.version[0]=="3"):
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 3, 2, "RC 2", 2);
-__version_date_info__ = (2016, 2, 3, "RC 2", 2);
+__version_info__ = (0, 3, 2, "RC 2", 3);
+__version_date_info__ = (2016, 2, 3, "RC 2", 3);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -653,7 +653,7 @@ def get_motherless_get_link_by_type(httpurl, httpheaders, httpcookie, page=1, ge
   returnval = get_motherless_sample_links(httpheaders, httpcookie, 10, "image");
  if(get_motherless_get_link_type(httpurl)=="sample-galleries"):
   returnval = get_motherless_sample_links(httpheaders, httpcookie, 10, "gallery");
- if(get_motherless_get_link_type(httpurl)=="sample"):
+ if(get_motherless_get_link_type(httpurl)=="sample" or get_motherless_get_link_type(httpurl)=="sample-all"):
   returnval = get_motherless_sample_links(httpheaders, httpcookie, 10, "all");
  if(get_motherless_get_link_type(httpurl)=="board"):
   returnval = get_motherless_boards_links(httpurl, httpheaders, httpcookie);
@@ -732,7 +732,7 @@ def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, sleep=
    outputname = "-";
   if(usetitlename=="-" and not outfile=="-"):
    outputname = outfile;
-  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, outputname, outpath, sleep), 'linkinfo': mlesslink} });
+  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, outputname, outpath, sleep), 'linkinfo': mlesslink, 'outputfile': outputname} });
   mli = mli + 1;
  return returnval;
 
@@ -757,7 +757,7 @@ def download_get_motherless_boards_links(httpurl, httpheaders, httpcookie, sleep
    outputname = "-";
   if(usetitlename=="-" and not outfile=="-"):
    outputname = outfile;
-  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, outputname, outpath, sleep), 'linkinfo': mlesslink} });
+  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, outputname, outpath, sleep), 'linkinfo': mlesslink, 'outputfile': outputname} });
   mli = mli + 1;
  return returnval;
 
