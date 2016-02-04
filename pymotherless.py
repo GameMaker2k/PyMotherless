@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 02/03/2016 Ver. 0.3.2 RC 3 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 02/04/2016 Ver. 0.3.3 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -40,8 +40,8 @@ if(sys.version[0]=="3"):
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 3, 2, "RC 2", 3);
-__version_date_info__ = (2016, 2, 3, "RC 2", 3);
+__version_info__ = (0, 3, 3, "RC 1", 1);
+__version_date_info__ = (2016, 2, 4, "RC 1", 1);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -246,7 +246,7 @@ def get_motherless_get_link_type(httpurl):
   returnval = "member";
  if(mlessvidid[1]=="term" and len(mlessvidid)==3 and (mlessvidid[2]=="videos" or mlessvidid[2]=="images" or mlessvidid[2]=="galleries")):
   returnval = "gallery";
- if(mlessvidid[1]=="g" and len(mlessvidid)==4):
+ if(mlessvidid[1]=="g" and len(mlessvidid)==4 and re.match("^([0-9A-F]+)$", mlessvidid[3])):
   returnval = "file";
  if(mlessvidid[1]=="random" and len(mlessvidid)==3 and (mlessvidid[2]=="video" or mlessvidid[2]=="image")):
   returnval = "file";
@@ -258,7 +258,7 @@ def get_motherless_get_link_type(httpurl):
   returnval = "gallery";
  if(re.match("^G", mlessvidid[1]) and len(mlessvidid)==3):
   returnval = "file";
- if(re.match("^g", mlessvidid[1]) and len(mlessvidid)==4):
+ if(re.match("^g", mlessvidid[1]) and len(mlessvidid)==4 and re.match("^([0-9A-F]+)$", mlessvidid[3])):
   returnval = "file";
  if(mlessvidid[1]=="members" and len(mlessvidid)==2):
   returnval = "member";
@@ -274,7 +274,7 @@ def get_motherless_get_link_type(httpurl):
   returnval = "team";
  if(mlessvidid_parts.netloc=="cdn.images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn.videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn.thumbs.motherlessmedia.com"):
   returnval = "download";
- if(returnval==False and len(mlessvidid)==2):
+ if(returnval==False and len(mlessvidid)==2 and re.match("^([0-9A-F]+)$", mlessvidid[1])):
   returnval = "file";
  return returnval;
 
