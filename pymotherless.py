@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 2/3/2016 Ver. 0.3.2 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 02/03/2016 Ver. 0.3.2 RC 2 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -23,19 +23,28 @@ if(sys.version[0]=="2"):
   from cStringIO import StringIO;
  except ImportError:
   from StringIO import StringIO;
+ # From http://python-future.org/compatible_idioms.html
+ from urlparse import urlparse;
+ from urllib import urlencode;
+ from urllib2 import urlopen, Request, HTTPError;
  import urllib2, urlparse, cookielib;
 if(sys.version[0]=="3"):
  from io import StringIO, BytesIO;
+ # From http://python-future.org/compatible_idioms.html
+ from urllib.parse import urlparse, urlencode
+ from urllib.request import urlopen, Request
+ from urllib.error import HTTPError
  import urllib.request as urllib2;
  import urllib.parse as urlparse;
  import http.cookiejar as cookielib;
 if(__name__ == "__main__"):
  sys.tracebacklimit = 0;
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 3, 2, "RC 1", 1);
-__version_date__ = "2016.02.03";
+__version_info__ = (0, 3, 2, "RC 2", 2);
+__version_date_info__ = (2016, 2, 3, "RC 2", 2);
+__version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
- __version_date_plusrc__ = __version_date__+"-"+str(__version_info__[4]);
+ __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
 if(__version_info__[4]==None):
  __version_date_plusrc__ = __version_date__;
 if(__version_info__[3]!=None):
@@ -56,7 +65,7 @@ def add_url_param(url, **params):
  parts = list(urlparse.urlsplit(url));
  d = dict(cgi.parse_qsl(parts[n])); # use cgi.parse_qs for list values
  d.update(params);
- parts[n]=urllib.urlencode(d);
+ parts[n]=urlencode(d);
  return urlparse.urlunsplit(parts);
 
 os.environ["PATH"] = os.environ["PATH"] + os.pathsep + os.path.dirname(os.path.realpath(__file__)) + os.pathsep + os.getcwd();
