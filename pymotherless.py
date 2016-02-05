@@ -13,11 +13,18 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 02/05/2016 Ver. 0.3.6 RC 2 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 02/05/2016 Ver. 0.3.6 RC 3 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
-import re, os, sys, urllib, gzip, time, datetime, argparse, cgi, subprocess, requests, imp;
+import re, os, sys, urllib, gzip, time, datetime, argparse, cgi, subprocess, imp;
+haverequests = False;
+try:
+ imp.find_module('requests');
+ haverequests = True;
+ import requests;
+except ImportError:
+ haverequests = False;
 havehttplibtwo = False;
 try:
  imp.find_module('httplib2');
@@ -46,8 +53,8 @@ if(sys.version[0]=="3"):
  import http.cookiejar as cookielib;
 
 __program_name__ = "PyMotherless";
-__version_info__ = (0, 3, 6, "RC 1", 2);
-__version_date_info__ = (2016, 2, 5, "RC 1", 2);
+__version_info__ = (0, 3, 6, "RC 1", 3);
+__version_date_info__ = (2016, 2, 5, "RC 1", 3);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -157,13 +164,15 @@ def make_http_headers_from_list(headers=[("Referer", "http://motherless.com/"), 
  return returnval;
 
 def download_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1):
- global geturls_download_sleep, havehttplibtwo;
+ global geturls_download_sleep, haverequests, havehttplibtwo;
  if(sleep<0):
   sleep = geturls_download_sleep;
  if(httplibuse=="urllib1" or httplibuse=="urllib2"):
   httplibuse = "urllib";
  if(httplibuse=="httplib1" or httplibuse=="httplib2"):
   httplibuse = "httplib";
+ if(haverequests==False and httplibuse=="requests"):
+  httplibuse = "urllib";
  if(havehttplibtwo==False and httplibuse=="httplib"):
   httplibuse = "urllib";
  if(httplibuse=="urllib"):
@@ -177,13 +186,15 @@ def download_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib", sle
  return returnval;
 
 def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1):
- global geturls_download_sleep, havehttplibtwo;
+ global geturls_download_sleep, haverequests, havehttplibtwo;
  if(sleep<0):
   sleep = geturls_download_sleep;
  if(httplibuse=="urllib1" or httplibuse=="urllib2"):
   httplibuse = "urllib";
  if(httplibuse=="httplib1" or httplibuse=="httplib2"):
   httplibuse = "httplib";
+ if(haverequests==False and httplibuse=="requests"):
+  httplibuse = "urllib";
  if(havehttplibtwo==False and httplibuse=="httplib"):
   httplibuse = "urllib";
  if(httplibuse=="urllib"):
@@ -197,13 +208,15 @@ def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib"
  return returnval;
 
 def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", outfile="-", outpath=os.getcwd(), sleep=-1):
- global geturls_download_sleep, havehttplibtwo;
+ global geturls_download_sleep, haverequests, havehttplibtwo;
  if(sleep<0):
   sleep = geturls_download_sleep;
  if(httplibuse=="urllib1" or httplibuse=="urllib2"):
   httplibuse = "urllib";
  if(httplibuse=="httplib1" or httplibuse=="httplib2"):
   httplibuse = "httplib";
+ if(haverequests==False and httplibuse=="requests"):
+  httplibuse = "urllib";
  if(havehttplibtwo==False and httplibuse=="httplib"):
   httplibuse = "urllib";
  if(httplibuse=="urllib"):
@@ -290,75 +303,93 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   f.closed;
  return returnval;
 
-def download_from_url_with_requests(httpurl, httpheaders, httpcookie, sleep=-1):
- global geturls_download_sleep;
- if(sleep<0):
-  sleep = geturls_download_sleep;
- if isinstance(httpheaders, list):
-  httpheaders = make_http_headers_from_list(httpheaders);
- time.sleep(sleep);
- geturls_text = requests.get(httpurl, headers=httpheaders);
- if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
-  if(sys.version[0]=="2"):
-   strbuf = StringIO(geturls_text.content);
-  if(sys.version[0]=="3"):
-   strbuf = BytesIO(geturls_text.content);
-  gzstrbuf = gzip.GzipFile(fileobj=strbuf);
-  if(sys.version[0]=="2"):
+if(haverequests==True):
+ def download_from_url_with_requests(httpurl, httpheaders, httpcookie, sleep=-1):
+  global geturls_download_sleep;
+  if(sleep<0):
+   sleep = geturls_download_sleep;
+  if isinstance(httpheaders, list):
+   httpheaders = make_http_headers_from_list(httpheaders);
+  time.sleep(sleep);
+  geturls_text = requests.get(httpurl, headers=httpheaders);
+  if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
+   if(sys.version[0]=="2"):
+    strbuf = StringIO(geturls_text.content);
+   if(sys.version[0]=="3"):
+    strbuf = BytesIO(geturls_text.content);
+   gzstrbuf = gzip.GzipFile(fileobj=strbuf);
+   if(sys.version[0]=="2"):
+    returnval = gzstrbuf.content[:];
+   if(sys.version[0]=="3"):
+    returnval = gzstrbuf.content[:].decode('ascii', 'replace');
+  if(geturls_text.headers['Content-Type']!="gzip" and geturls_text.headers['Content-Type']!="deflate"):
+   returnval = geturls_text.content[:];
+  return returnval;
+
+if(havehttplibtwo==False):
+ def download_from_url_with_requests(httpurl, httpheaders, httpcookie, sleep=-1):
+  returnval = download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep)
+  return returnval;
+
+if(haverequests==True):
+ def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep=-1):
+  global geturls_download_sleep;
+  if(sleep<0):
+   sleep = geturls_download_sleep;
+  if isinstance(httpheaders, list):
+   httpheaders = make_http_headers_from_list(httpheaders);
+  time.sleep(sleep);
+  geturls_text = requests.get(httpurl, headers=httpheaders);
+  if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
+   if(sys.version[0]=="2"):
+    strbuf = StringIO(geturls_text.content);
+   if(sys.version[0]=="3"):
+    strbuf = BytesIO(geturls_text.content);
+   gzstrbuf = gzip.GzipFile(fileobj=strbuf);
    returnval = gzstrbuf.content[:];
-  if(sys.version[0]=="3"):
-   returnval = gzstrbuf.content[:].decode('ascii', 'replace');
- if(geturls_text.headers['Content-Type']!="gzip" and geturls_text.headers['Content-Type']!="deflate"):
-  returnval = geturls_text.content[:];
- return returnval;
+  if(geturls_text.headers['Content-Type']!="gzip" and geturls_text.headers['Content-Type']!="deflate"):
+   returnval = geturls_text.content[:];
+  return returnval;
 
-def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep=-1):
- global geturls_download_sleep;
- if(sleep<0):
-  sleep = geturls_download_sleep;
- if isinstance(httpheaders, list):
-  httpheaders = make_http_headers_from_list(httpheaders);
- time.sleep(sleep);
- geturls_text = requests.get(httpurl, headers=httpheaders);
- if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
-  if(sys.version[0]=="2"):
-   strbuf = StringIO(geturls_text.content);
-  if(sys.version[0]=="3"):
-   strbuf = BytesIO(geturls_text.content);
-  gzstrbuf = gzip.GzipFile(fileobj=strbuf);
-  returnval = gzstrbuf.content[:];
- if(geturls_text.headers['Content-Type']!="gzip" and geturls_text.headers['Content-Type']!="deflate"):
-  returnval = geturls_text.content[:];
- return returnval;
+if(havehttplibtwo==False):
+ def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep=-1):
+  returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, sleep)
+  return returnval;
 
-def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), sleep=-1):
- global geturls_download_sleep;
- if(sleep<0):
-  sleep = geturls_download_sleep;
- if(not outfile=="-"):
-  outpath = outpath.rstrip(os.path.sep);
-  filepath = os.path.realpath(outpath+os.path.sep+outfile);
-  if(not os.path.exists(outpath)):
-   os.makedirs(outpath);
-  if(os.path.exists(outpath) and os.path.isfile(outpath)):
-   return False;
-  if(os.path.exists(filepath) and os.path.isdir(filepath)):
-   return False;
-  with open(filepath, 'wb+') as f:
+if(haverequests==True):
+ def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), sleep=-1):
+  global geturls_download_sleep;
+  if(sleep<0):
+   sleep = geturls_download_sleep;
+  if(not outfile=="-"):
+   outpath = outpath.rstrip(os.path.sep);
+   filepath = os.path.realpath(outpath+os.path.sep+outfile);
+   if(not os.path.exists(outpath)):
+    os.makedirs(outpath);
+   if(os.path.exists(outpath) and os.path.isfile(outpath)):
+    return False;
+   if(os.path.exists(filepath) and os.path.isdir(filepath)):
+    return False;
+   with open(filepath, 'wb+') as f:
+    f.write(download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep));
+   f.closed;
+   returnval = True;
+  if(outfile=="-" and sys.version[0]=="2"):
+   f = StringIO();
    f.write(download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep));
-  f.closed;
-  returnval = True;
- if(outfile=="-" and sys.version[0]=="2"):
-  f = StringIO();
-  f.write(download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep));
-  returnval = f.getvalue();
-  f.closed;
- if(outfile=="-" and sys.version[0]=="3"):
-  f = BytesIO();
-  f.write(download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep));
-  returnval = f.getvalue();
-  f.closed;
- return returnval;
+   returnval = f.getvalue();
+   f.closed;
+  if(outfile=="-" and sys.version[0]=="3"):
+   f = BytesIO();
+   f.write(download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep));
+   returnval = f.getvalue();
+   f.closed;
+  return returnval;
+
+if(havehttplibtwo==False):
+ def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), sleep=-1):
+  returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile, outpath, sleep)
+  return returnval;
 
 if(havehttplibtwo==True):
  def download_from_url_with_httplib(httpurl, httpheaders, httpcookie, sleep=-1):
