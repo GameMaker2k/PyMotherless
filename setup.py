@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: setup.py - Last Update: 02/05/2016 Ver. 0.3.4 RC 1 - Author: cooldude2k $
+    $FileInfo: setup.py - Last Update: 02/05/2016 Ver. 0.3.6 RC 1 - Author: cooldude2k $
 '''
 
 import re, os, sys, time, datetime, platform, pkg_resources;
@@ -21,7 +21,7 @@ from setuptools import setup, find_packages;
 
 setup(
  name = 'PyMotherless',
- version = '0.3.4',
+ version = '0.3.6',
  author = 'Kazuki Przyborowski',
  author_email = 'kazuki.przyborowski@gmail.com',
  maintainer = 'Kazuki Przyborowski',
