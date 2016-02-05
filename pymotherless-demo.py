@@ -41,5 +41,3 @@ parser = argparse.ArgumentParser(description="get urls of images/videos from mot
 parser.add_argument('-v', '--version', action='version', version=__program_name__+" "+__version__);
 getargs = parser.parse_args();
 
-print(pymotherless.download_motherless_links("http://motherless.com/5F75E14", geturls_headers_dict, geturls_cj, "requests"));
-
