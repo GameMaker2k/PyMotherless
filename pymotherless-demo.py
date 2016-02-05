@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless-demo.py - Last Update: 02/05/2016 Ver. 0.3.6 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless-demo.py - Last Update: 02/05/2016 Ver. 0.3.6 RC 2 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -40,4 +40,6 @@ geturls_download_sleep = pymotherless.geturls_download_sleep;
 parser = argparse.ArgumentParser(description="get urls of images/videos from motherless.com", conflict_handler="resolve", add_help=True);
 parser.add_argument('-v', '--version', action='version', version=__program_name__+" "+__version__);
 getargs = parser.parse_args();
+
+print(pymotherless.download_motherless_links("http://motherless.com/5F75E14", geturls_headers_dict, geturls_cj, "requests"));
 
