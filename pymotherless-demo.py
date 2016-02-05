@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless-demo.py - Last Update: 02/04/2016 Ver. 0.3.3 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless-demo.py - Last Update: 02/05/2016 Ver. 0.3.4 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -32,6 +32,8 @@ geturls_ua = pymotherless.geturls_ua;
 geturls_ua_firefox_windows7 = pymotherless.geturls_ua_firefox_windows7;
 geturls_ua_chrome_windows7 = pymotherless.geturls_ua_chrome_windows7;
 geturls_ua_internet_explorer_windows7 = pymotherless.geturls_ua_internet_explorer_windows7;
+geturls_headers_list = pymotherless.geturls_headers_list;
+geturls_headers_dict = pymotherless.geturls_headers_dict;
 geturls_headers = pymotherless.geturls_headers;
 geturls_download_sleep = pymotherless.geturls_download_sleep;
 
