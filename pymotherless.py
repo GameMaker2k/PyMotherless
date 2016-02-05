@@ -42,7 +42,7 @@ if(sys.version[0]=="2"):
  from urllib import urlencode;
  from urllib2 import urlopen, Request, HTTPError;
  import urllib2, urlparse, cookielib;
-if(sys.version[0]=="3"):
+if(sys.version[0]>="3"):
  from io import StringIO, BytesIO;
  # From http://python-future.org/compatible_idioms.html
  from urllib.parse import urlparse, urlencode
@@ -141,8 +141,12 @@ def arglistize(proexec, *varlist):
 def make_http_headers_from_dict(headers={'Referer': "http://motherless.com/", 'User-Agent': geturls_ua, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"}):
  if isinstance(headers, dict):
   returnval = [];
-  for headkey, headvalue in headers.iteritems():
-   returnval.append((headkey, headvalue));
+  if(sys.version[0]=="2"):
+   for headkey, headvalue in headers.iteritems():
+    returnval.append((headkey, headvalue));
+  if(sys.version[0]>="3"):
+   for headkey, headvalue in headers.items():
+    returnval.append((headkey, headvalue));
  elif isinstance(headers, list):
   returnval = headers;
  else:
@@ -242,12 +246,12 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
  if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
   if(sys.version[0]=="2"):
    strbuf = StringIO(geturls_text.read());
-  if(sys.version[0]=="3"):
+  if(sys.version[0]>="3"):
    strbuf = BytesIO(geturls_text.read());
   gzstrbuf = gzip.GzipFile(fileobj=strbuf);
   if(sys.version[0]=="2"):
    returnval = gzstrbuf.read()[:];
-  if(sys.version[0]=="3"):
+  if(sys.version[0]>="3"):
    returnval = gzstrbuf.read()[:].decode('ascii', 'replace');
  if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
   returnval = geturls_text.read()[:];
@@ -266,7 +270,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, sleep=-
  if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
   if(sys.version[0]=="2"):
    strbuf = StringIO(geturls_text.read());
-  if(sys.version[0]=="3"):
+  if(sys.version[0]>="3"):
    strbuf = BytesIO(geturls_text.read());
   gzstrbuf = gzip.GzipFile(fileobj=strbuf);
   returnval = gzstrbuf.read()[:];
@@ -296,7 +300,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   f.write(download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, sleep));
   returnval = f.getvalue();
   f.closed;
- if(outfile=="-" and sys.version[0]=="3"):
+ if(outfile=="-" and sys.version[0]>="3"):
   f = BytesIO();
   f.write(download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, sleep));
   returnval = f.getvalue();
@@ -315,12 +319,12 @@ if(haverequests==True):
   if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
    if(sys.version[0]=="2"):
     strbuf = StringIO(geturls_text.content);
-   if(sys.version[0]=="3"):
+   if(sys.version[0]>="3"):
     strbuf = BytesIO(geturls_text.content);
    gzstrbuf = gzip.GzipFile(fileobj=strbuf);
    if(sys.version[0]=="2"):
     returnval = gzstrbuf.content[:];
-   if(sys.version[0]=="3"):
+   if(sys.version[0]>="3"):
     returnval = gzstrbuf.content[:].decode('ascii', 'replace');
   if(geturls_text.headers['Content-Type']!="gzip" and geturls_text.headers['Content-Type']!="deflate"):
    returnval = geturls_text.content[:];
@@ -343,7 +347,7 @@ if(haverequests==True):
   if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
    if(sys.version[0]=="2"):
     strbuf = StringIO(geturls_text.content);
-   if(sys.version[0]=="3"):
+   if(sys.version[0]>="3"):
     strbuf = BytesIO(geturls_text.content);
    gzstrbuf = gzip.GzipFile(fileobj=strbuf);
    returnval = gzstrbuf.content[:];
@@ -379,7 +383,7 @@ if(haverequests==True):
    f.write(download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep));
    returnval = f.getvalue();
    f.closed;
-  if(outfile=="-" and sys.version[0]=="3"):
+  if(outfile=="-" and sys.version[0]>="3"):
    f = BytesIO();
    f.write(download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, sleep));
    returnval = f.getvalue();
@@ -406,12 +410,12 @@ if(havehttplibtwo==True):
   if(geturls_text[0]['Content-Type']=="gzip" or geturls_text[0]['Content-Type']=="deflate"):
    if(sys.version[0]=="2"):
     strbuf = StringIO(geturls_text[1]);
-   if(sys.version[0]=="3"):
+   if(sys.version[0]>="3"):
     strbuf = BytesIO(geturls_text[1]);
    gzstrbuf = gzip.GzipFile(fileobj=strbuf);
    if(sys.version[0]=="2"):
     returnval = gzstrbuf.content[:];
-   if(sys.version[0]=="3"):
+   if(sys.version[0]>="3"):
     returnval = gzstrbuf.content[:].decode('ascii', 'replace');
   if(geturls_text[0]['Content-Type']!="gzip" and geturls_text[0]['Content-Type']!="deflate"):
    returnval = geturls_text[1][:];
@@ -437,7 +441,7 @@ if(havehttplibtwo==True):
   if(geturls_text[0]['Content-Type']=="gzip" or geturls_text[0]['Content-Type']=="deflate"):
    if(sys.version[0]=="2"):
     strbuf = StringIO(geturls_text[1]);
-   if(sys.version[0]=="3"):
+   if(sys.version[0]>="3"):
     strbuf = BytesIO(geturls_text[1]);
    gzstrbuf = gzip.GzipFile(fileobj=strbuf);
    returnval = gzstrbuf.content[:];
@@ -473,7 +477,7 @@ if(havehttplibtwo==True):
    f.write(download_from_url_file_with_httplib(httpurl, httpheaders, httpcookie, sleep));
    returnval = f.getvalue();
    f.closed;
-  if(outfile=="-" and sys.version[0]=="3"):
+  if(outfile=="-" and sys.version[0]>="3"):
    f = BytesIO();
    f.write(download_from_url_file_with_httplib(httpurl, httpheaders, httpcookie, sleep));
    returnval = f.getvalue();
