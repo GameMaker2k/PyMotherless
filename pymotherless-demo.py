@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless-demo.py - Last Update: 02/05/2016 Ver. 0.3.6 RC 4 - Author: cooldude2k $
+    $FileInfo: pymotherless-demo.py - Last Update: 02/05/2016 Ver. 0.3.6 RC 5 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -34,9 +34,12 @@ geturls_ua_seamonkey_windows7 = pymotherless.geturls_ua_seamonkey_windows7;
 geturls_ua_chrome_windows7 = pymotherless.geturls_ua_chrome_windows7;
 geturls_ua_chromium_windows7 = pymotherless.geturls_ua_chromium_windows7;
 geturls_ua_internet_explorer_windows7 = pymotherless.geturls_ua_internet_explorer_windows7;
-geturls_headers_list = pymotherless.geturls_headers_list;
-geturls_headers_dict = pymotherless.geturls_headers_dict;
 geturls_headers = pymotherless.geturls_headers;
+geturls_headers_firefox_windows7 = pymotherless.geturls_headers_firefox_windows7;
+geturls_headers_seamonkey_windows7 = pymotherless.geturls_headers_seamonkey_windows7;
+geturls_headers_chrome_windows7 = pymotherless.geturls_headers_chrome_windows7;
+geturls_headers_chromium_windows7 = pymotherless.geturls_headers_chromium_windows7;
+geturls_headers_internet_explorer_windows7 = pymotherless.geturls_headers_internet_explorer_windows7;
 geturls_download_sleep = pymotherless.geturls_download_sleep;
 
 parser = argparse.ArgumentParser(description="get urls of images/videos from motherless.com", conflict_handler="resolve", add_help=True);
