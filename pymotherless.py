@@ -335,7 +335,7 @@ if(haverequests==True):
   if isinstance(httpheaders, list):
    httpheaders = make_http_headers_from_list_to_dict(httpheaders);
   time.sleep(sleep);
-  geturls_text = requests.get(httpurl, headers=httpheaders);
+  geturls_text = requests.get(httpurl, headers=httpheaders, cookies=httpcookie);
   if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
    if(sys.version[0]=="2"):
     strbuf = StringIO(geturls_text.content);
@@ -363,7 +363,7 @@ if(haverequests==True):
   if isinstance(httpheaders, list):
    httpheaders = make_http_headers_from_list_to_dict(httpheaders);
   time.sleep(sleep);
-  geturls_text = requests.get(httpurl, headers=httpheaders);
+  geturls_text = requests.get(httpurl, headers=httpheaders, cookies=httpcookie);
   if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
    if(sys.version[0]=="2"):
     strbuf = StringIO(geturls_text.content);
