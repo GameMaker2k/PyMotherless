@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 02/08/2016 Ver. 0.3.7 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 02/08/2016 Ver. 0.3.7 RC 2 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -399,7 +399,7 @@ def get_motherless_get_number_pages(httpurl, httpheaders, httpcookie, httplibuse
  mregex_getpagenum = re.escape("page=")+"([0-9]+)"+re.escape("\" class=\"pop\" rel=\"")+"([0-9]+)"+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
  mlesspagenum = re.findall(mregex_getpagenum, mrtext);
  try:
-  returnval = mlesspagenum[-1][0];
+  returnval = int(mlesspagenum[-1][0]);
  except:
   returnval = 1;
  return returnval;
@@ -568,7 +568,7 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
  mregex_getpagenum = re.escape("page=")+"([0-9]+)"+re.escape("\" class=\"pop\" rel=\"")+"([0-9]+)"+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
  mlesspagenum = re.findall(mregex_getpagenum, mrtext);
  try:
-  lastpage = mlesspagenum[-1][0];
+  lastpage = int(mlesspagenum[-1][0]);
  except:
   lastpage = 1;
  if(page>lastpage):
@@ -704,7 +704,7 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="
  mregex_getpagenum = re.escape("page=")+"([0-9]+)"+re.escape("\" class=\"pop\" rel=\"")+"([0-9]+)"+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
  mlesspagenum = re.findall(mregex_getpagenum, mrtext);
  try:
-  lastpage = mlesspagenum[-1][0];
+  lastpage = int(mlesspagenum[-1][0]);
  except:
   lastpage = 1;
  if(page>lastpage):
