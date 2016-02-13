@@ -19,7 +19,9 @@
 from __future__ import division, absolute_import, print_function;
 import re, os, sys, pymotherless, argparse;
 
+__project__ = pymotherless.__project__;
 __program_name__ = pymotherless.__program_name__;
+__project_url__ = pymotherless.__project_url__;
 __version_info__ = pymotherless.__version_info__;
 __version_date_info__ = pymotherless.__version_date_info__;
 __version_date__ = pymotherless.__version_date__;
@@ -34,12 +36,20 @@ geturls_ua_seamonkey_windows7 = pymotherless.geturls_ua_seamonkey_windows7;
 geturls_ua_chrome_windows7 = pymotherless.geturls_ua_chrome_windows7;
 geturls_ua_chromium_windows7 = pymotherless.geturls_ua_chromium_windows7;
 geturls_ua_internet_explorer_windows7 = pymotherless.geturls_ua_internet_explorer_windows7;
+geturls_ua_pymotherless_python = pymotherless.geturls_ua_pymotherless_python;
+geturls_ua_pymotherless_python_alt = pymotherless.geturls_ua_pymotherless_python_alt;
+geturls_ua_googlebot_google = pymotherless.geturls_ua_googlebot_google;
+geturls_ua_googlebot_google_old = pymotherless.geturls_ua_googlebot_google_old;
 geturls_headers = pymotherless.geturls_headers;
 geturls_headers_firefox_windows7 = pymotherless.geturls_headers_firefox_windows7;
 geturls_headers_seamonkey_windows7 = pymotherless.geturls_headers_seamonkey_windows7;
 geturls_headers_chrome_windows7 = pymotherless.geturls_headers_chrome_windows7;
 geturls_headers_chromium_windows7 = pymotherless.geturls_headers_chromium_windows7;
 geturls_headers_internet_explorer_windows7 = pymotherless.geturls_headers_internet_explorer_windows7;
+geturls_headers_pymotherless_python = pymotherless.geturls_headers_pymotherless_python;
+geturls_headers_pymotherless_python_alt = pymotherless.geturls_headers_pymotherless_python_alt;
+geturls_headers_googlebot_google = pymotherless.geturls_headers_googlebot_google;
+geturls_headers_googlebot_google_old = pymotherless.geturls_headers_googlebot_google_old;
 geturls_download_sleep = pymotherless.geturls_download_sleep;
 
 parser = argparse.ArgumentParser(description="get urls of images/videos from motherless.com", conflict_handler="resolve", add_help=True);
