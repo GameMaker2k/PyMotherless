@@ -83,7 +83,6 @@ geturls_headers_pymotherless_python = {'Referer': "http://motherless.com/", 'Use
 geturls_headers_pymotherless_python_alt = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_pymotherless_python_alt, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_googlebot_google = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_googlebot_google, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_googlebot_google_old = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_googlebot_google_old, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
-
 geturls_headers = geturls_headers_firefox_windows7;
 geturls_download_sleep = 0;
 
