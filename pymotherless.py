@@ -561,6 +561,12 @@ def get_motherless_links_from_url(httpurl, httpheaders, httpcookie, httplibuse="
   if(filewithext[0]=="/images"):
    filewithoutext = os.path.splitext(filewithext[1])[0];
    returnval = get_motherless_links("http://motherless.com/"+filewithoutext, httpheaders, httpcookie, httplibuse="urllib");
+  if(filewithext[0]=="/thumbs"):
+   filewithoutext = os.path.splitext(filewithext[1])[0];
+   filewithoutext = filewithoutext.replace("-zoom", "");
+   filewithoutext = filewithoutext.replace("-small", "");
+   filewithoutext = filewithoutext.replace("-strip", "");
+   returnval = get_motherless_links("http://motherless.com/"+filewithoutext, httpheaders, httpcookie, httplibuse="urllib");
  return returnval;
 
 def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
