@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 02/08/2016 Ver. 0.3.7 RC 2 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 02/22/2016 Ver. 0.3.8 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -48,8 +48,8 @@ if(sys.version[0]>="3"):
 __program_name__ = "PyMotherless";
 __project__ = __program_name__;
 __project_url__ = "https://github.com/GameMaker2k/PyMotherless";
-__version_info__ = (0, 3, 7, "RC 1", 1);
-__version_date_info__ = (2016, 2, 8, "RC 1", 1);
+__version_info__ = (0, 3, 8, "RC 1", 1);
+__version_date_info__ = (2016, 2, 22, "RC 1", 1);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -417,6 +417,10 @@ def get_motherless_get_number_pages(httpurl, httpheaders, httpcookie, httplibuse
   returnval = 1;
  return returnval;
 
+def get_motherless_number_pages(httpurl):
+ returnval = get_motherless_get_number_pages(httpurl);
+ return returnval;
+
 def get_motherless_get_link_type(httpurl):
  mlessvidqstr = urlparse.parse_qs(urlparse.urlparse(httpurl).query);
  mlessvidid_parts = urlparse.urlparse(httpurl);
@@ -486,6 +490,28 @@ def get_motherless_get_link_type(httpurl):
   returnval = "file";
  return returnval;
 
+def get_motherless_link_type(httpurl):
+ returnval = get_motherless_get_link_type(httpurl);
+ return returnval;
+
+def get_motherless_get_user_info(username):
+ returnval = {'username': username};
+ avatarfilenameext = os.path.basename(urlparse.urljoin("http://cdn.avatars.motherlessmedia.com/thumbs/"+username+"-avatar.jpg", urlparse.urlparse("http://cdn.avatars.motherlessmedia.com/thumbs/"+username+"-avatar.jpg").path));
+ avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
+ returnval.update({'orginurl': "http://motherless.com/m/"+username});
+ returnval.update({'orginurltype': "profile"});
+ returnval.update({'url': "http://motherless.com/m/"+username});
+ returnval.update({'urltype': "profile"});
+ returnval.update({'avatarurl': "http://cdn.avatars.motherlessmedia.com/thumbs/"+username+"-avatar.jpg"});
+ returnval.update({'avatarfullfilename': avatarfilenameext});
+ returnval.update({'avatarfilename': avatarfilename});
+ returnval.update({'avatarextension': avatarfileextension});
+ return returnval;
+
+def get_motherless_user_info(username):
+ returnval = get_motherless_get_user_info(username);
+ return returnval;
+
 def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
  mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  if(sys.version[0]>="3"):
@@ -524,9 +550,9 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
  returnval = False;
  mlessurltype = get_motherless_get_link_type("http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2]);
  if(mlesslinkone[0][1]=="images"):
-  returnval = {'type': mlesslinkone[0][1], 'urltype': mlessurltype, 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'orginurl': httpurl, 'orginurltype': get_motherless_get_link_type(httpurl), 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/thumbs/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension};
+  returnval = {'type': mlesslinkone[0][1], 'urltype': mlessurltype, 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'orginurl': httpurl, 'orginurltype': get_motherless_get_link_type(httpurl), 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/thumbs/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'userinfo': get_motherless_get_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension};
  if(mlesslinkone[0][1]=="videos"):
-  returnval = {'type': mlesslinkone[0][1], 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'orginurl': httpurl, 'orginurltype': get_motherless_get_link_type(httpurl), 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[0][1]+"/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension};
+  returnval = {'type': mlesslinkone[0][1], 'url': "http://cdn."+mlesslinkone[0][0]+".motherlessmedia.com/"+mlesslinkone[0][1]+"/"+mlesslinkone[0][2], 'orginurl': httpurl, 'orginurltype': get_motherless_get_link_type(httpurl), 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[0][1]+"/"+mlesslinktwo[0][2], 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'userinfo': get_motherless_get_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension};
  return returnval;
 
 def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
@@ -627,7 +653,7 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
   mlessurltype = get_motherless_get_link_type("http://motherless.com/"+mlesslinkone[mli]);
   avatarfilenameext = os.path.basename(urlparse.urljoin("http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", urlparse.urlparse("http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg").path));
   avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
-  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlesslinkone[mli], 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][0], 'strip': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][1], 'title': mlesslinktwo[mli][2], 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'stripfullfilename': stripfilenameext, 'stripfilename': stripfilename, 'stripextension': stripfileextension, 'username': mlessuname[mli], 'avatarurl': "http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
+  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlesslinkone[mli], 'thumbnail': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][0], 'strip': "http://cdn.thumbs.motherlessmedia.com/"+mlesslinktwo[mli][1], 'title': mlesslinktwo[mli][2], 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'stripfullfilename': stripfilenameext, 'stripfilename': stripfilename, 'stripextension': stripfileextension, 'userinfo': get_motherless_get_user_info(mlessuname[mli]), 'username': mlessuname[mli], 'avatarurl': "http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
   mli = mli + 1;
  return returnval;
 
@@ -651,7 +677,7 @@ def get_motherless_random_links(httpheaders, httpcookie, httplibuse="urllib", li
   returnval.update({'urltype': "gallery"});
   while(mli<mlil):
    get_links = get_motherless_links("http://motherless.com/random/image", httpheaders, httpcookie, httplibuse);
-   returnval.update({mli: {'urltype': get_motherless_get_link_type("http://motherless.com/"+get_links['filename']), 'url': "http://motherless.com/"+get_links['filename'], 'thumbnail': get_links['thumbnail'], 'strip': get_links['thumbnailalt'], 'title': get_links['title'], 'thumbfullfilename': get_links['thumbfullfilename'], 'thumbfilename': get_links['thumbfilename'], 'thumbextension': get_links['thumbextension'], 'stripfullfilename': get_links['thumbnailaltfullfilename'], 'stripfilename': get_links['thumbnailaltextension'], 'stripextension': get_links['thumbnailaltfilename'], 'username': get_links['username'], 'avatarurl': get_links['avatarurl'], 'avatarfullfilename': get_links['avatarfullfilename'], 'avatarfilename': get_links['avatarfilename'], 'avatarextension': get_links['avatarextension']} });
+   returnval.update({mli: {'urltype': get_motherless_get_link_type("http://motherless.com/"+get_links['filename']), 'url': "http://motherless.com/"+get_links['filename'], 'thumbnail': get_links['thumbnail'], 'strip': get_links['thumbnailalt'], 'title': get_links['title'], 'thumbfullfilename': get_links['thumbfullfilename'], 'thumbfilename': get_links['thumbfilename'], 'thumbextension': get_links['thumbextension'], 'stripfullfilename': get_links['thumbnailaltfullfilename'], 'stripfilename': get_links['thumbnailaltextension'], 'stripextension': get_links['thumbnailaltfilename'], 'userinfo': get_motherless_get_user_info(get_links['username']), 'username': get_links['username'], 'avatarurl': get_links['avatarurl'], 'avatarfullfilename': get_links['avatarfullfilename'], 'avatarfilename': get_links['avatarfilename'], 'avatarextension': get_links['avatarextension']} });
    mli = mli + 1;
  if(linktype=="video"):
   returnval = {'pages': 1};
@@ -663,7 +689,7 @@ def get_motherless_random_links(httpheaders, httpcookie, httplibuse="urllib", li
   returnval.update({'urltype': "gallery"});
   while(mli<mlil):
    get_links = get_motherless_links("http://motherless.com/random/video", httpheaders, httpcookie, httplibuse);
-   returnval.update({mli: {'urltype': get_motherless_get_link_type("http://motherless.com/"+get_links['filename']), 'url': "http://motherless.com/"+get_links['filename'], 'thumbnail': get_links['thumbnail'], 'strip': get_links['thumbnailalt'], 'title': get_links['title'], 'thumbfullfilename': get_links['thumbfullfilename'], 'thumbfilename': get_links['thumbfilename'], 'thumbextension': get_links['thumbextension'], 'stripfullfilename': get_links['thumbnailaltfullfilename'], 'stripfilename': get_links['thumbnailaltextension'], 'stripextension': get_links['thumbnailaltfilename'], 'username': get_links['username'], 'avatarurl': get_links['avatarurl'], 'avatarfullfilename': get_links['avatarfullfilename'], 'avatarfilename': get_links['avatarfilename'], 'avatarextension': get_links['avatarextension']} });
+   returnval.update({mli: {'urltype': get_motherless_get_link_type("http://motherless.com/"+get_links['filename']), 'url': "http://motherless.com/"+get_links['filename'], 'thumbnail': get_links['thumbnail'], 'strip': get_links['thumbnailalt'], 'title': get_links['title'], 'thumbfullfilename': get_links['thumbfullfilename'], 'thumbfilename': get_links['thumbfilename'], 'thumbextension': get_links['thumbextension'], 'stripfullfilename': get_links['thumbnailaltfullfilename'], 'stripfilename': get_links['thumbnailaltextension'], 'stripextension': get_links['thumbnailaltfilename'], 'userinfo': get_motherless_get_user_info(get_links['username']), 'username': get_links['username'], 'avatarurl': get_links['avatarurl'], 'avatarfullfilename': get_links['avatarfullfilename'], 'avatarfilename': get_links['avatarfilename'], 'avatarextension': get_links['avatarextension']} });
    mli = mli + 1;
  return returnval;
 
@@ -699,6 +725,7 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  returnval.update({'orginurltype': get_motherless_get_link_type(httpurl)});
  mlessrooturltype = get_motherless_get_link_type(httpurl);
  returnval.update({'urltype': mlessrooturltype});
+ returnval.update({'userinfo': get_motherless_get_user_info(mlessurlname[0][0])});
  returnval.update({'username': mlessurlname[0][0]});
  returnval.update({'avatarurl': mlessavaturl});
  returnval.update({'avatarfullfilename': avatarfilenameext});
@@ -707,6 +734,48 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  while(mli<mlil):
   mlessurltype = get_motherless_get_link_type("http://motherless.com/"+mlesslinkone[mli]);
   returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlesslinkone[mli]} });
+  mli = mli + 1;
+ return returnval;
+
+def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1]):
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ if(sys.version[0]>="3"):
+  mrtext = mrtext.decode('ascii', 'replace');
+ mregex_getposts = "(\t+)"+re.escape("<p>")+"(.+?)"+re.escape("</p>")+"(\t+)";
+ mlessposts = re.findall(mregex_getposts, mrtext);
+ mregex_getuname = re.escape("<a href=\"/boards/member/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\"");
+ mlessuname = re.findall(mregex_getuname, mrtext);
+ mregex_getopuname = re.escape("<a href=\"/boards/member/")+"([\w\/\?\&\=\.\-]+)"+re.escape("\" class=\"post-username special-member op-member\" title=\"op\" rel=\"")+"([\w\/\?\&\=\.\-]+)"+re.escape("\">");
+ mlessopuname = re.findall(mregex_getopuname, mrtext);
+ if(getposts[1]>len(mlessposts) or getposts[1]==-1):
+  getposts[1] = len(mlessposts);
+ if(getposts[0]>getposts[1] and not getposts[1]==-1):
+  tmpgetposts0 = getposts[0];
+  tmpgetposts1 = getposts[1];
+  getposts[0] = tmpgetposts1;
+  getposts[1] = tmpgetposts0;
+ if(getposts[0]<0):
+  getposts[0] = 0;
+ mli = getposts[0];
+ mlil = getposts[1];
+ returnval = {'numofposts': mlil};
+ returnval.update({'numofallposts': len(mlessposts)});
+ returnval.update({'orginurl': httpurl});
+ returnval.update({'orginurltype': get_motherless_get_link_type(httpurl)});
+ mlessrooturltype = get_motherless_get_link_type(httpurl);
+ returnval.update({'urltype': mlessrooturltype});
+ returnval.update({'userinfo': get_motherless_get_user_info(mlessurlname[0][0])});
+ returnval.update({'username': mlessopuname[0][0]});
+ avatarfilenameext = os.path.basename(urlparse.urljoin("http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessopuname[0][0]+"-avatar.jpg", urlparse.urlparse("http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessopuname[0][0]+"-avatar.jpg").path));
+ avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
+ returnval.update({'avatarurl': mlessavaturl});
+ returnval.update({'avatarfullfilename': avatarfilenameext});
+ returnval.update({'avatarfilename': avatarfilename});
+ returnval.update({'avatarextension': avatarfileextension});
+ while(mli<mlil):
+  avatarfilenameext = os.path.basename(urlparse.urljoin("http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", urlparse.urlparse("http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg").path));
+  avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
+  returnval.update({mli: {'post': mlessposts[mli][1], 'userinfo': get_motherless_get_user_info(get_links['username']), 'username': mlessuname[mli], 'avatarurl': "http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
   mli = mli + 1;
  return returnval;
 
@@ -755,7 +824,7 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="
   avatarfilenameext = os.path.basename(urlparse.urljoin(mlessavatar[mli], urlparse.urlparse(mlessavatar[mli]).path));
   avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
   mlessurltype = get_motherless_get_link_type("http://motherless.com/"+mlessurlname[mli]);
-  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlessurlname[mli], 'username': mlessuname[mli], 'avatarurl': mlessavatar[mli], 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
+  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlessurlname[mli], 'userinfo': get_motherless_get_user_info(get_links['username']), 'username': mlessuname[mli], 'avatarurl': mlessavatar[mli], 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
   mli = mli + 1;
  return returnval;
 
@@ -788,7 +857,7 @@ def get_motherless_girls(httpheaders, httpcookie, httplibuse="urllib", getlinks=
   avatarfilenameext = os.path.basename(urlparse.urljoin(mlessuname[mli][0], urlparse.urlparse(mlessuname[mli][0]).path));
   avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
   mlessurltype = get_motherless_get_link_type("http://motherless.com/"+mlessuname[mli][1]);
-  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlessuname[mli][1], 'username': mlessuname[mli][1], 'avatarurl': mlessuname[mli][0], 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
+  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlessuname[mli][1], 'userinfo': get_motherless_get_user_info(get_links['username']), 'username': mlessuname[mli][1], 'avatarurl': mlessuname[mli][0], 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
   mli = mli + 1;
  return returnval;
 
@@ -823,7 +892,7 @@ def get_motherless_team(httpheaders, httpcookie, httplibuse="urllib", getlinks=[
   avatarfilenameext = os.path.basename(urlparse.urljoin(mlessavatar[mli][0], urlparse.urlparse(mlessavatar[mli][0]).path));
   avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
   mlessurltype = get_motherless_get_link_type("http://motherless.com/"+mlessuname_odd[mli]);
-  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlessuname_odd[mli], 'username': mlessuname_odd[mli], 'avatarurl': mlessavatar[mli][0], 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
+  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com/"+mlessuname_odd[mli], 'userinfo': get_motherless_get_user_info(get_links['username']), 'username': mlessuname_odd[mli], 'avatarurl': mlessavatar[mli][0], 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension} });
   mli = mli + 1;
  return returnval;
 
