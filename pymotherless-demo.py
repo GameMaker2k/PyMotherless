@@ -56,3 +56,6 @@ parser = argparse.ArgumentParser(description="get urls of images/videos from mot
 parser.add_argument('-v', '--version', action='version', version=__program_name__+" "+__version__);
 getargs = parser.parse_args();
 
+if(getargs.verbose==True):
+ log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG);
+
