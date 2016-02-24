@@ -18,6 +18,7 @@
 
 from __future__ import division, absolute_import, print_function;
 import re, os, sys, platform, tempfile, urllib, gzip, time, datetime, argparse, cgi, subprocess, imp;
+import logging as log;
 haverequests = False;
 try:
  imp.find_module('requests');
@@ -213,7 +214,7 @@ def download_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib", sle
   returnval = False;
  return returnval;
 
-def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", buffersize=256 * 1024, sleep=-1):
+def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", buffersize=256 * 1024, sleep=-1, verbose=False):
  global geturls_download_sleep, haverequests;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -224,14 +225,14 @@ def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib"
  if(haverequests==False and httplibuse=="requests"):
   httplibuse = "urllib";
  if(httplibuse=="urllib"):
-  returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
+  returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep, verbose);
  elif(httplibuse=="requests"):
-  returnval = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize, sleep);
+  returnval = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize, sleep, verbose);
  else:
   returnval = False;
  return returnval;
 
-def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", outfile="-", outpath=os.getcwd(), buffersize=256 * 1024, sleep=-1):
+def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", outfile="-", outpath=os.getcwd(), buffersize=256 * 1024, sleep=-1, verbose=False):
  global geturls_download_sleep, haverequests;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -240,11 +241,11 @@ def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urll
  if(haverequests==False and httplibuse=="requests"):
   httplibuse = "urllib";
  if(httplibuse=="urllib"):
-  returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
+  returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep, verbose);
  elif(httplibuse=="httplib"):
-  returnval = download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
+  returnval = download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep, verbose);
  elif(httplibuse=="requests"):
-  returnval = download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
+  returnval = download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep, verbose);
  else:
   returnval = False;
  return returnval;
@@ -270,30 +271,40 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
   returnval = geturls_text.read()[:];
  return returnval;
 
-def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, sleep=-1):
+def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, sleep=-1, verbose=False):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
+ if(verbose==True):
+  log.basicConfig(format="%(levelname)s: %(message)s");
  geturls_opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(httpcookie));
  if isinstance(httpheaders, dict):
   httpheaders = make_http_headers_from_dict_to_list(httpheaders);
  geturls_opener.addheaders = httpheaders;
  time.sleep(sleep);
  geturls_text = geturls_opener.open(httpurl);
+ downloadsize = int(geturls_text.info().get('Content-Length'));
+ if downloadsize is None: downloadsize = 0;
+ fulldatasize = 0;
  with tempfile.NamedTemporaryFile('wb+', prefix="pymotherless-", delete=False) as f:
   returnval = f.name;
   while True:
-   databytes = geturls_text.read(256 * 1024);
-   datasize = len(databytes);
+   databytes = geturls_text.read(buffersize);
    if not databytes: break;
+   datasize = len(databytes);
+   fulldatasize = datasize + fulldatasize;
+   percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+   log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
    f.write(databytes);
   f.close();
  return returnval;
 
-def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=256 * 1024, sleep=-1):
+def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=256 * 1024, sleep=-1, verbose=False):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
+ if(verbose==True):
+  log.basicConfig(format="%(levelname)s: %(message)s");
  if(not outfile=="-"):
   outpath = outpath.rstrip(os.path.sep);
   filepath = os.path.realpath(outpath+os.path.sep+outfile);
@@ -304,12 +315,17 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   if(os.path.exists(filepath) and os.path.isdir(filepath)):
    return False;
   tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
+  downloadsize = os.path.getsize(tmpfilename);
+  fulldatasize = 0;
   with open(tmpfilename, 'rb') as ft:
    with open(filepath, 'wb+') as f:
     while True:
-     databytes = ft.read(1024);
-     datasize = len(databytes);
+     databytes = ft.read(buffersize);
      if not databytes: break;
+     datasize = len(databytes);
+     fulldatasize = datasize + fulldatasize;
+     percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
      f.write(databytes);
    f.close();
    ft.close();
@@ -317,12 +333,17 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   returnval = True;
  if(outfile=="-" and sys.version[0]=="2"):
   tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
+  downloadsize = os.path.getsize(tmpfilename);
+  fulldatasize = 0;
   with open(tmpfilename, 'rb') as ft:
    f = StringIO();
    while True:
-    databytes = ft.read(1024);
-    datasize = len(databytes);
+    databytes = ft.read(buffersize);
     if not databytes: break;
+    datasize = len(databytes);
+    fulldatasize = datasize + fulldatasize;
+    percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+    log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
     f.write(databytes);
    f.close();
    ft.close();
@@ -330,12 +351,17 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   returnval = f.getvalue();
  if(outfile=="-" and sys.version[0]>="3"):
   tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
+  downloadsize = os.path.getsize(tmpfilename);
+  fulldatasize = 0;
   with open(tmpfilename, 'rb') as ft:
    f = BytesIO();
    while True:
-    databytes = ft.read(1024);
-    datasize = len(databytes);
+    databytes = ft.read(buffersize);
     if not databytes: break;
+    datasize = len(databytes);
+    fulldatasize = datasize + fulldatasize;
+    percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+    log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
     f.write(databytes);
    f.close();
    ft.close();
@@ -369,32 +395,42 @@ if(haverequests==True):
   return returnval;
 
 if(haverequests==True):
- def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, sleep=-1):
+ def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, sleep=-1, verbose=False):
   global geturls_download_sleep;
   if(sleep<0):
    sleep = geturls_download_sleep;
+  if(verbose==True):
+   log.basicConfig(format="%(levelname)s: %(message)s");
   if isinstance(httpheaders, list):
    httpheaders = make_http_headers_from_list_to_dict(httpheaders);
   time.sleep(sleep);
   geturls_text = requests.get(httpurl, headers=httpheaders, cookies=httpcookie, stream=True);
+  downloadsize = int(geturls_text.headers.get('Content-Length'));
+  if downloadsize is None: downloadsize = 0;
+  fulldatasize = 0;
   with tempfile.NamedTemporaryFile('wb+', prefix="pymotherless-", delete=False) as f:
    returnval = f.name;
-   for databytes in geturls_text.iter_content(chunk_size=256 * 1024):
+   for databytes in geturls_text.iter_content(chunk_size=buffersize):
     datasize = len(databytes);
+    fulldatasize = datasize + fulldatasize;
+    percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+    log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
     f.write(databytes);
    f.close();
   return returnval;
 
 if(haverequests==True):
- def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, sleep=-1):
-  returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep)
+ def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, sleep=-1, verbose=False):
+  returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep, verbose)
   return returnval;
 
 if(haverequests==True):
- def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, outfile="-", outpath=os.getcwd(), sleep=-1):
+ def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, outfile="-", outpath=os.getcwd(), sleep=-1, verbose=False):
   global geturls_download_sleep;
   if(sleep<0):
    sleep = geturls_download_sleep;
+  if(verbose==True):
+   log.basicConfig(format="%(levelname)s: %(message)s");
   if(not outfile=="-"):
    outpath = outpath.rstrip(os.path.sep);
    filepath = os.path.realpath(outpath+os.path.sep+outfile);
@@ -405,25 +441,35 @@ if(haverequests==True):
    if(os.path.exists(filepath) and os.path.isdir(filepath)):
     return False;
    tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
+   downloadsize = os.path.getsize(tmpfilename);
+   fulldatasize = 0;
    with open(tmpfilename, 'rb') as ft:
     with open(filepath, 'wb+') as f:
      while True:
-      databytes = ft.read(1024);
-      datasize = len(databytes);
+      databytes = ft.read(buffersize);
       if not databytes: break;
-      f.write(databytes);
+      datasize = len(databytes);
+      fulldatasize = datasize + fulldatasize;
+      percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+      log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+     f.write(databytes);
     f.close();
     ft.close();
     os.remove(tmpfilename);
    returnval = True;
   if(outfile=="-" and sys.version[0]=="2"):
    tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
+   downloadsize = os.path.getsize(tmpfilename);
+   fulldatasize = 0;
    with open(tmpfilename, 'rb') as ft:
     f = StringIO();
     while True:
-     databytes = ft.read(1024);
-     datasize = len(databytes);
+     databytes = ft.read(buffersize);
      if not databytes: break;
+     datasize = len(databytes);
+     fulldatasize = datasize + fulldatasize;
+     percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
      f.write(databytes);
     f.close();
     ft.close();
@@ -431,12 +477,17 @@ if(haverequests==True):
    returnval = f.getvalue();
   if(outfile=="-" and sys.version[0]>="3"):
    tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
+   downloadsize = os.path.getsize(tmpfilename);
+   fulldatasize = 0;
    with open(tmpfilename, 'rb') as ft:
     f = BytesIO();
     while True:
-     databytes = ft.read(1024);
-     datasize = len(databytes);
+     databytes = ft.read(buffersize);
      if not databytes: break;
+     datasize = len(databytes);
+     fulldatasize = datasize + fulldatasize;
+     percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
      f.write(databytes);
     f.close();
     ft.close();
@@ -445,8 +496,8 @@ if(haverequests==True):
   return returnval;
 
 if(haverequests==True):
- def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, outfile="-", outpath=os.getcwd(), sleep=-1):
-  returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, outfile, outpath, sleep)
+ def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=256 * 1024, outfile="-", outpath=os.getcwd(), sleep=-1, verbose=False):
+  returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, outfile, outpath, sleep, verbose)
   return returnval;
 
 def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
@@ -1131,7 +1182,7 @@ def download_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urll
   outputname = "-";
  if(usetitlename=="-" and not outfile=="-"):
   outputname = outfile;
- returnval = download_from_url_to_file(mlessurl['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, 256 * 1024, sleep);
+ returnval = download_from_url_to_file(mlessurl['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, 256 * 1024, sleep, False);
  return returnval;
 
 def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
@@ -1148,7 +1199,7 @@ def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibu
    outputname = "-";
   if(usetitlename=="-" and not outfile[mli]=="-"):
    outputname = outfile;
-  returnval = download_from_url_to_file(mlessurl['url'], httpheaders, httpcookie, httplibuse, outputname, outpathname, 256 * 1024, sleep);
+  returnval = download_from_url_to_file(mlessurl['url'], httpheaders, httpcookie, httplibuse, outputname, outpathname, 256 * 1024, sleep, False);
  if(not mlessurl['urltype']=="download"):
   returnval = mlessurl;
  return returnval;
@@ -1177,7 +1228,7 @@ def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httpli
    outputname = "-";
   if(usetitlename=="-" and not outfile=="-"):
    outputname = outfile;
-  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, 256 * 1024, sleep), 'linkinfo': mlesslink, 'outputfile': outputname} });
+  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, 256 * 1024, sleep, False), 'linkinfo': mlesslink, 'outputfile': outputname} });
   mli = mli + 1;
  return returnval;
 
@@ -1202,7 +1253,7 @@ def download_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibus
    outputname = "-";
   if(usetitlename=="-" and not outfile=="-"):
    outputname = outfile;
-  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, 256 * 1024, sleep), 'linkinfo': mlesslink, 'outputfile': outputname} });
+  returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, 256 * 1024, sleep, False), 'linkinfo': mlesslink, 'outputfile': outputname} });
   mli = mli + 1;
  return returnval;
 
