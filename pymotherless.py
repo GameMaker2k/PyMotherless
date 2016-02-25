@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 02/24/2016 Ver. 0.4.2 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 02/25/2016 Ver. 0.4.3 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -49,8 +49,8 @@ if(sys.version[0]>="3"):
 __program_name__ = "PyMotherless";
 __project__ = __program_name__;
 __project_url__ = "https://github.com/GameMaker2k/PyMotherless";
-__version_info__ = (0, 4, 2, "RC 1", 1);
-__version_date_info__ = (2016, 2, 24, "RC 1", 1);
+__version_info__ = (0, 4, 3, "RC 1", 1);
+__version_date_info__ = (2016, 2, 25, "RC 1", 1);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -284,6 +284,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
  downloadsize = int(geturls_text.info().get('Content-Length'));
  if downloadsize is None: downloadsize = 0;
  fulldatasize = 0;
+ log.info("Downloading URL "+httpurl);
  with tempfile.NamedTemporaryFile('wb+', prefix="pymotherless-", delete=False) as f:
   returnval = f.name;
   while True:
@@ -291,7 +292,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
    if not databytes: break;
    datasize = len(databytes);
    fulldatasize = datasize + fulldatasize;
-   percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+   percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
    log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
    f.write(databytes);
   f.close();
@@ -313,6 +314,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
   downloadsize = os.path.getsize(tmpfilename);
   fulldatasize = 0;
+  log.info("Moving file "+tmpfilename+" to "+filepath);
   with open(tmpfilename, 'rb') as ft:
    with open(filepath, 'wb+') as f:
     while True:
@@ -320,7 +322,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
      if not databytes: break;
      datasize = len(databytes);
      fulldatasize = datasize + fulldatasize;
-     percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+     percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
      log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
      f.write(databytes);
    f.close();
@@ -338,7 +340,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
     if not databytes: break;
     datasize = len(databytes);
     fulldatasize = datasize + fulldatasize;
-    percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+    percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
     f.write(databytes);
    f.close();
@@ -356,7 +358,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
     if not databytes: break;
     datasize = len(databytes);
     fulldatasize = datasize + fulldatasize;
-    percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+    percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
     f.write(databytes);
    f.close();
@@ -402,12 +404,13 @@ if(haverequests==True):
   downloadsize = int(geturls_text.headers.get('Content-Length'));
   if downloadsize is None: downloadsize = 0;
   fulldatasize = 0;
+  log.info("Downloading URL "+httpurl);
   with tempfile.NamedTemporaryFile('wb+', prefix="pymotherless-", delete=False) as f:
    returnval = f.name;
    for databytes in geturls_text.iter_content(chunk_size=buffersize):
     datasize = len(databytes);
     fulldatasize = datasize + fulldatasize;
-    percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+    percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
     log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
     f.write(databytes);
    f.close();
@@ -435,6 +438,7 @@ if(haverequests==True):
    tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
+   log.info("Moving file "+tmpfilename+" to "+filepath);
    with open(tmpfilename, 'rb') as ft:
     with open(filepath, 'wb+') as f:
      while True:
@@ -442,7 +446,7 @@ if(haverequests==True):
       if not databytes: break;
       datasize = len(databytes);
       fulldatasize = datasize + fulldatasize;
-      percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+      percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
       log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
      f.write(databytes);
     f.close();
@@ -460,7 +464,7 @@ if(haverequests==True):
      if not databytes: break;
      datasize = len(databytes);
      fulldatasize = datasize + fulldatasize;
-     percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+     percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
      log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
      f.write(databytes);
     f.close();
@@ -478,7 +482,7 @@ if(haverequests==True):
      if not databytes: break;
      datasize = len(databytes);
      fulldatasize = datasize + fulldatasize;
-     percentage = "{0:.0f}%".format(float(fulldatasize / downloadsize) * 100);
+     percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
      log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
      f.write(databytes);
     f.close();
