@@ -207,7 +207,7 @@ def download_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib", sle
  if(httplibuse=="urllib"):
   returnval = download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep);
  elif(httplibuse=="httplib"):
-  returnval = download_from_url_with_httplib(httpurl, httpheaders, httpcookie, sleep);
+  returnval = download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep);
  elif(httplibuse=="requests"):
   returnval = download_from_url_with_requests(httpurl, httpheaders, httpcookie, sleep);
  else:
@@ -226,6 +226,8 @@ def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib"
   httplibuse = "urllib";
  if(httplibuse=="urllib"):
   returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
+ elif(httplibuse=="httplib"):
+  returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
  elif(httplibuse=="requests"):
   returnval = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize, sleep);
  else:
@@ -243,7 +245,7 @@ def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urll
  if(httplibuse=="urllib"):
   returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
  elif(httplibuse=="httplib"):
-  returnval = download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
+  returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
  elif(httplibuse=="requests"):
   returnval = download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
  else:
@@ -266,9 +268,10 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
   if(sys.version[0]>="3"):
    strbuf = BytesIO(geturls_text.read());
   gzstrbuf = gzip.GzipFile(fileobj=strbuf);
-  returnval = gzstrbuf.read()[:];
+  returnval_content = gzstrbuf.read()[:];
  if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
-  returnval = geturls_text.read()[:];
+  returnval_content = geturls_text.read()[:];
+ returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.info())};
  return returnval;
 
 def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
@@ -376,18 +379,19 @@ if(haverequests==True):
    httpheaders = make_http_headers_from_list_to_dict(httpheaders);
   time.sleep(sleep);
   geturls_text = requests.get(httpurl, headers=httpheaders, cookies=httpcookie);
-  if(geturls_text.headers['Content-Type']=="gzip" or geturls_text.headers['Content-Type']=="deflate"):
+  if(geturls_text.headers.get('Content-Type')=="gzip" or geturls_text.headers.get('Content-Type')=="deflate"):
    if(sys.version[0]=="2"):
     strbuf = StringIO(geturls_text.content);
    if(sys.version[0]>="3"):
     strbuf = BytesIO(geturls_text.content);
    gzstrbuf = gzip.GzipFile(fileobj=strbuf);
-   returnval = gzstrbuf.content[:];
-  if(geturls_text.headers['Content-Type']!="gzip" and geturls_text.headers['Content-Type']!="deflate"):
-   returnval = geturls_text.content[:];
+   returnval_content = gzstrbuf.content[:];
+  if(geturls_text.headers.get('Content-Type')!="gzip" and geturls_text.headers.get('Content-Type')!="deflate"):
+   returnval_content = geturls_text.content[:];
+  returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.headers)};
   return returnval;
 
-if(haverequests==True):
+if(haverequests==False):
  def download_from_url_with_requests(httpurl, httpheaders, httpcookie, sleep=-1):
   returnval = download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep)
   return returnval;
@@ -416,13 +420,13 @@ if(haverequests==True):
    f.close();
   return returnval;
 
-if(haverequests==True):
+if(haverequests==False):
  def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
   returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep)
   return returnval;
 
 if(haverequests==True):
- def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=[262144, 262144], outfile="-", outpath=os.getcwd(), sleep=-1):
+ def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
   global geturls_download_sleep;
   if(sleep<0):
    sleep = geturls_download_sleep;
@@ -435,7 +439,7 @@ if(haverequests==True):
     return False;
    if(os.path.exists(filepath) and os.path.isdir(filepath)):
     return False;
-   tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
+   tmpfilename = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
    log.info("Moving file "+tmpfilename+" to "+filepath);
@@ -448,13 +452,13 @@ if(haverequests==True):
       fulldatasize = datasize + fulldatasize;
       percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
       log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
-     f.write(databytes);
+      f.write(databytes);
     f.close();
     ft.close();
     os.remove(tmpfilename);
    returnval = True;
   if(outfile=="-" and sys.version[0]=="2"):
-   tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
+   tmpfilename = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
    with open(tmpfilename, 'rb') as ft:
@@ -472,7 +476,7 @@ if(haverequests==True):
     os.remove(tmpfilename);
    returnval = f.getvalue();
   if(outfile=="-" and sys.version[0]>="3"):
-   tmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
+   tmpfilename = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
    with open(tmpfilename, 'rb') as ft:
@@ -491,13 +495,13 @@ if(haverequests==True):
    returnval = f.getvalue();
   return returnval;
 
-if(haverequests==True):
- def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=[262144, 262144], outfile="-", outpath=os.getcwd(), sleep=-1):
+if(haverequests==False):
+ def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
   returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, outfile, outpath, sleep)
   return returnval;
 
 def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
@@ -598,7 +602,7 @@ def get_motherless_user_info(username):
  return returnval;
 
 def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_gettitle = re.escape("<title>")+"(.*)"+re.escape(" - MOTHERLESS.COM</title>");
@@ -661,7 +665,7 @@ def get_motherless_links_from_url(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_geturlinternal = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" rev=\"outbound\" rel=\"nofollow\" class=\"pop\" target=\"_blank\" title=\"motherless link\">");
@@ -706,7 +710,7 @@ def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
@@ -718,7 +722,7 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
  if(page>lastpage):
   page = lastpage;
  httpurl = add_url_param(httpurl, page=str(page));
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_geturlone = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" class=\"img-container\" target=\"_self\">");
@@ -800,7 +804,7 @@ def get_motherless_random_links(httpheaders, httpcookie, httplibuse="urllib", li
  return returnval;
 
 def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mrtext_tmp = re.sub(re.escape("http://motherless.com"), "", mrtext);
@@ -844,7 +848,7 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  return returnval;
 
 def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getposts = "(\t+)"+re.escape("<p>")+"(.+?)"+re.escape("</p>")+"(\t+)";
@@ -886,7 +890,7 @@ def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="ur
  return returnval;
 
 def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getposts = re.escape("<div style=\"text-align: justify;\">\n")+"(\t+)(.+?)"+re.escape("</div>");
@@ -928,7 +932,7 @@ def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
@@ -940,7 +944,7 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="
  if(page>lastpage):
   page = lastpage;
  httpurl = add_url_param(httpurl, page=str(page));
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getuname = re.escape("<tr rel=\"")+'?\'?([^"\'>]*)'+re.escape("\"");
@@ -978,7 +982,7 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_girls(httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
- mrtext = download_from_url("http://motherless.com/girls", httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url("http://motherless.com/girls", httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getuname = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" rev=\"")+'?\'?([^"\'>]*)'+re.escape("\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">");
@@ -1011,7 +1015,7 @@ def get_motherless_girls(httpheaders, httpcookie, httplibuse="urllib", getlinks=
  return returnval;
 
 def get_motherless_team(httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
- mrtext = download_from_url("http://motherless.com/about", httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url("http://motherless.com/about", httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getuname = re.escape("<div class=\"about-us-member\">\n				<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\"");
@@ -1048,7 +1052,7 @@ def get_motherless_team(httpheaders, httpcookie, httplibuse="urllib", getlinks=[
  return returnval;
 
 def get_motherless_top_referrers(httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
- mrtext = download_from_url("http://motherless.com/referers", httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url("http://motherless.com/referers", httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_geturlname = "([0-9]+)"+re.escape(". <a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" class=\"pop\" target=\"_blank\" rel=\"nofollow\">\n						")+"(.*)"+re.escape("					</a>");
@@ -1079,7 +1083,7 @@ def get_motherless_top_referers(httpheaders, httpcookie, httplibuse="urllib", ge
  return get_motherless_top_referrers(httpheaders, httpcookie, httplibuse, getlinks);
 
 def get_motherless_groups(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
@@ -1091,7 +1095,7 @@ def get_motherless_groups(httpurl, httpheaders, httpcookie, httplibuse="urllib",
  if(page>lastpage):
   page = lastpage;
  httpurl = add_url_param(httpurl, page=str(page));
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getavatar = re.escape("<img\n        src=\"")+'?\'?([^"\'>]*)'+re.escape("\"\n        class=\"avatar avatar-")+"(full|medium)"+re.escape("\"");
