@@ -803,6 +803,42 @@ def get_motherless_random_links(httpheaders, httpcookie, httplibuse="urllib", li
    mli = mli + 1;
  return returnval;
 
+def get_motherless_random_links_alt(httpheaders, httpcookie, httplibuse="urllib", linktype="video", getlinks=[0, 80]):
+ if(getlinks[0]>getlinks[1] and not getlinks[1]==-1):
+  tmpgetlinks0 = getlinks[0];
+  tmpgetlinks1 = getlinks[1];
+  getlinks[0] = tmpgetlinks1;
+  getlinks[1] = tmpgetlinks0;
+ if(getlinks[0]<0):
+  getlinks[0] = 0;
+ mli = getlinks[0];
+ mlil = getlinks[1];
+ if(linktype=="image"):
+  returnval = {'pages': 1};
+  returnval.update({'curpage': 1});
+  returnval.update({'numoflinks': 80});
+  returnval.update({'numofalllinks': mlil});
+  returnval.update({'orginurl': "http://motherless.com/random/image"});
+  returnval.update({'orginurltype': "gallery"});
+  returnval.update({'urltype': "gallery"});
+  while(mli<mlil):
+   get_links = get_motherless_links("http://motherless.com/random/image", httpheaders, httpcookie, httplibuse);
+   returnval.update({mli: get_links});
+   mli = mli + 1;
+ if(linktype=="video"):
+  returnval = {'pages': 1};
+  returnval.update({'curpage': 1});
+  returnval.update({'numoflinks': 80});
+  returnval.update({'numofalllinks': mlil});
+  returnval.update({'orginurl': "http://motherless.com/random/video"});
+  returnval.update({'orginurltype': "gallery"});
+  returnval.update({'urltype': "gallery"});
+  while(mli<mlil):
+   get_links = get_motherless_links("http://motherless.com/random/video", httpheaders, httpcookie, httplibuse);
+   returnval.update({mli: get_links});
+   mli = mli + 1;
+ return returnval;
+
 def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
  mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
  if(sys.version[0]>="3"):
