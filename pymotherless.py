@@ -64,8 +64,9 @@ if(__version_info__[3]==None):
 geturls_cj = cookielib.CookieJar();
 geturls_ua_firefox_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:44.0) Gecko/20100101 Firefox/44.0";
 geturls_ua_seamonkey_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:42.0) Gecko/20100101 Firefox/42.0 SeaMonkey/2.39";
-geturls_ua_chrome_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36";
-geturls_ua_chromium_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Ubuntu Chromium/48.0.2564.82 Chrome/48.0.2564.82 Safari/537.36";
+geturls_ua_chrome_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36";
+geturls_ua_chromium_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chromium/48.0.2564.116 Chrome/48.0.2564.116 Safari/537.36";
+geturls_ua_midori_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/538.15 (KHTML, like Gecko) Chrome/18.0.1025.133 Safari/538.15 Midori/0.5";
 geturls_ua_internet_explorer_windows7 = "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko";
 geturls_ua_pymotherless_python = "Mozilla/5.0 (compatible; {proname}/{prover}; +{prourl})".format(proname=__project__, prover=__version__, prourl=__project_url__);
 if(platform.python_implementation()!=""):
@@ -79,6 +80,7 @@ geturls_headers_firefox_windows7 = {'Referer': "http://motherless.com/", 'User-A
 geturls_headers_seamonkey_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_seamonkey_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_chrome_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_chrome_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_chromium_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_chromium_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
+geturls_headers_midori_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_midori_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_internet_explorer_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_internet_explorer_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_pymotherless_python = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_pymotherless_python, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_pymotherless_python_alt = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_pymotherless_python_alt, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
@@ -271,7 +273,7 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
   returnval_content = gzstrbuf.read()[:];
  if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
   returnval_content = geturls_text.read()[:];
- returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.info())};
+ returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.getcode()};
  geturls_text.close();
  return returnval;
 
@@ -390,7 +392,7 @@ if(haverequests==True):
    returnval_content = gzstrbuf.content[:];
   if(geturls_text.headers.get('Content-Type')!="gzip" and geturls_text.headers.get('Content-Type')!="deflate"):
    returnval_content = geturls_text.content[:];
-  returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.headers)};
+  returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.headers), 'URL': geturls_text.url, 'Code': geturls_text.status_code};
   geturls_text.close();
   return returnval;
 
@@ -505,7 +507,8 @@ if(haverequests==False):
   return returnval;
 
 def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
@@ -606,7 +609,8 @@ def get_motherless_user_info(username):
  return returnval;
 
 def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_gettitle = re.escape("<title>")+"(.*)"+re.escape(" - MOTHERLESS.COM</title>");
@@ -669,7 +673,8 @@ def get_motherless_links_from_url(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_geturlinternal = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" rev=\"outbound\" rel=\"nofollow\" class=\"pop\" target=\"_blank\" title=\"motherless link\">");
@@ -714,7 +719,8 @@ def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
@@ -726,7 +732,8 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
  if(page>lastpage):
   page = lastpage;
  httpurl = add_url_param(httpurl, page=str(page));
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_geturlone = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" class=\"img-container\" target=\"_self\">");
@@ -844,7 +851,8 @@ def get_motherless_random_links_alt(httpheaders, httpcookie, httplibuse="urllib"
  return returnval;
 
 def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mrtext_tmp = re.sub(re.escape("http://motherless.com"), "", mrtext);
@@ -888,7 +896,8 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  return returnval;
 
 def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getposts = "(\t+)"+re.escape("<p>")+"(.+?)"+re.escape("</p>")+"(\t+)";
@@ -930,7 +939,8 @@ def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="ur
  return returnval;
 
 def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getposts = re.escape("<div style=\"text-align: justify;\">\n")+"(\t+)(.+?)"+re.escape("</div>");
@@ -972,7 +982,8 @@ def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
@@ -984,7 +995,8 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="
  if(page>lastpage):
   page = lastpage;
  httpurl = add_url_param(httpurl, page=str(page));
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getuname = re.escape("<tr rel=\"")+'?\'?([^"\'>]*)'+re.escape("\"");
@@ -1022,7 +1034,8 @@ def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_girls(httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
- mrtext = download_from_url("http://motherless.com/girls", httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url("http://motherless.com/girls", httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getuname = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" rev=\"")+'?\'?([^"\'>]*)'+re.escape("\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">");
@@ -1055,7 +1068,8 @@ def get_motherless_girls(httpheaders, httpcookie, httplibuse="urllib", getlinks=
  return returnval;
 
 def get_motherless_team(httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
- mrtext = download_from_url("http://motherless.com/about", httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url("http://motherless.com/about", httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getuname = re.escape("<div class=\"about-us-member\">\n				<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\"");
@@ -1092,7 +1106,8 @@ def get_motherless_team(httpheaders, httpcookie, httplibuse="urllib", getlinks=[
  return returnval;
 
 def get_motherless_top_referrers(httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1]):
- mrtext = download_from_url("http://motherless.com/referers", httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url("http://motherless.com/referers", httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_geturlname = "([0-9]+)"+re.escape(". <a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" class=\"pop\" target=\"_blank\" rel=\"nofollow\">\n						")+"(.*)"+re.escape("					</a>");
@@ -1123,7 +1138,8 @@ def get_motherless_top_referers(httpheaders, httpcookie, httplibuse="urllib", ge
  return get_motherless_top_referrers(httpheaders, httpcookie, httplibuse, getlinks);
 
 def get_motherless_groups(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
@@ -1135,7 +1151,8 @@ def get_motherless_groups(httpurl, httpheaders, httpcookie, httplibuse="urllib",
  if(page>lastpage):
   page = lastpage;
  httpurl = add_url_param(httpurl, page=str(page));
- mrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse)['Content'];
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_getavatar = re.escape("<img\n        src=\"")+'?\'?([^"\'>]*)'+re.escape("\"\n        class=\"avatar avatar-")+"(full|medium)"+re.escape("\"");
