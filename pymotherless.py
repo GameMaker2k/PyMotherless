@@ -272,6 +272,7 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
  if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
   returnval_content = geturls_text.read()[:];
  returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.info())};
+ geturls_text.close();
  return returnval;
 
 def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
@@ -299,6 +300,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
    log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
    f.write(databytes);
   f.close();
+ geturls_text.close();
  return returnval;
 
 def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
@@ -389,6 +391,7 @@ if(haverequests==True):
   if(geturls_text.headers.get('Content-Type')!="gzip" and geturls_text.headers.get('Content-Type')!="deflate"):
    returnval_content = geturls_text.content[:];
   returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.headers)};
+  geturls_text.close();
   return returnval;
 
 if(haverequests==False):
@@ -418,6 +421,7 @@ if(haverequests==True):
     log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
     f.write(databytes);
    f.close();
+  geturls_text.close();
   return returnval;
 
 if(haverequests==False):
