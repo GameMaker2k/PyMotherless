@@ -17,7 +17,7 @@
 '''
 
 from __future__ import division, absolute_import, print_function;
-import re, os, sys, platform, tempfile, urllib, gzip, time, datetime, argparse, cgi, subprocess, imp;
+import re, os, sys, shutil, platform, tempfile, urllib, gzip, time, datetime, argparse, cgi, subprocess, imp;
 import logging as log;
 haverequests = False;
 try:
@@ -292,7 +292,8 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
  fulldatasize = 0;
  log.info("Downloading URL "+httpurl);
  with tempfile.NamedTemporaryFile('wb+', prefix="pymotherless-", delete=False) as f:
-  returnval = {'Filename': f.name, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.getcode()};
+  tmpfilename = f.name;
+  returnval = {'Type': "File", 'Filename': tmpfilename, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.getcode()};
   while True:
    databytes = geturls_text.read(buffersize);
    if not databytes: break;
@@ -303,6 +304,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
    f.write(databytes);
   f.close();
  geturls_text.close();
+ returnval.update({'Filesize': os.path.getsize(tmpfilename)});
  return returnval;
 
 def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
@@ -323,20 +325,10 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   downloadsize = os.path.getsize(tmpfilename);
   fulldatasize = 0;
   log.info("Moving file "+tmpfilename+" to "+filepath);
-  with open(tmpfilename, 'rb') as ft:
-   with open(filepath, 'wb+') as f:
-    while True:
-     databytes = ft.read(buffersize[1]);
-     if not databytes: break;
-     datasize = len(databytes);
-     fulldatasize = datasize + fulldatasize;
-     percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
-     f.write(databytes);
-   f.close();
-   ft.close();
+  shutil.move(tmpfilename, filepath);
+  if(os.path.exists(tmpfilename)==True):
    os.remove(tmpfilename);
-  returnval = {'Filename': f.name, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+  returnval = {'Type': "File", 'Filename': f.name, 'Filesize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
  if(outfile=="-" and sys.version[0]=="2"):
   pretmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
   tmpfilename = pretmpfilename['Filename'];
@@ -355,7 +347,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
    f.close();
    ft.close();
    os.remove(tmpfilename);
-  returnval = {'Content': f.getvalue(), 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+  returnval = {'Type': "Content", 'Content': f.getvalue(), 'Contentsize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
  if(outfile=="-" and sys.version[0]>="3"):
   pretmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
   tmpfilename = pretmpfilename['Filename'];
@@ -374,7 +366,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
    f.close();
    ft.close();
    os.remove(tmpfilename);
-  returnval = {'Content': f.getvalue(), 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+  returnval = {'Type': "Content", 'Content': f.getvalue(), 'Contentsize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
  return returnval;
 
 if(haverequests==True):
@@ -418,7 +410,8 @@ if(haverequests==True):
   fulldatasize = 0;
   log.info("Downloading URL "+httpurl);
   with tempfile.NamedTemporaryFile('wb+', prefix="pymotherless-", delete=False) as f:
-   returnval = {'Filename': f.name, 'Headers': dict(geturls_text.headers), 'URL': geturls_text.url, 'Code': geturls_text.status_code};
+   tmpfilename = f.name;
+   returnval = {'Type': "File", 'Filename': tmpfilename, 'Headers': dict(geturls_text.headers), 'URL': geturls_text.url, 'Code': geturls_text.status_code};
    for databytes in geturls_text.iter_content(chunk_size=buffersize):
     datasize = len(databytes);
     fulldatasize = datasize + fulldatasize;
@@ -427,6 +420,7 @@ if(haverequests==True):
     f.write(databytes);
    f.close();
   geturls_text.close();
+  returnval.update({'Filesize': os.path.getsize(tmpfilename)});
   return returnval;
 
 if(haverequests==False):
@@ -453,20 +447,10 @@ if(haverequests==True):
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
    log.info("Moving file "+tmpfilename+" to "+filepath);
-   with open(tmpfilename, 'rb') as ft:
-    with open(filepath, 'wb+') as f:
-     while True:
-      databytes = ft.read(buffersize[1]);
-      if not databytes: break;
-      datasize = len(databytes);
-      fulldatasize = datasize + fulldatasize;
-      percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-      log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
-      f.write(databytes);
-    f.close();
-    ft.close();
+   shutil.move(tmpfilename, filepath);
+   if(os.path.exists(tmpfilename)==True):
     os.remove(tmpfilename);
-   returnval = {'Filename': f.name, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+   returnval = {'Type': "File", 'Filename': f.name, 'Filesize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
   if(outfile=="-" and sys.version[0]=="2"):
    pretmpfilename = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
    tmpfilename = pretmpfilename['Filename'];
@@ -485,7 +469,7 @@ if(haverequests==True):
     f.close();
     ft.close();
     os.remove(tmpfilename);
-   returnval = {'Content': f.getvalue(), 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+   returnval = {'Type': "Content", 'Content': f.getvalue(), 'Contentsize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
   if(outfile=="-" and sys.version[0]>="3"):
    pretmpfilename = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
    tmpfilename = pretmpfilename['Filename'];
@@ -504,7 +488,7 @@ if(haverequests==True):
     f.close();
     ft.close();
     os.remove(tmpfilename);
-   returnval = {'Content': f.getvalue(), 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+   returnval = {'Type': "Content", 'Content': f.getvalue(), 'Contentsize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
   return returnval;
 
 if(haverequests==False):
