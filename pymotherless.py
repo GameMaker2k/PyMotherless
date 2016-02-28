@@ -304,7 +304,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
    f.write(databytes);
   f.close();
  geturls_text.close();
- returnval.update({'Filesize': os.path.getsize(tmpfilename)});
+ returnval.update({'Filesize': int(os.path.getsize(tmpfilename))});
  return returnval;
 
 def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
@@ -328,7 +328,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   shutil.move(tmpfilename, filepath);
   if(os.path.exists(tmpfilename)==True):
    os.remove(tmpfilename);
-  returnval = {'Type': "File", 'Filename': filepath, 'Filesize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+  returnval = {'Type': "File", 'Filename': filepath, 'Filesize': int(downloadsize), 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
  if(outfile=="-" and sys.version[0]=="2"):
   pretmpfilename = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
   tmpfilename = pretmpfilename['Filename'];
@@ -420,7 +420,7 @@ if(haverequests==True):
     f.write(databytes);
    f.close();
   geturls_text.close();
-  returnval.update({'Filesize': os.path.getsize(tmpfilename)});
+  returnval.update({'Filesize': int(os.path.getsize(tmpfilename))});
   return returnval;
 
 if(haverequests==False):
@@ -450,7 +450,7 @@ if(haverequests==True):
    shutil.move(tmpfilename, filepath);
    if(os.path.exists(tmpfilename)==True):
     os.remove(tmpfilename);
-   returnval = {'Type': "File", 'Filename': filepath, 'Filesize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+   returnval = {'Type': "File", 'Filename': filepath, 'Filesize': int(downloadsize), 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
   if(outfile=="-" and sys.version[0]=="2"):
    pretmpfilename = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
    tmpfilename = pretmpfilename['Filename'];
