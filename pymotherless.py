@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 02/28/2016 Ver. 0.4.4 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 02/29/2016 Ver. 0.4.4 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -26,6 +26,13 @@ try:
  import requests;
 except ImportError:
  haverequests = False;
+havemechanize = False;
+try:
+ imp.find_module('mechanize');
+ havemechanize = True;
+ import mechanize;
+except ImportError:
+ havemechanize = False;
 if(sys.version[0]=="2"):
  try:
   from cStringIO import StringIO;
@@ -50,7 +57,7 @@ __program_name__ = "PyMotherless";
 __project__ = __program_name__;
 __project_url__ = "https://github.com/GameMaker2k/PyMotherless";
 __version_info__ = (0, 4, 4, "RC 1", 1);
-__version_date_info__ = (2016, 2, 28, "RC 1", 1);
+__version_date_info__ = (2016, 2, 29, "RC 1", 1);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -202,16 +209,16 @@ def download_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib", sle
   sleep = geturls_download_sleep;
  if(httplibuse=="urllib1" or httplibuse=="urllib2"):
   httplibuse = "urllib";
- if(httplibuse=="httplib1" or httplibuse=="httplib2"):
-  httplibuse = "httplib";
  if(haverequests==False and httplibuse=="requests"):
+  httplibuse = "urllib";
+ if(havemechanize==False and httplibuse=="mechanize"):
   httplibuse = "urllib";
  if(httplibuse=="urllib"):
   returnval = download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep);
- elif(httplibuse=="httplib"):
-  returnval = download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep);
  elif(httplibuse=="requests"):
   returnval = download_from_url_with_requests(httpurl, httpheaders, httpcookie, sleep);
+ elif(httplibuse=="mechanize"):
+  returnval = download_from_url_with_mechanize(httpurl, httpheaders, httpcookie, sleep);
  else:
   returnval = False;
  return returnval;
@@ -222,16 +229,16 @@ def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib"
   sleep = geturls_download_sleep;
  if(httplibuse=="urllib1" or httplibuse=="urllib2"):
   httplibuse = "urllib";
- if(httplibuse=="httplib1" or httplibuse=="httplib2"):
-  httplibuse = "httplib";
  if(haverequests==False and httplibuse=="requests"):
+  httplibuse = "urllib";
+ if(havemechanize==False and httplibuse=="mechanize"):
   httplibuse = "urllib";
  if(httplibuse=="urllib"):
   returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
- elif(httplibuse=="httplib"):
-  returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep);
  elif(httplibuse=="requests"):
   returnval = download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize, sleep);
+ elif(httplibuse=="mechanize"):
+  returnval = download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize, sleep);
  else:
   returnval = False;
  return returnval;
@@ -244,12 +251,14 @@ def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urll
   httplibuse = "urllib";
  if(haverequests==False and httplibuse=="requests"):
   httplibuse = "urllib";
+ if(havemechanize==False and httplibuse=="mechanize"):
+  httplibuse = "urllib";
  if(httplibuse=="urllib"):
-  returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
- elif(httplibuse=="httplib"):
   returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
  elif(httplibuse=="requests"):
   returnval = download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
+ elif(httplibuse=="mechanize"):
+  returnval = download_from_url_to_file_with_mechanize(httpurl, httpheaders, httpcookie, outfile, outpath, buffersize, sleep);
  else:
   returnval = False;
  return returnval;
@@ -264,6 +273,7 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
  geturls_opener.addheaders = httpheaders;
  time.sleep(sleep);
  geturls_text = geturls_opener.open(httpurl);
+ log.info("Downloading URL "+httpurl);
  if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
   if(sys.version[0]=="2"):
    strbuf = StringIO(geturls_text.read());
@@ -273,7 +283,7 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
   returnval_content = gzstrbuf.read()[:];
  if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
   returnval_content = geturls_text.read()[:];
- returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.getcode()};
+ returnval = {'Type': "Content", 'Content': returnval_content, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.getcode()};
  geturls_text.close();
  return returnval;
 
@@ -378,6 +388,7 @@ if(haverequests==True):
    httpheaders = make_http_headers_from_list_to_dict(httpheaders);
   time.sleep(sleep);
   geturls_text = requests.get(httpurl, headers=httpheaders, cookies=httpcookie);
+  log.info("Downloading URL "+httpurl);
   if(geturls_text.headers.get('Content-Type')=="gzip" or geturls_text.headers.get('Content-Type')=="deflate"):
    if(sys.version[0]=="2"):
     strbuf = StringIO(geturls_text.content);
@@ -387,7 +398,7 @@ if(haverequests==True):
    returnval_content = gzstrbuf.content[:];
   if(geturls_text.headers.get('Content-Type')!="gzip" and geturls_text.headers.get('Content-Type')!="deflate"):
    returnval_content = geturls_text.content[:];
-  returnval = {'Content': returnval_content, 'Headers': dict(geturls_text.headers), 'URL': geturls_text.url, 'Code': geturls_text.status_code};
+  returnval = {'Type': "Content", 'Content': returnval_content, 'Headers': dict(geturls_text.headers), 'URL': geturls_text.url, 'Code': geturls_text.status_code};
   geturls_text.close();
   return returnval;
 
@@ -493,6 +504,144 @@ if(haverequests==True):
 
 if(haverequests==False):
  def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
+  returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, outfile, outpath, sleep)
+  return returnval;
+
+if(havemechanize==True):
+ def download_from_url_with_mechanize(httpurl, httpheaders, httpcookie, sleep=-1):
+  global geturls_download_sleep;
+  if(sleep<0):
+   sleep = geturls_download_sleep;
+  geturls_opener = mechanize.Browser();
+  if isinstance(httpheaders, dict):
+   httpheaders = make_http_headers_from_dict_to_list(httpheaders);
+  time.sleep(sleep);
+  geturls_opener.addheaders = httpheaders;
+  geturls_opener.set_cookiejar(httpcookie);
+  geturls_opener.set_handle_robots(False);
+  geturls_text = geturls_opener.open(httpurl);
+  log.info("Downloading URL "+httpurl);
+  if(geturls_text.info().get("Content-Encoding")=="gzip" or geturls_text.info().get("Content-Encoding")=="deflate"):
+   if(sys.version[0]=="2"):
+    strbuf = StringIO(geturls_text.read());
+   if(sys.version[0]>="3"):
+    strbuf = BytesIO(geturls_text.read());
+   gzstrbuf = gzip.GzipFile(fileobj=strbuf);
+   returnval_content = gzstrbuf.read()[:];
+  if(geturls_text.info().get("Content-Encoding")!="gzip" and geturls_text.info().get("Content-Encoding")!="deflate"):
+   returnval_content = geturls_text.read()[:];
+  returnval = {'Type': "Content", 'Content': returnval_content, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.code};
+  geturls_text.close();
+  return returnval;
+
+if(havemechanize==False):
+ def download_from_url_with_mechanize(httpurl, httpheaders, httpcookie, sleep=-1):
+  returnval = download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep)
+  return returnval;
+
+if(havemechanize==True):
+ def download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
+  global geturls_download_sleep;
+  if(sleep<0):
+   sleep = geturls_download_sleep;
+  geturls_opener = mechanize.Browser();
+  if isinstance(httpheaders, dict):
+   httpheaders = make_http_headers_from_dict_to_list(httpheaders);
+  time.sleep(sleep);
+  geturls_opener.addheaders = httpheaders;
+  geturls_opener.set_cookiejar(httpcookie);
+  geturls_opener.set_handle_robots(False);
+  geturls_text = geturls_opener.open(httpurl);
+  downloadsize = int(geturls_text.info().get('Content-Length'));
+  if downloadsize is None: downloadsize = 0;
+  fulldatasize = 0;
+  log.info("Downloading URL "+httpurl);
+  with tempfile.NamedTemporaryFile('wb+', prefix="pymotherless-", delete=False) as f:
+   tmpfilename = f.name;
+   returnval = {'Type': "File", 'Filename': tmpfilename, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.code};
+   while True:
+    databytes = geturls_text.read(buffersize);
+    if not databytes: break;
+    datasize = len(databytes);
+    fulldatasize = datasize + fulldatasize;
+    percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
+    log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+    f.write(databytes);
+   f.close();
+  geturls_text.close();
+  returnval.update({'Filesize': os.path.getsize(tmpfilename)});
+  return returnval;
+
+if(havemechanize==False):
+ def download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
+  returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep)
+  return returnval;
+
+if(havemechanize==True):
+ def download_from_url_to_file_with_mechanize(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
+  global geturls_download_sleep;
+  if(sleep<0):
+   sleep = geturls_download_sleep;
+  if(not outfile=="-"):
+   outpath = outpath.rstrip(os.path.sep);
+   filepath = os.path.realpath(outpath+os.path.sep+outfile);
+   if(not os.path.exists(outpath)):
+    os.makedirs(outpath);
+   if(os.path.exists(outpath) and os.path.isfile(outpath)):
+    return False;
+   if(os.path.exists(filepath) and os.path.isdir(filepath)):
+    return False;
+   pretmpfilename = download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
+   tmpfilename = pretmpfilename['Filename'];
+   downloadsize = os.path.getsize(tmpfilename);
+   fulldatasize = 0;
+   log.info("Moving file "+tmpfilename+" to "+filepath);
+   shutil.move(tmpfilename, filepath);
+   if(os.path.exists(tmpfilename)==True):
+    os.remove(tmpfilename);
+   returnval = {'Type': "File", 'Filename': filepath, 'Filesize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+  if(outfile=="-" and sys.version[0]=="2"):
+   pretmpfilename = download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
+   tmpfilename = pretmpfilename['Filename'];
+   downloadsize = os.path.getsize(tmpfilename);
+   fulldatasize = 0;
+   with open(tmpfilename, 'rb') as ft:
+    f = StringIO();
+    while True:
+     databytes = ft.read(buffersize[1]);
+     if not databytes: break;
+     datasize = len(databytes);
+     fulldatasize = datasize + fulldatasize;
+     percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
+     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+     f.write(databytes);
+    f.close();
+    ft.close();
+    os.remove(tmpfilename);
+   returnval = {'Type': "Content", 'Content': f.getvalue(), 'Contentsize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+  if(outfile=="-" and sys.version[0]>="3"):
+   pretmpfilename = download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize[0], sleep);
+   tmpfilename = pretmpfilename['Filename'];
+   downloadsize = os.path.getsize(tmpfilename);
+   fulldatasize = 0;
+   with open(tmpfilename, 'rb') as ft:
+    f = BytesIO();
+    while True:
+     databytes = ft.read(buffersize[1]);
+     if not databytes: break;
+     datasize = len(databytes);
+     fulldatasize = datasize + fulldatasize;
+     percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
+     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+     f.write(databytes);
+    f.close();
+    ft.close();
+    os.remove(tmpfilename);
+   returnval = {'Type': "Content", 'Content': f.getvalue(), 'Contentsize': downloadsize, 'Headers': pretmpfilename['Headers'], 'URL': pretmpfilename['URL'], 'Code': pretmpfilename['Code']};
+  return returnval;
+
+if(havemechanize==False):
+ def download_from_url_to_file_with_mechanize(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
   returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, outfile, outpath, sleep)
   return returnval;
 
@@ -628,9 +777,9 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
  mlessavatar = mlessavatar[0];
  avatarfilenameext = os.path.basename(urlparse.urljoin(mlessavatar, urlparse.urlparse(mlessavatar).path));
  avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
- mregex_getviews = re.escape("<strong>Views</strong>\n")+"(\s+|\t+)([0-9]+)(\s+\t+)"+re.escape("</h2>");
+ mregex_getviews = re.escape("<strong>Views</strong>\n")+"(\s+|\t+)([0-9\,]+)(\s+\t+)"+re.escape("</h2>");
  mlessviews = re.findall(mregex_getviews, mrtext);
- mregex_getfavorited = re.escape("<strong>Favorited</strong>\n")+"(\s+\t+)([0-9]+)(\s+\t+)"+re.escape("</h2>");
+ mregex_getfavorited = re.escape("<strong>Favorited</strong>\n")+"(\s+\t+)([0-9\,]+)(\s+\t+)"+re.escape("</h2>");
  mlessfavorited = re.findall(mregex_getfavorited, mrtext);
  if(mlesslinkonetype[0][1]=="images"):
   thumbnailaltpart = thumbfilename+"-zoom"+thumbfileextension;
@@ -645,9 +794,9 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
  returnval = False;
  mlessurltype = get_motherless_link_type(mlesslinkone[0]);
  if(mlesslinkonetype[0][1]=="images"):
-  returnval = {'type': mlesslinkonetype[0][1], 'urltype': mlessurltype, 'url': mlesslinkone[0], 'orginurl': httpurl, 'orginurltype': get_motherless_link_type(httpurl), 'thumbnail': mlesslinktwo[0].replace("images", "thumbs"), 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'userinfo': get_motherless_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlessviews[0][1]), 'numberoffavorites': int(mlessfavorited[0][1])};
+  returnval = {'type': mlesslinkonetype[0][1], 'urltype': mlessurltype, 'url': mlesslinkone[0], 'orginurl': httpurl, 'orginurltype': get_motherless_link_type(httpurl), 'thumbnail': mlesslinktwo[0].replace("images", "thumbs"), 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'userinfo': get_motherless_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlessviews[0][1].replace(',', '')), 'numberoffavorites': int(mlessfavorited[0][1].replace(',', ''))};
  if(mlesslinkonetype[0][1]=="videos"):
-  returnval = {'type': mlesslinkonetype[0][1], 'url': mlesslinkone[0], 'orginurl': httpurl, 'orginurltype': get_motherless_link_type(httpurl), 'thumbnail': mlesslinktwo[0].replace("images", "thumbs"), 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'userinfo': get_motherless_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlessviews[0][1]), 'numberoffavorites': int(mlessfavorited[0][1])};
+  returnval = {'type': mlesslinkonetype[0][1], 'url': mlesslinkone[0], 'orginurl': httpurl, 'orginurltype': get_motherless_link_type(httpurl), 'thumbnail': mlesslinktwo[0].replace("images", "thumbs"), 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'userinfo': get_motherless_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlessviews[0][1].replace(',', '')), 'numberoffavorites': int(mlessfavorited[0][1].replace(',', ''))};
  return returnval;
 
 def get_motherless_links_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
@@ -740,9 +889,8 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
  mlesslinktwo = re.findall(mregex_geturltwo, mrtext);
  mregex_getcaption = re.escape("<h2 class=\"caption title\">")+"(.*)"+re.escape("</h2>");
  mlesscaption = re.findall(mregex_getcaption, mrtext);
- mregex_gethits = re.escape("<div class=\"caption right\">")+"([0-9]+)"+re.escape(" Hits</div>");
+ mregex_gethits = re.escape("<div class=\"caption right\">")+"([0-9\,]+)"+re.escape(" Hits</div>");
  mlesshits = re.findall(mregex_gethits, mrtext);
- print(mlesshits);
  mregex_getuserinfo = re.escape("<a class=\"caption left\" href=\"")+'?\'?([^"\'>]*)'+re.escape("\">");
  mlessuname = re.findall(mregex_getuserinfo, mrtext);
  if(getlinks[1]>len(mlesslinkone) or getlinks[1]==-1):
@@ -773,7 +921,7 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
   mlessurltype = get_motherless_link_type("http://motherless.com/"+mlesslinkone[mli]);
   avatarfilenameext = os.path.basename(urlparse.urljoin("http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", urlparse.urlparse("http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg").path));
   avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
-  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com"+mlesslinkone[mli], 'thumbnail': mlesslinktwo[mli][0], 'strip': mlesslinktwo[mli][1], 'title': mlesslinktwo[mli][2], 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'stripfullfilename': stripfilenameext, 'stripfilename': stripfilename, 'stripextension': stripfileextension, 'userinfo': get_motherless_user_info(mlessuname[mli]), 'username': mlessuname[mli], 'avatarurl': "http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlesshits[mli])} });
+  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com"+mlesslinkone[mli], 'thumbnail': mlesslinktwo[mli][0], 'strip': mlesslinktwo[mli][1], 'title': mlesslinktwo[mli][2], 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'stripfullfilename': stripfilenameext, 'stripfilename': stripfilename, 'stripextension': stripfileextension, 'userinfo': get_motherless_user_info(mlessuname[mli]), 'username': mlessuname[mli], 'avatarurl': "http://cdn.avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlesshits[mli].replace(',', ''))} });
   mli = mli + 1;
  return returnval;
 
