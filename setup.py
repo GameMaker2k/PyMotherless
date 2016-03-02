@@ -13,15 +13,23 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: setup.py - Last Update: 02/29/2016 Ver. 0.4.4 RC 1 - Author: cooldude2k $
+    $FileInfo: setup.py - Last Update: 03/1/2016 Ver. 0.4.5 RC 1 - Author: cooldude2k $
 '''
 
 import re, os, sys, time, datetime, platform, pkg_resources;
 from setuptools import setup, find_packages;
 
+verinfofilename = os.path.realpath("."+os.path.sep+os.path.sep+"pymotherless.py");
+''' verinfofilename = os.path.abspath("."+os.path.sep+os.path.sep+"pymotherless.py"); '''
+verinfofile = open(verinfofilename, "r");
+verinfodata = verinfofile.read();
+verinfofile.close();
+setuppy_verinfo = re.findall("Ver\. ([0-9]+)\.([0-9]+)\.([0-9]+) RC ([0-9]+)", verinfodata)[0];
+pymotherless_version = str(setuppy_verinfo[0])+"."+str(setuppy_verinfo[1])+"."+str(setuppy_verinfo[2]);
+
 setup(
  name = 'PyMotherless',
- version = '0.4.4',
+ version = pymotherless_version,
  author = 'Kazuki Przyborowski',
  author_email = 'kazuki.przyborowski@gmail.com',
  maintainer = 'Kazuki Przyborowski',
