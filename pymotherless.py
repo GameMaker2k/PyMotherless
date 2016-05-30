@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 4/20/2016 Ver. 0.4.5 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 5/30/2016 Ver. 0.4.5 RC 2 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -56,8 +56,8 @@ if(sys.version[0]>="3"):
 __program_name__ = "PyMotherless";
 __project__ = __program_name__;
 __project_url__ = "https://github.com/GameMaker2k/PyMotherless";
-__version_info__ = (0, 4, 5, "RC 1", 1);
-__version_date_info__ = (2016, 4, 20, "RC 1", 1);
+__version_info__ = (0, 4, 5, "RC 2", 2);
+__version_date_info__ = (2016, 5, 30, "RC 2", 2);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -773,6 +773,8 @@ def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse=
  return returnval;
 
 def get_motherless_link_type(httpurl):
+ mregex_gettitle = re.escape("http://cdn")+"([0-4])"+re.escape(".");
+ mrtext = re.sub(mregex_gettitle, "http://cdn.", mrtext);
  mlessvidqstr = urlparse.parse_qs(urlparse.urlparse(httpurl).query);
  mlessvidid_parts = urlparse.urlparse(httpurl);
  mlessvidid = mlessvidid_parts.path.split("/");
@@ -866,6 +868,8 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
+ mregex_gettitle = re.escape("http://cdn")+"([0-4])"+re.escape(".");
+ mrtext = re.sub(mregex_gettitle, "http://cdn.", mrtext);
  mregex_gettitle = re.escape("<title>")+"(.*)"+re.escape(" - MOTHERLESS.COM</title>");
  mlesstitle = re.findall(mregex_gettitle, mrtext);
  mregex_geturlone = re.escape("__fileurl = '")+'?\'?([^"\'>]*)'+re.escape("';");
