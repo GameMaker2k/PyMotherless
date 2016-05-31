@@ -774,7 +774,7 @@ def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse=
 
 def get_motherless_link_type(httpurl):
  mregex_gettitle = re.escape("http://cdn")+"([0-4])"+re.escape(".");
- mrtext = re.sub(mregex_gettitle, "http://cdn.", mrtext);
+ httpurl = re.sub(mregex_gettitle, "http://cdn.", httpurl);
  mlessvidqstr = urlparse.parse_qs(urlparse.urlparse(httpurl).query);
  mlessvidid_parts = urlparse.urlparse(httpurl);
  mlessvidid = mlessvidid_parts.path.split("/");
