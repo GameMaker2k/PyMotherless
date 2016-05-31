@@ -80,7 +80,7 @@ if(getargs.verbose==True):
 
 if(getargs.dump_user_agent==True):
  print(getargs.user_agent);
- exit();
+ sys.exit();
 
 motherless_linktype = pymotherless.get_motherless_link_type(getargs.url);
 motherless_links = [];
