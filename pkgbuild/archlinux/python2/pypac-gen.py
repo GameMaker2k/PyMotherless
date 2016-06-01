@@ -68,8 +68,8 @@ if(sys.version[0]=="3"):
  pkgsource = "py3motherless";
 pkgupstreamname = "PyMotherless";
 pkgveralt = str(setuppy_verinfo[0])+"."+str(setuppy_verinfo[1])+"."+str(setuppy_verinfo[2]);
-pkgveraltrel = str(setuppy_verinfo[3]);
-pkgver = str(pkgveralt)+"-rc"+str(setuppy_verinfo[3]);
+pkgveraltrel = str(setuppy_verinfo[4]);
+pkgver = str(pkgveralt)+"-rc"+str(setuppy_verinfo[4]);
 pkgurgency = "urgency=low";
 pkgauthorname = setuppy_author;
 pkgauthoremail = setuppy_authoremail;
