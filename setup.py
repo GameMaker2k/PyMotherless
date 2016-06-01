@@ -27,47 +27,68 @@ verinfofile.close();
 setuppy_verinfo_esc = re.escape("__version_info__ = (")+"(.*)"+re.escape(");");
 setuppy_verinfo = re.findall(setuppy_verinfo_esc, verinfodata)[0];
 setuppy_verinfo_exp = [vergetspt.strip().replace("\"", "") for vergetspt in setuppy_verinfo.split(',')];
-pymotherless_version = str(setuppy_verinfo_exp[0])+"."+str(setuppy_verinfo_exp[1])+"."+str(setuppy_verinfo_exp[2]);
 '''
 setuppy_verinfo = re.findall("Ver\. ([0-9]+)\.([0-9]+)\.([0-9]+) RC ([0-9]+)", verinfodata)[0];
 pymotherless_version = str(setuppy_verinfo[0])+"."+str(setuppy_verinfo[1])+"."+str(setuppy_verinfo[2]);
 '''
+pymodule = {};
+pymodule['version'] = str(setuppy_verinfo_exp[0])+"."+str(setuppy_verinfo_exp[1])+"."+str(setuppy_verinfo_exp[2]);
+pymodule['name'] = 'PyMotherless';
+pymodule['author'] = 'Kazuki Przyborowski';
+pymodule['authoremail'] = 'kazuki.przyborowski@gmail.com';
+pymodule['maintainer'] = 'Kazuki Przyborowski';
+pymodule['maintaineremail'] = 'kazuki.przyborowski@gmail.com';
+pymodule['description'] = 'Get urls of images/videos from motherless.';
+pymodule['license'] = 'Revised BSD License';
+pymodule['keywords'] = 'motherless pymotherless python python-motherless';
+pymodule['url'] = 'https://github.com/GameMaker2k/PyMotherless';
+pymodule['downloadurl'] = 'https://github.com/GameMaker2k/PyMotherless/archive/master.tar.gz';
+pymodule['longdescription'] = 'Get urls of images/videos from motherless.';
+pymodule['platforms'] = 'OS Independent';
+pymodule['zipsafe'] = True;
+pymodule['pymodules'] = ['pymotherless'];
+pymodule['classifiers'] = [
+ 'Development Status :: 5 - Production/Stable',
+ 'Intended Audience :: Developers',
+ 'Intended Audience :: Other Audience',
+ 'License :: OSI Approved',
+ 'License :: OSI Approved :: BSD License',
+ 'Natural Language :: English',
+ 'Operating System :: MacOS',
+ 'Operating System :: MacOS :: MacOS X',
+ 'Operating System :: Microsoft',
+ 'Operating System :: Microsoft :: Windows',
+ 'Operating System :: OS/2',
+ 'Operating System :: OS Independent',
+ 'Operating System :: POSIX',
+ 'Operating System :: Unix',
+ 'Programming Language :: Python',
+ 'Topic :: Utilities',
+ 'Topic :: Software Development',
+ 'Topic :: Software Development :: Libraries',
+ 'Topic :: Software Development :: Libraries :: Python Modules',
+];
+if(sys.argv[1]=="versioninfo" or sys.argv[1]=="getversioninfo"):
+ import json;
+ pymodule_data = json.dumps(pymodule);
+ print(pymodule_data);
+ sys.exit();
 
 setup(
- name = 'PyMotherless',
- version = pymotherless_version,
- author = 'Kazuki Przyborowski',
- author_email = 'kazuki.przyborowski@gmail.com',
- maintainer = 'Kazuki Przyborowski',
- maintainer_email = 'kazuki.przyborowski@gmail.com',
- description = 'Get urls of images/videos from motherless.',
- license = 'Revised BSD License',
- keywords = 'motherless pymotherless python python-motherless',
- url = 'https://github.com/GameMaker2k/PyMotherless',
- download_url = 'https://github.com/GameMaker2k/PyMotherless/archive/master.tar.gz',
- long_description = 'Get urls of images/videos from motherless.',
- platforms = 'OS Independent',
- zip_safe = True,
- py_modules = ['pymotherless'],
- classifiers = [
-  'Development Status :: 5 - Production/Stable',
-  'Intended Audience :: Developers',
-  'Intended Audience :: Other Audience',
-  'License :: OSI Approved',
-  'License :: OSI Approved :: BSD License',
-  'Natural Language :: English',
-  'Operating System :: MacOS',
-  'Operating System :: MacOS :: MacOS X',
-  'Operating System :: Microsoft',
-  'Operating System :: Microsoft :: Windows',
-  'Operating System :: OS/2',
-  'Operating System :: OS Independent',
-  'Operating System :: POSIX',
-  'Operating System :: Unix',
-  'Programming Language :: Python',
-  'Topic :: Utilities',
-  'Topic :: Software Development',
-  'Topic :: Software Development :: Libraries',
-  'Topic :: Software Development :: Libraries :: Python Modules',
- ],
+ name = pymodule['name'],
+ version = pymodule['version'],
+ author = pymodule['author'],
+ author_email = pymodule['authoremail'],
+ maintainer = pymodule['maintainer'],
+ maintainer_email = pymodule['maintaineremail'],
+ description = pymodule['description'],
+ license = pymodule['license'],
+ keywords = pymodule['keywords'],
+ url = pymodule['url'],
+ download_url = pymodule['downloadurl'],
+ long_description = pymodule['longdescription'],
+ platforms = pymodule['platforms'],
+ zip_safe = pymodule['zipsafe'],
+ py_modules = pymodule['pymodules'],
+ classifiers = pymodule['classifiers']
 )
