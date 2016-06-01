@@ -20,19 +20,22 @@ import re, os, sys, time, datetime, platform, pkg_resources;
 from setuptools import setup, find_packages;
 
 verinfofilename = os.path.realpath("."+os.path.sep+os.path.sep+"pymotherless.py");
-''' verinfofilename = os.path.abspath("."+os.path.sep+os.path.sep+"pymotherless.py"); '''
 verinfofile = open(verinfofilename, "r");
 verinfodata = verinfofile.read();
 verinfofile.close();
 setuppy_verinfo_esc = re.escape("__version_info__ = (")+"(.*)"+re.escape(");");
 setuppy_verinfo = re.findall(setuppy_verinfo_esc, verinfodata)[0];
 setuppy_verinfo_exp = [vergetspt.strip().replace("\"", "") for vergetspt in setuppy_verinfo.split(',')];
-'''
-setuppy_verinfo = re.findall("Ver\. ([0-9]+)\.([0-9]+)\.([0-9]+) RC ([0-9]+)", verinfodata)[0];
-pymotherless_version = str(setuppy_verinfo[0])+"."+str(setuppy_verinfo[1])+"."+str(setuppy_verinfo[2]);
-'''
+setuppy_dateinfo_esc = re.escape("__version_date_info__ = (")+"(.*)"+re.escape(");");
+setuppy_dateinfo = re.findall(setuppy_dateinfo_esc, verinfodata)[0];
+setuppy_dateinfo_exp = [vergetspt.strip().replace("\"", "") for vergetspt in setuppy_dateinfo.split(',')];
 pymodule = {};
 pymodule['version'] = str(setuppy_verinfo_exp[0])+"."+str(setuppy_verinfo_exp[1])+"."+str(setuppy_verinfo_exp[2]);
+pymodule['versionrc'] = int(setuppy_verinfo_exp[4]);
+pymodule['versionlist'] = (int(setuppy_verinfo_exp[0]), int(setuppy_verinfo_exp[1]), int(setuppy_verinfo_exp[2]), str(setuppy_verinfo_exp[3]), int(setuppy_verinfo_exp[4]));
+pymodule['verdate'] = str(setuppy_dateinfo_exp[0])+"."+str(setuppy_dateinfo_exp[1])+"."+str(setuppy_dateinfo_exp[2]);
+pymodule['verdaterc'] = int(setuppy_dateinfo_exp[4]);
+pymodule['verdatelist'] = (int(setuppy_dateinfo_exp[0]), int(setuppy_dateinfo_exp[1]), int(setuppy_dateinfo_exp[2]), str(setuppy_dateinfo_exp[3]), int(setuppy_dateinfo_exp[4]));
 pymodule['name'] = 'PyMotherless';
 pymodule['author'] = 'Kazuki Przyborowski';
 pymodule['authoremail'] = 'kazuki.przyborowski@gmail.com';
