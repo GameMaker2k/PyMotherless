@@ -69,7 +69,7 @@ pymodule['classifiers'] = [
  'Topic :: Utilities',
  'Topic :: Software Development',
  'Topic :: Software Development :: Libraries',
- 'Topic :: Software Development :: Libraries :: Python Modules',
+ 'Topic :: Software Development :: Libraries :: Python Modules'
 ];
 if(sys.argv[1]=="versioninfo" or sys.argv[1]=="getversioninfo"):
  import json;
