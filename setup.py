@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: setup.py - Last Update: 5/30/2016 Ver. 0.4.5 RC 2 - Author: cooldude2k $
+    $FileInfo: setup.py - Last Update: 5/31/2016 Ver. 0.4.5 RC 3 - Author: cooldude2k $
 '''
 
 import re, os, sys, time, datetime, platform, pkg_resources;
@@ -24,8 +24,14 @@ verinfofilename = os.path.realpath("."+os.path.sep+os.path.sep+"pymotherless.py"
 verinfofile = open(verinfofilename, "r");
 verinfodata = verinfofile.read();
 verinfofile.close();
+setuppy_verinfo_esc = re.escape("__version_info__ = (")+"(.*)"+re.escape(");");
+setuppy_verinfo = re.findall(setuppy_verinfo_esc, verinfodata)[0];
+setuppy_verinfo_exp = [vergetspt.strip().replace("\"", "") for vergetspt in setuppy_verinfo.split(',')];
+pymotherless_version = str(setuppy_verinfo_exp[0])+"."+str(setuppy_verinfo_exp[1])+"."+str(setuppy_verinfo_exp[2]);
+'''
 setuppy_verinfo = re.findall("Ver\. ([0-9]+)\.([0-9]+)\.([0-9]+) RC ([0-9]+)", verinfodata)[0];
 pymotherless_version = str(setuppy_verinfo[0])+"."+str(setuppy_verinfo[1])+"."+str(setuppy_verinfo[2]);
+'''
 
 setup(
  name = 'PyMotherless',
