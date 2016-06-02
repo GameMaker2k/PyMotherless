@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: setup.py - Last Update: 6/1/2016 Ver. 0.4.6 RC 1 - Author: cooldude2k $
+    $FileInfo: setup.py - Last Update: 6/1/2016 Ver. 0.4.7 RC 1 - Author: cooldude2k $
 '''
 
 import re, os, sys, time, datetime, platform, pkg_resources;
@@ -71,10 +71,22 @@ pymodule['classifiers'] = [
  'Topic :: Software Development :: Libraries',
  'Topic :: Software Development :: Libraries :: Python Modules'
 ];
-if(sys.argv[1]=="versioninfo" or sys.argv[1]=="getversioninfo"):
+if(len(sys.argv)>1 and (sys.argv[1]=="versioninfo" or sys.argv[1]=="getversioninfo")):
  import json;
  pymodule_data = json.dumps(pymodule);
  print(pymodule_data);
+ sys.exit();
+if(len(sys.argv)>1 and (sys.argv[1]=="sourceinfo" or sys.argv[1]=="getsourceinfo")):
+ srcinfofilename = os.path.realpath("."+os.path.sep+pymodule['name'].replace("-", "_")+".egg-info"+os.path.sep+"SOURCES.txt");
+ srcinfofile = open(srcinfofilename, "r");
+ srcinfodata = srcinfofile.read();
+ srcinfofile.close();
+ srcinfolist = srcinfodata.split('\n');
+ srcfilelist = "";
+ srcpdir = os.path.basename(os.path.dirname(os.path.realpath(__file__)));
+ for ifile in srcinfolist:
+  srcfilelist = "./"+srcpdir+"/"+ifile+" "+srcfilelist;
+ print(srcfilelist);
  sys.exit();
 
 setup(

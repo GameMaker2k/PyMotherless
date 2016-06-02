@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 6/1/2016 Ver. 0.4.6 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 6/1/2016 Ver. 0.4.7 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -56,7 +56,7 @@ if(sys.version[0]>="3"):
 __program_name__ = "PyMotherless";
 __project__ = __program_name__;
 __project_url__ = "https://github.com/GameMaker2k/PyMotherless";
-__version_info__ = (0, 4, 6, "RC 1", 1);
+__version_info__ = (0, 4, 7, "RC 1", 1);
 __version_date_info__ = (2016, 6, 1, "RC 1", 1);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
