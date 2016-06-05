@@ -90,7 +90,7 @@ if(sys.version[0]=="2"):
  pkgbuilddepends = "'python2'";
 if(sys.version[0]=="3"):
  pkgbuilddepends = "'python'";
-pkgstandardsversion = "3.9.5";
+pkgstandardsversion = "3.9.8";
 if(sys.version[0]=="2"):
  pkgpackage = "python2-pymotherless";
  pkgoldname = "python2-motherless";

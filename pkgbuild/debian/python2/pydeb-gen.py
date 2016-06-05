@@ -110,7 +110,7 @@ if(getargs.codename=="squeeze" or getargs.codename=="wheezy"):
   pkgbuilddepends = "python-setuptools, python-all, debhelper, dh-python, devscripts";
  if(sys.version[0]=="3"):
   pkgbuilddepends = "python3-setuptools, python3-all, debhelper, dh-python, devscripts";
-pkgstandardsversion = "3.9.5";
+pkgstandardsversion = "3.9.8";
 if(sys.version[0]=="2"):
  pkgpackage = "python-pymotherless";
  pkgoldname = "python-motherless";
