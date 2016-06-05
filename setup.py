@@ -77,7 +77,7 @@ if(len(sys.argv)>1 and (sys.argv[1]=="versioninfo" or sys.argv[1]=="getversionin
  print(pymodule_data);
  sys.exit();
 if(len(sys.argv)>1 and (sys.argv[1]=="sourceinfo" or sys.argv[1]=="getsourceinfo")):
- srcinfofilename = os.path.realpath("."+os.path.sep+pymodule['name'].replace("-", "_")+".egg-info"+os.path.sep+"SOURCES.txt");
+ srcinfofilename = os.path.realpath("."+os.path.sep+pkg_resources.to_filename(pymodule['name'])+".egg-info"+os.path.sep+"SOURCES.txt");
  srcinfofile = open(srcinfofilename, "r");
  srcinfodata = srcinfofile.read();
  srcinfofile.close();
@@ -85,10 +85,12 @@ if(len(sys.argv)>1 and (sys.argv[1]=="sourceinfo" or sys.argv[1]=="getsourceinfo
  srcfilelist = "";
  srcpdir = os.path.basename(os.path.dirname(os.path.realpath(__file__)));
  for ifile in srcinfolist:
-  srcfilelist = "./"+srcpdir+"/"+ifile+" "+srcfilelist;
+  srcfilelist = "."+os.path.sep+srcpdir+os.path.sep+ifile+" "+srcfilelist;
  print(srcfilelist);
+ sys.exit();
+if(len(sys.argv)>1 and sys.argv[1]=="cleansourceinfo"):
  os.system("rm -rfv \""+os.path.realpath("."+os.path.sep+"dist\""));
- os.system("rm -rfv \""+os.path.realpath("."+os.path.sep+pymodule['name'].replace("-", "_")+".egg-info\""));
+ os.system("rm -rfv \""+os.path.realpath("."+os.path.sep+pkg_resources.to_filename(pymodule['name'])+".egg-info\""));
  sys.exit();
 
 setup(
