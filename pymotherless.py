@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 6/1/2016 Ver. 0.4.7 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 6/16/2016 Ver. 0.4.7 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -57,7 +57,7 @@ __program_name__ = "PyMotherless";
 __project__ = __program_name__;
 __project_url__ = "https://github.com/GameMaker2k/PyMotherless";
 __version_info__ = (0, 4, 7, "RC 1", 1);
-__version_date_info__ = (2016, 6, 1, "RC 1", 1);
+__version_date_info__ = (2016, 6, 16, "RC 1", 1);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -380,6 +380,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
   downloadsize = int(downloadsize);
  if downloadsize is None: downloadsize = 0;
  fulldatasize = 0;
+ prevdownsize = 0;
  log.info("Downloading URL "+httpurl);
  with tempfile.NamedTemporaryFile('wb+', prefix="pywwwget-", delete=False) as f:
   tmpfilename = f.name;
@@ -392,7 +393,9 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
    percentage = "";
    if(downloadsize>0):
     percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-   log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+   downloaddiff = fulldatasize - prevdownsize;
+   log.info("Downloading "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Downloaded "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+   prevdownsize = fulldatasize;
    f.write(databytes);
   f.close();
  geturls_text.close();
@@ -426,6 +429,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   tmpfilename = pretmpfilename['Filename'];
   downloadsize = os.path.getsize(tmpfilename);
   fulldatasize = 0;
+  prevdownsize = 0;
   with open(tmpfilename, 'rb') as ft:
    f = StringIO();
    while True:
@@ -436,7 +440,9 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
     percentage = "";
     if(downloadsize>0):
      percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-    log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+    downloaddiff = fulldatasize - prevdownsize;
+    log.info("Copying "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Copied "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+    prevdownsize = fulldatasize;
     f.write(databytes);
    f.seek(0);
    fdata = f.getvalue();
@@ -449,6 +455,7 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
   tmpfilename = pretmpfilename['Filename'];
   downloadsize = os.path.getsize(tmpfilename);
   fulldatasize = 0;
+  prevdownsize = 0;
   with open(tmpfilename, 'rb') as ft:
    f = BytesIO();
    while True:
@@ -459,7 +466,9 @@ def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outf
     percentage = "";
     if(downloadsize>0):
      percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-    log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+    downloaddiff = fulldatasize - prevdownsize;
+    log.info("Copying "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Copied "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+    prevdownsize = fulldatasize;
     f.write(databytes);
    f.seek(0);
    fdata = f.getvalue();
@@ -511,6 +520,7 @@ if(haverequests==True):
    downloadsize = int(downloadsize);
   if downloadsize is None: downloadsize = 0;
   fulldatasize = 0;
+  prevdownsize = 0;
   log.info("Downloading URL "+httpurl);
   with tempfile.NamedTemporaryFile('wb+', prefix="pywwwget-", delete=False) as f:
    tmpfilename = f.name;
@@ -521,7 +531,9 @@ if(haverequests==True):
     percentage = "";
     if(downloadsize>0):
      percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-    log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+    downloaddiff = fulldatasize - prevdownsize;
+    log.info("Downloading "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Downloaded "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+    prevdownsize = fulldatasize;
     f.write(databytes);
    f.close();
   geturls_text.close();
@@ -561,6 +573,7 @@ if(haverequests==True):
    tmpfilename = pretmpfilename['Filename'];
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
+   prevdownsize = 0;
    with open(tmpfilename, 'rb') as ft:
     f = StringIO();
     while True:
@@ -571,7 +584,9 @@ if(haverequests==True):
      percentage = "";
      if(downloadsize>0):
       percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+     downloaddiff = fulldatasize - prevdownsize;
+     log.info("Copying "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Copied "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+     prevdownsize = fulldatasize;
      f.write(databytes);
     f.seek(0);
     fdata = f.getvalue();
@@ -584,6 +599,7 @@ if(haverequests==True):
    tmpfilename = pretmpfilename['Filename'];
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
+   prevdownsize = 0;
    with open(tmpfilename, 'rb') as ft:
     f = BytesIO();
     while True:
@@ -594,7 +610,9 @@ if(haverequests==True):
      percentage = "";
      if(downloadsize>0):
       percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+     downloaddiff = fulldatasize - prevdownsize;
+     log.info("Copying "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Copied "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+     prevdownsize = fulldatasize;
      f.write(databytes);
     f.seek(0);
     fdata = f.getvalue();
@@ -659,6 +677,7 @@ if(havemechanize==True):
    downloadsize = int(downloadsize);
   if downloadsize is None: downloadsize = 0;
   fulldatasize = 0;
+  prevdownsize = 0;
   log.info("Downloading URL "+httpurl);
   with tempfile.NamedTemporaryFile('wb+', prefix="pywwwget-", delete=False) as f:
    tmpfilename = f.name;
@@ -671,7 +690,9 @@ if(havemechanize==True):
     percentage = "";
     if(downloadsize>0):
      percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-    log.info("Downloading "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+    downloaddiff = fulldatasize - prevdownsize;
+    log.info("Downloading "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Downloaded "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+    prevdownsize = fulldatasize;
     f.write(databytes);
    f.close();
   geturls_text.close();
@@ -711,6 +732,7 @@ if(havemechanize==True):
    tmpfilename = pretmpfilename['Filename'];
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
+   prevdownsize = 0;
    with open(tmpfilename, 'rb') as ft:
     f = StringIO();
     while True:
@@ -721,7 +743,9 @@ if(havemechanize==True):
      percentage = "";
      if(downloadsize>0):
       percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+     downloaddiff = fulldatasize - prevdownsize;
+     log.info("Copying "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Copied "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+     prevdownsize = fulldatasize;
      f.write(databytes);
     f.seek(0);
     fdata = f.getvalue();
@@ -734,6 +758,7 @@ if(havemechanize==True):
    tmpfilename = pretmpfilename['Filename'];
    downloadsize = os.path.getsize(tmpfilename);
    fulldatasize = 0;
+   prevdownsize = 0;
    with open(tmpfilename, 'rb') as ft:
     f = BytesIO();
     while True:
@@ -744,7 +769,9 @@ if(havemechanize==True):
      percentage = "";
      if(downloadsize>0):
       percentage = str("{0:.2f}".format(float(float(fulldatasize / downloadsize) * 100))).rstrip('0').rstrip('.')+"%";
-     log.info("Copying "+str(fulldatasize)+" / "+str(downloadsize)+" bytes. "+str(percentage)+" done.");
+     downloaddiff = fulldatasize - prevdownsize;
+     log.info("Copying "+get_readable_size(fulldatasize, 2, "SI")['ReadableWithSuffix']+" / "+get_readable_size(downloadsize, 2, "SI")['ReadableWithSuffix']+" "+str(percentage)+" / Copied "+get_readable_size(downloaddiff, 2, "SI")['ReadableWithSuffix']);
+     prevdownsize = fulldatasize;
      f.write(databytes);
     f.seek(0);
     fdata = f.getvalue();
