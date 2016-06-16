@@ -153,6 +153,9 @@ if(getargs.get_url==False and getargs.get_pageurl==False and getargs.get_thumbna
  listsize = len(motherless_links);
  listcount = 0;
  while(listcount < listsize):
+  listcountalt = listcount + 1;
+  percentage = str("{0:.2f}".format(float(float(listcountalt / listsize) * 100))).rstrip('0').rstrip('.')+"%";
+  log.info("Downloading URL Number "+str(listcountalt)+" / "+str(listsize)+" "+str(percentage));
   if(motherless_linktype=="file"):
    pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj);
   if(motherless_linktype=="gallery"):
