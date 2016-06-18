@@ -39,16 +39,16 @@ if(sys.version[0]=="2"):
  except ImportError:
   from StringIO import StringIO;
  # From http://python-future.org/compatible_idioms.html
- from urlparse import urlparse;
+ from urlparse import urlparse, urlunparse, urlsplit, urlunsplit, urljoin;
  from urllib import urlencode;
  from urllib2 import urlopen, Request, HTTPError;
  import urllib2, urlparse, cookielib;
 if(sys.version[0]>="3"):
  from io import StringIO, BytesIO;
  # From http://python-future.org/compatible_idioms.html
- from urllib.parse import urlparse, urlencode
- from urllib.request import urlopen, Request
- from urllib.error import HTTPError
+ from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit, urljoin, urlencode;
+ from urllib.request import urlopen, Request;
+ from urllib.error import HTTPError;
  import urllib.request as urllib2;
  import urllib.parse as urlparse;
  import http.cookiejar as cookielib;
@@ -829,20 +829,40 @@ if(havemechanize==False):
   returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, outfile, outpath, sleep)
   return returnval;
 
-def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
- premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
- mrtext = premrtext['Content'];
- if(sys.version[0]>="3"):
-  mrtext = mrtext.decode('ascii', 'replace');
- mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
- mlesspagenum = re.findall(mregex_getpagenum, mrtext);
- try:
-  returnval = int(mlesspagenum[-1][0]);
- except:
-  returnval = 1;
+def check_motherless_url(httpurl):
+ returnval = {};
+ httpurl.replace("https://", "http://");
+ if(not httpurl.startswith("http")):
+  httpurl = "http://"+httpurl;
+ urlparts = urlsplit(httpurl);
+ urltype = None;
+ domaintype = None;
+ if(urlparts.netloc=="motherless.com" or urlparts.netloc=="www.motherless.com"):
+  urltype = "motherless-link";
+  domaintype = "motherless";
+ if(urlparts.netloc=="cdn.avatars.motherlessmedia.com" or urlparts.netloc=="cdn1.avatars.motherlessmedia.com" or urlparts.netloc=="cdn2.avatars.motherlessmedia.com" or urlparts.netloc=="cdn3.avatars.motherlessmedia.com" or urlparts.netloc=="cdn4.avatars.motherlessmedia.com"):
+  urltype = "motherless-avatar";
+  domaintype = "motherlessmedia";
+ if(urlparts.netloc=="cdn.images.motherlessmedia.com" or urlparts.netloc=="cdn1.images.motherlessmedia.com" or urlparts.netloc=="cdn2.images.motherlessmedia.com" or urlparts.netloc=="cdn3.images.motherlessmedia.com" or urlparts.netloc=="cdn4.images.motherlessmedia.com"):
+  urltype = "motherless-image";
+  domaintype = "motherlessmedia";
+ if(urlparts.netloc=="cdn.videos.motherlessmedia.com" or urlparts.netloc=="cdn1.videos.motherlessmedia.com" or urlparts.netloc=="cdn2.videos.motherlessmedia.com" or urlparts.netloc=="cdn3.videos.motherlessmedia.com" or urlparts.netloc=="cdn4.videos.motherlessmedia.com"):
+  urltype = "motherless-video";
+  domaintype = "motherlessmedia";
+ if(urlparts.netloc=="cdn.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn1.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn2.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn3.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn4.thumbs.motherlessmedia.com"):
+  urltype = "motherless-thumbnail";
+  domaintype = "motherlessmedia";
+ if(urltype==None or domaintype==None):
+  return False;
+ returnval.update({'url': httpurl, 'urltype': urltype, 'domaintype': domaintype, 'urlinfo': {'scheme': urlparts.scheme, 'netloc': urlparts.netloc, 'path': urlparts.path, 'query': urlparts.query, 'fragment': urlparts.fragment}});
+ return returnval;
+
+def fix_motherless_url(httpurl):
+ returnval = check_motherless_url(httpurl)['url'];
  return returnval;
 
 def get_motherless_link_type(httpurl):
+ httpurl = fix_motherless_url(httpurl);
  mregex_gettitle = re.escape("http://cdn")+"([1-4])"+re.escape(".");
  httpurl = re.sub(mregex_gettitle, "http://cdn.", httpurl);
  mlessvidqstr = urlparse.parse_qs(urlparse.urlparse(httpurl).query);
@@ -927,6 +947,25 @@ def get_motherless_link_type(httpurl):
   returnval = "file";
  return returnval;
 
+def get_motherless_link_type_alt(httpurl):
+ httpurl = fix_motherless_url(httpurl);
+ returnval = {'urlinfo': check_motherless_url(httpurl), 'motherlessinfo': get_motherless_link_type(httpurl)};
+ return returnval;
+
+def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
+ httpurl = fix_motherless_url(httpurl);
+ premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
+ mrtext = premrtext['Content'];
+ if(sys.version[0]>="3"):
+  mrtext = mrtext.decode('ascii', 'replace');
+ mregex_getpagenum = re.escape("\" class=\"pop\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">")+"([0-9]+)"+re.escape("</a>");
+ mlesspagenum = re.findall(mregex_getpagenum, mrtext);
+ try:
+  returnval = int(mlesspagenum[-1][0]);
+ except:
+  returnval = 1;
+ return returnval;
+
 def get_motherless_user_info(username, motherless_serv=None):
  motherless_subdomain = "cdn.";
  if(motherless_serv<5 or motherless_serv>0):
@@ -945,6 +984,7 @@ def get_motherless_user_info(username, motherless_serv=None):
  return returnval;
 
 def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", motherless_serv=None):
+ httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
@@ -1002,6 +1042,7 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", 
  return returnval;
 
 def get_motherless_links_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
+ httpurl = fix_motherless_url(httpurl);
  returnval = False;
  if(get_motherless_link_type(httpurl)=="download"):
   urlparts = urlparse.urlparse(httpurl);
@@ -1018,6 +1059,7 @@ def get_motherless_links_from_url(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="urllib"):
+ httpurl = fix_motherless_url(httpurl);
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1064,6 +1106,7 @@ def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1], motherless_serv=None):
+ httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
@@ -1203,6 +1246,7 @@ def get_motherless_random_links_alt(httpheaders, httpcookie, httplibuse="urllib"
  return returnval;
 
 def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1], motherless_serv=None):
+ httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
@@ -1251,6 +1295,7 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  return returnval;
 
 def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1], motherless_serv=None):
+ httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
@@ -1297,6 +1342,7 @@ def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="ur
  return returnval;
 
 def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1], motherless_serv=None):
+ httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
@@ -1343,6 +1389,7 @@ def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="
  return returnval;
 
 def get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
+ httpurl = fix_motherless_url(httpurl);
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1499,6 +1546,7 @@ def get_motherless_top_referers(httpheaders, httpcookie, httplibuse="urllib", ge
  return get_motherless_top_referrers(httpheaders, httpcookie, httplibuse, getlinks);
 
 def get_motherless_groups(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
+ httpurl = fix_motherless_url(httpurl);
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1556,6 +1604,7 @@ def get_motherless_sample_links(httpheaders, httpcookie, httplibuse="urllib", nu
  return returnval;
 
 def get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
+ httpurl = fix_motherless_url(httpurl);
  returnval = False;
  if(get_motherless_link_type(httpurl)=="file"):
   returnval = get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse);
@@ -1580,6 +1629,7 @@ def get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse="ur
  return returnval;
 
 def view_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", viewerpro="mpv", prearg=[], proarg=[]):
+ httpurl = fix_motherless_url(httpurl);
  commandlist = [viewerpro] + prearg;
  commandlist = commandlist + [get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse)['url']];
  commandlist = commandlist + proarg;
@@ -1589,6 +1639,7 @@ def view_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib",
 
 def download_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[524288, 524288], outfile="-", outpath=os.getcwd(), usetitlename=False):
  global geturls_download_sleep;
+ httpurl = fix_motherless_url(httpurl);
  if(sleep<0):
   sleep = geturls_download_sleep;
  mlessurl = get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse);
@@ -1605,6 +1656,7 @@ def download_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urll
 
 def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[524288, 524288], outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
  global geturls_download_sleep;
+ httpurl = fix_motherless_url(httpurl);
  if(sleep<0):
   sleep = geturls_download_sleep;
  mlessurl = get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse, page);
@@ -1624,6 +1676,7 @@ def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibu
 
 def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[524288, 524288], outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
  global geturls_download_sleep;
+ httpurl = fix_motherless_url(httpurl);
  if(sleep<0):
   sleep = geturls_download_sleep;
  mlessgalleries = get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse, page, getlinks);
@@ -1652,6 +1705,7 @@ def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httpli
 
 def download_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[524288, 524288], outfile="-", outpath=os.getcwd(), usetitlename=False, getlinks=[0, -1]):
  global geturls_download_sleep;
+ httpurl = fix_motherless_url(httpurl);
  if(sleep<0):
   sleep = geturls_download_sleep;
  mlessgalleries = get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse, getlinks);
