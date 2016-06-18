@@ -309,7 +309,7 @@ def download_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib", sle
   returnval = False;
  return returnval;
 
-def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", buffersize=262144, sleep=-1):
+def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", buffersize=524288, sleep=-1):
  global geturls_download_sleep, haverequests;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -329,7 +329,7 @@ def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib"
   returnval = False;
  return returnval;
 
-def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
+def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", outfile="-", outpath=os.getcwd(), buffersize=[524288, 524288], sleep=-1):
  global geturls_download_sleep, haverequests;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -373,7 +373,7 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
  geturls_text.close();
  return returnval;
 
-def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
+def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize=524288, sleep=-1):
  global geturls_download_sleep;
  exec_time_start = time.time();
  if(sleep<0):
@@ -413,7 +413,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
  returnval.update({'Filesize': os.path.getsize(tmpfilename), 'DownloadTime': float(exec_time_start - exec_time_end), 'DownloadTimeReadable': hms_string(exec_time_start - exec_time_end)});
  return returnval;
 
-def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
+def download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[524288, 524288], sleep=-1):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -527,7 +527,7 @@ if(haverequests==False):
   return returnval;
 
 if(haverequests==True):
- def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
+ def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=524288, sleep=-1):
   global geturls_download_sleep;
   exec_time_start = time.time();
   if(sleep<0):
@@ -564,12 +564,12 @@ if(haverequests==True):
   return returnval;
 
 if(haverequests==False):
- def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
+ def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=524288, sleep=-1):
   returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep)
   return returnval;
 
 if(haverequests==True):
- def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
+ def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[524288, 524288], sleep=-1):
   global geturls_download_sleep;
   if(sleep<0):
    sleep = geturls_download_sleep;
@@ -655,7 +655,7 @@ if(haverequests==True):
   return returnval;
 
 if(haverequests==False):
- def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
+ def download_from_url_to_file_with_requests(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[524288, 524288], sleep=-1):
   returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, outfile, outpath, sleep)
   return returnval;
 
@@ -692,7 +692,7 @@ if(havemechanize==False):
   return returnval;
 
 if(havemechanize==True):
- def download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
+ def download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize=524288, sleep=-1):
   global geturls_download_sleep;
   exec_time_start = time.time();
   if(sleep<0):
@@ -735,12 +735,12 @@ if(havemechanize==True):
   return returnval;
 
 if(havemechanize==False):
- def download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize=262144, sleep=-1):
+ def download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize=524288, sleep=-1):
   returnval = download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, sleep)
   return returnval;
 
 if(havemechanize==True):
- def download_from_url_to_file_with_mechanize(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
+ def download_from_url_to_file_with_mechanize(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[524288, 524288], sleep=-1):
   global geturls_download_sleep;
   if(sleep<0):
    sleep = geturls_download_sleep;
@@ -825,7 +825,7 @@ if(havemechanize==True):
   return returnval;
 
 if(havemechanize==False):
- def download_from_url_to_file_with_mechanize(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[262144, 262144], sleep=-1):
+ def download_from_url_to_file_with_mechanize(httpurl, httpheaders, httpcookie, outfile="-", outpath=os.getcwd(), buffersize=[524288, 524288], sleep=-1):
   returnval = download_from_url_to_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize, outfile, outpath, sleep)
   return returnval;
 
@@ -1587,7 +1587,7 @@ def view_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib",
  mpvplayout, mpvplayerr = mpvplaylistp.communicate();
  return True;
 
-def download_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[262144, 262144], outfile="-", outpath=os.getcwd(), usetitlename=False):
+def download_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[524288, 524288], outfile="-", outpath=os.getcwd(), usetitlename=False):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -1603,7 +1603,7 @@ def download_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urll
  returnval = download_from_url_to_file(mlessurl['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, buffersize, sleep);
  return returnval;
 
-def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[262144, 262144], outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
+def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[524288, 524288], outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -1622,7 +1622,7 @@ def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibu
   returnval = mlessurl;
  return returnval;
 
-def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[262144, 262144], outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
+def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[524288, 524288], outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -1650,7 +1650,7 @@ def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httpli
   mli = mli + 1;
  return returnval;
 
-def download_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[262144, 262144], outfile="-", outpath=os.getcwd(), usetitlename=False, getlinks=[0, -1]):
+def download_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=[524288, 524288], outfile="-", outpath=os.getcwd(), usetitlename=False, getlinks=[0, -1]):
  global geturls_download_sleep;
  if(sleep<0):
   sleep = geturls_download_sleep;
