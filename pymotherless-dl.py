@@ -55,25 +55,28 @@ geturls_download_sleep = pymotherless.geturls_download_sleep;
 
 parser = argparse.ArgumentParser(description="get urls of images/videos from motherless.com", conflict_handler="resolve", add_help=True);
 parser.add_argument("url", help="motherless url");
-parser.add_argument("--version", action="version", version=__program_name__+" "+__version__);
+parser.add_argument("-v", "--version", action="version", version=__program_name__+" "+__version__);
 parser.add_argument("-U", "--update", action="store_true", help="update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)");
-parser.add_argument("--dump-user-agent", action="store_true", help="display the current browser identification");
-parser.add_argument("--user-agent", default="Mozilla/5.0 (Windows NT 6.1; rv:44.0) Gecko/20100101 Firefox/44.0", help="specify a custom user agent");
-parser.add_argument("--referer", default="http://motherless.com/", help="specify a custom referer, use if the video access");
+parser.add_argument("-d", "--dump-user-agent", action="store_true", help="display the current browser identification");
+parser.add_argument("-u", "--user-agent", default="Mozilla/5.0 (Windows NT 6.1; rv:44.0) Gecko/20100101 Firefox/44.0", help="specify a custom user agent");
+parser.add_argument("-r", "--referer", default="http://motherless.com/", help="specify a custom referer, use if the video access");
 parser.add_argument("-g", "--get-url", action="store_true", help="simulate, quiet but print URL");
-parser.add_argument("--get-pageurl", action="store_true", help="simulate, quiet but print URL");
+parser.add_argument("-p", "--get-pageurl", action="store_true", help="simulate, quiet but print URL");
 parser.add_argument("-e", "--get-title", action="store_true", help="simulate, quiet but print title");
-parser.add_argument("--get-id", action="store_true", help="simulate, quiet but print id");
-parser.add_argument("--get-thumbnail", action="store_true", help="simulate, quiet but print thumbnail URL");
-parser.add_argument("--get-filename", action="store_true", help="simulate, quiet but print output filename");
-parser.add_argument("--get-username", action="store_true", help="simulate, quiet but print uploaders username");
-parser.add_argument("--get-views", action="store_true", help="simulate, quiet but print number of views");
-parser.add_argument("--get-favorites", action="store_true", help="simulate, quiet but print number of favorites");
-parser.add_argument("-v", "--verbose", action="store_true", help="print various debugging information");
+parser.add_argument("-i", "--get-id", action="store_true", help="simulate, quiet but print id");
+parser.add_argument("-t", "--get-thumbnail", action="store_true", help="simulate, quiet but print thumbnail URL");
+parser.add_argument("-f", "--get-filename", action="store_true", help="simulate, quiet but print output filename");
+parser.add_argument("-u", "--get-username", action="store_true", help="simulate, quiet but print uploaders username");
+parser.add_argument("-i", "--get-views", action="store_true", help="simulate, quiet but print number of views");
+parser.add_argument("-f", "--get-favorites", action="store_true", help="simulate, quiet but print number of favorites");
+parser.add_argument("-o", "--output-directory", default=os.path.realpath(os.getcwd()), help="specify a directory to output file to");
+parser.add_argument("-V", "--verbose", action="store_true", help="print various debugging information");
 getargs = parser.parse_args();
 
 getargs_cj = geturls_cj;
 getargs_headers = {'Referer': getargs.referer, 'User-Agent': getargs.user_agent, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
+
+getargs.output_directory = os.path.realpath(getargs.output_directory);
 
 if(getargs.verbose==True):
  log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG);
@@ -99,6 +102,15 @@ if(motherless_linktype=="gallery"):
     motherless_links.append(getlinks[innumcount]['url']);
    innumcount = innumcount + 1;
   numcount = numcount + 1;
+if(motherless_linktype=="board"):
+ getlinks = pymotherless.get_motherless_boards_links(getargs.url, getargs_headers, getargs_cj);
+ innumlinks = getlinks['numoflinks'];
+ innumcount = 0;
+ while(innumcount < innumlinks):
+  inmotherless_linktype = pymotherless.get_motherless_link_type(getlinks[innumcount]['url']);
+  if(inmotherless_linktype=="file"):
+   motherless_links.append(getlinks[innumcount]['url']);
+  innumcount = innumcount + 1;
 
 if(getargs.get_url==True):
  listsize = len(motherless_links);
@@ -157,7 +169,7 @@ if(getargs.get_url==False and getargs.get_pageurl==False and getargs.get_thumbna
   percentage = str("{0:.2f}".format(float(float(listcountalt / listsize) * 100))).rstrip('0').rstrip('.')+"%";
   log.info("Downloading URL Number "+str(listcountalt)+" / "+str(listsize)+" "+str(percentage));
   if(motherless_linktype=="file"):
-   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj);
-  if(motherless_linktype=="gallery"):
-   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, outpath=os.getcwd()+os.path.sep+getargs.url.rsplit('/', 1)[-1]);
+   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, outpath=getargs.output_directory);
+  if(motherless_linktype=="gallery" or motherless_linktype=="board"):
+   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, outpath=getargs.output_directory+os.path.sep+getargs.url.rsplit('/', 1)[-1]);
   listcount = listcount + 1;
