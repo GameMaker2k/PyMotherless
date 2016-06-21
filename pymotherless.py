@@ -68,6 +68,8 @@ if(__version_info__[3]!=None):
 if(__version_info__[3]==None):
  __version__ = str(__version_info__[0])+"."+str(__version_info__[1])+"."+str(__version_info__[2]);
 
+tmpfileprefix = "pymotherless-";
+
 geturls_cj = cookielib.CookieJar();
 geturls_ua_firefox_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:44.0) Gecko/20100101 Firefox/44.0";
 geturls_ua_seamonkey_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:42.0) Gecko/20100101 Firefox/42.0 SeaMonkey/2.39";
@@ -291,7 +293,7 @@ def make_http_headers_from_list_to_dict(headers=[("Referer", "http://motherless.
 
 def get_httplib_support(checkvalue=None):
  global haverequests, havemechanize;
- returnval = ();
+ returnval = [];
  returnval.append("urllib");
  if(haverequests==True):
   returnval.append("requests");
@@ -397,7 +399,7 @@ def download_from_url_with_urllib(httpurl, httpheaders, httpcookie, sleep=-1):
  return returnval;
 
 def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffersize=524288, sleep=-1):
- global geturls_download_sleep;
+ global geturls_download_sleep, tmpfileprefix;
  exec_time_start = time.time();
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -414,7 +416,7 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
  fulldatasize = 0;
  prevdownsize = 0;
  log.info("Downloading URL "+httpurl);
- with tempfile.NamedTemporaryFile('wb+', prefix="pywwwget-", delete=False) as f:
+ with tempfile.NamedTemporaryFile('wb+', prefix=tmpfileprefix, delete=False) as f:
   tmpfilename = f.name;
   returnval = {'Type': "File", 'Filename': tmpfilename, 'Filesize': downloadsize, 'FilesizeAlt': {'IEC': get_readable_size(downloadsize, 2, "IEC"), 'SI': get_readable_size(downloadsize, 2, "SI")}, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.getcode()};
   while True:
@@ -551,7 +553,7 @@ if(haverequests==False):
 
 if(haverequests==True):
  def download_from_url_file_with_requests(httpurl, httpheaders, httpcookie, buffersize=524288, sleep=-1):
-  global geturls_download_sleep;
+  global geturls_download_sleep, tmpfileprefix;
   exec_time_start = time.time();
   if(sleep<0):
    sleep = geturls_download_sleep;
@@ -566,7 +568,7 @@ if(haverequests==True):
   fulldatasize = 0;
   prevdownsize = 0;
   log.info("Downloading URL "+httpurl);
-  with tempfile.NamedTemporaryFile('wb+', prefix="pywwwget-", delete=False) as f:
+  with tempfile.NamedTemporaryFile('wb+', prefix=tmpfileprefix, delete=False) as f:
    tmpfilename = f.name;
    returnval = {'Type': "File", 'Filename': tmpfilename, 'Filesize': downloadsize, 'FilesizeAlt': {'IEC': get_readable_size(downloadsize, 2, "IEC"), 'SI': get_readable_size(downloadsize, 2, "SI")}, 'Headers': dict(geturls_text.headers), 'URL': geturls_text.url, 'Code': geturls_text.status_code};
    for databytes in geturls_text.iter_content(chunk_size=buffersize):
@@ -716,7 +718,7 @@ if(havemechanize==False):
 
 if(havemechanize==True):
  def download_from_url_file_with_mechanize(httpurl, httpheaders, httpcookie, buffersize=524288, sleep=-1):
-  global geturls_download_sleep;
+  global geturls_download_sleep, tmpfileprefix;
   exec_time_start = time.time();
   if(sleep<0):
    sleep = geturls_download_sleep;
@@ -735,7 +737,7 @@ if(havemechanize==True):
   fulldatasize = 0;
   prevdownsize = 0;
   log.info("Downloading URL "+httpurl);
-  with tempfile.NamedTemporaryFile('wb+', prefix="pywwwget-", delete=False) as f:
+  with tempfile.NamedTemporaryFile('wb+', prefix=tmpfileprefix, delete=False) as f:
    tmpfilename = f.name;
    returnval = {'Type': "File", 'Filename': tmpfilename, 'Filesize': downloadsize, 'FilesizeAlt': {'IEC': get_readable_size(downloadsize, 2, "IEC"), 'SI': get_readable_size(downloadsize, 2, "SI")}, 'Headers': dict(geturls_text.info()), 'URL': geturls_text.geturl(), 'Code': geturls_text.code};
    while True:
