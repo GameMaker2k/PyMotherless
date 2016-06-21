@@ -289,8 +289,31 @@ def make_http_headers_from_list_to_dict(headers=[("Referer", "http://motherless.
   returnval = False;
  return returnval;
 
+def get_httplib_support(checkvalue=None):
+ global haverequests, havemechanize;
+ returnval = ();
+ returnval.append("urllib");
+ if(haverequests==True):
+  returnval.append("requests");
+ if(havemechanize==True):
+  returnval.append("mechanize");
+ if(not checkvalue==None):
+  if(checkvalue=="urllib1" or checkvalue=="urllib2"):
+   checkvalue = "urllib";
+  if(checkvalue in returnval):
+   returnval = True;
+  else:
+   returnval = False;
+ return returnval;
+
+def check_httplib_support(checkvalue="urllib"):
+ if(checkvalue=="urllib1" or checkvalue=="urllib2"):
+  checkvalue = "urllib";
+ returnval = get_httplib_support(checkvalue);
+ return returnval;
+
 def download_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1):
- global geturls_download_sleep, haverequests;
+ global geturls_download_sleep, haverequests, havemechanize;
  if(sleep<0):
   sleep = geturls_download_sleep;
  if(httplibuse=="urllib1" or httplibuse=="urllib2"):
@@ -310,7 +333,7 @@ def download_from_url(httpurl, httpheaders, httpcookie, httplibuse="urllib", sle
  return returnval;
 
 def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", buffersize=524288, sleep=-1):
- global geturls_download_sleep, haverequests;
+ global geturls_download_sleep, haverequests, havemechanize;
  if(sleep<0):
   sleep = geturls_download_sleep;
  if(httplibuse=="urllib1" or httplibuse=="urllib2"):
@@ -330,7 +353,7 @@ def download_from_url_file(httpurl, httpheaders, httpcookie, httplibuse="urllib"
  return returnval;
 
 def download_from_url_to_file(httpurl, httpheaders, httpcookie, httplibuse="urllib", outfile="-", outpath=os.getcwd(), buffersize=[524288, 524288], sleep=-1):
- global geturls_download_sleep, haverequests;
+ global geturls_download_sleep, haverequests, havemechanize;
  if(sleep<0):
   sleep = geturls_download_sleep;
  if(httplibuse=="urllib1" or httplibuse=="urllib2"):
@@ -908,9 +931,9 @@ def get_motherless_link_type(httpurl):
  if(mlessvidid[1]=="term" and len(mlessvidid)==3 and (mlessvidid[2]=="videos" or mlessvidid[2]=="images" or mlessvidid[2]=="galleries")):
   returnval = "gallery";
  if(mlessvidid[1]=="g" and len(mlessvidid)==4 and re.match("^([0-9A-F]+)$", mlessvidid[3])):
-  returnval = "file";
+  returnval = "link";
  if(mlessvidid[1]=="random" and len(mlessvidid)==3 and (mlessvidid[2]=="video" or mlessvidid[2]=="image")):
-  returnval = "file";
+  returnval = "link";
  if(re.match("^V", mlessvidid[1]) and len(mlessvidid)==2):
   returnval = "board";
  if(re.match("^H", mlessvidid[1]) and len(mlessvidid)==2):
@@ -918,9 +941,9 @@ def get_motherless_link_type(httpurl):
  if(re.match("^G", mlessvidid[1]) and len(mlessvidid)==2):
   returnval = "gallery";
  if(re.match("^G", mlessvidid[1]) and len(mlessvidid)==3):
-  returnval = "file";
+  returnval = "link";
  if(re.match("^g", mlessvidid[1]) and len(mlessvidid)==4 and re.match("^([0-9A-F]+)$", mlessvidid[3])):
-  returnval = "file";
+  returnval = "link";
  if(mlessvidid[1]=="members" and len(mlessvidid)==2):
   returnval = "member";
  if(mlessvidid[1]=="members" and len(mlessvidid)==3 and mlessvidid[2]=="search"):
@@ -944,7 +967,7 @@ def get_motherless_link_type(httpurl):
  if(mlessvidid_parts.netloc=="cdn4.images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn4.videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn4.thumbs.motherlessmedia.com"):
   returnval = "download";
  if(returnval==False and len(mlessvidid)==2 and re.match("^([0-9A-F]+)$", mlessvidid[1])):
-  returnval = "file";
+  returnval = "link";
  return returnval;
 
 def get_motherless_link_type_alt(httpurl):
@@ -1606,7 +1629,7 @@ def get_motherless_sample_links(httpheaders, httpcookie, httplibuse="urllib", nu
 def get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
  httpurl = fix_motherless_url(httpurl);
  returnval = False;
- if(get_motherless_link_type(httpurl)=="file"):
+ if(get_motherless_link_type(httpurl)=="link"):
   returnval = get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse);
  if(get_motherless_link_type(httpurl)=="gallery"):
   returnval = get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse, page);

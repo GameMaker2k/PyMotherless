@@ -70,8 +70,13 @@ parser.add_argument("-u", "--get-username", action="store_true", help="simulate,
 parser.add_argument("-i", "--get-views", action="store_true", help="simulate, quiet but print number of views");
 parser.add_argument("-f", "--get-favorites", action="store_true", help="simulate, quiet but print number of favorites");
 parser.add_argument("-o", "--output-directory", default=os.path.realpath(os.getcwd()), help="specify a directory to output file to");
+parser.add_argument("-l", "--use-httplib", default="urllib", help="select library to download file can be urllib or requests or mechanize");
+parser.add_argument("-b", "--set-buffersize", default=524288, type=int, help="set how big buffersize is in bytes. how much it will download");
 parser.add_argument("-V", "--verbose", action="store_true", help="print various debugging information");
 getargs = parser.parse_args();
+
+if(not pymotherless.check_httplib_support(getargs.use_httplib)):
+ getargs.use_httplib = "urllib";
 
 getargs_cj = geturls_cj;
 getargs_headers = {'Referer': getargs.referer, 'User-Agent': getargs.user_agent, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
@@ -87,28 +92,28 @@ if(getargs.dump_user_agent==True):
 
 motherless_linktype = pymotherless.get_motherless_link_type(getargs.url);
 motherless_links = [];
-if(motherless_linktype=="file"):
+if(motherless_linktype=="link"):
  motherless_links.append(getargs.url);
 if(motherless_linktype=="gallery"):
- numpages = pymotherless.get_motherless_number_of_pages(getargs.url, getargs_headers, getargs_cj);
+ numpages = pymotherless.get_motherless_number_of_pages(getargs.url, getargs_headers, getargs_cj, getargs.use_httplib);
  numcount = 1;
  while(numcount <= numpages):
-  getlinks = pymotherless.get_motherless_galleries_links(getargs.url, getargs_headers, getargs_cj, page=numcount);
+  getlinks = pymotherless.get_motherless_galleries_links(getargs.url, getargs_headers, getargs_cj, getargs.use_httplib, page=numcount);
   innumlinks = getlinks['numoflinks'];
   innumcount = 0;
   while(innumcount < innumlinks):
    inmotherless_linktype = pymotherless.get_motherless_link_type(getlinks[innumcount]['url']);
-   if(inmotherless_linktype=="file"):
+   if(inmotherless_linktype=="link"):
     motherless_links.append(getlinks[innumcount]['url']);
    innumcount = innumcount + 1;
   numcount = numcount + 1;
 if(motherless_linktype=="board"):
- getlinks = pymotherless.get_motherless_boards_links(getargs.url, getargs_headers, getargs_cj);
+ getlinks = pymotherless.get_motherless_boards_links(getargs.url, getargs_headers, getargs_cj, getargs.use_httplib);
  innumlinks = getlinks['numoflinks'];
  innumcount = 0;
  while(innumcount < innumlinks):
   inmotherless_linktype = pymotherless.get_motherless_link_type(getlinks[innumcount]['url']);
-  if(inmotherless_linktype=="file"):
+  if(inmotherless_linktype=="link"):
    motherless_links.append(getlinks[innumcount]['url']);
   innumcount = innumcount + 1;
 
@@ -116,7 +121,7 @@ if(getargs.get_url==True):
  listsize = len(motherless_links);
  listcount = 0;
  while(listcount < listsize):
-  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj)['url']);
+  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['url']);
   listcount = listcount + 1;
 
 if(getargs.get_pageurl==True):
@@ -130,35 +135,35 @@ if(getargs.get_filename==True):
  listsize = len(motherless_links);
  listcount = 0;
  while(listcount < listsize):
-  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj)['fullfilename']);
+  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['fullfilename']);
   listcount = listcount + 1;
 
 if(getargs.get_title==True):
  listsize = len(motherless_links);
  listcount = 0;
  while(listcount < listsize):
-  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj)['title']);
+  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['title']);
   listcount = listcount + 1;
 
 if(getargs.get_username==True):
  listsize = len(motherless_links);
  listcount = 0;
  while(listcount < listsize):
-  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj)['username']);
+  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['username']);
   listcount = listcount + 1;
 
 if(getargs.get_views==True):
  listsize = len(motherless_links);
  listcount = 0;
  while(listcount < listsize):
-  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj)['numberofviews']);
+  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['numberofviews']);
   listcount = listcount + 1;
 
 if(getargs.get_favorites==True):
  listsize = len(motherless_links);
  listcount = 0;
  while(listcount < listsize):
-  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj)['numberoffavorites']);
+  print(pymotherless.get_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['numberoffavorites']);
   listcount = listcount + 1;
 
 if(getargs.get_url==False and getargs.get_pageurl==False and getargs.get_thumbnail==False and getargs.get_filename==False and getargs.get_title==False and getargs.get_username==False and getargs.get_views==False and getargs.get_favorites==False):
@@ -168,8 +173,8 @@ if(getargs.get_url==False and getargs.get_pageurl==False and getargs.get_thumbna
   listcountalt = listcount + 1;
   percentage = str("{0:.2f}".format(float(float(listcountalt / listsize) * 100))).rstrip('0').rstrip('.')+"%";
   log.info("Downloading URL Number "+str(listcountalt)+" / "+str(listsize)+" "+str(percentage));
-  if(motherless_linktype=="file"):
-   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, outpath=getargs.output_directory);
+  if(motherless_linktype=="link"):
+   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib, buffersize=[getargs.set_buffersize, getargs.set_buffersize], outpath=getargs.output_directory);
   if(motherless_linktype=="gallery" or motherless_linktype=="board"):
-   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, outpath=getargs.output_directory+os.path.sep+getargs.url.rsplit('/', 1)[-1]);
+   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib, buffersize=[getargs.set_buffersize, getargs.set_buffersize], outpath=getargs.output_directory+os.path.sep+getargs.url.rsplit('/', 1)[-1]);
   listcount = listcount + 1;
