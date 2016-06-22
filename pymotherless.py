@@ -73,11 +73,14 @@ tmpfilesuffix = "-";
 pytempdir = tempfile.gettempdir();
 
 geturls_cj = cookielib.CookieJar();
-geturls_ua_firefox_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:44.0) Gecko/20100101 Firefox/44.0";
-geturls_ua_seamonkey_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:42.0) Gecko/20100101 Firefox/42.0 SeaMonkey/2.39";
-geturls_ua_chrome_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36";
-geturls_ua_chromium_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chromium/48.0.2564.116 Chrome/48.0.2564.116 Safari/537.36";
-geturls_ua_midori_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/538.15 (KHTML, like Gecko) Chrome/18.0.1025.133 Safari/538.15 Midori/0.5";
+geturls_ua_firefox_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:47.0) Gecko/20100101 Firefox/47.0";
+geturls_ua_seamonkey_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:43.0) Gecko/20100101 Firefox/43.0 SeaMonkey/2.40";
+geturls_ua_chrome_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/50.0.2661.102 Safari/537.36";
+geturls_ua_chromium_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chromium/50.0.2661.102 Chrome/50.0.2661.102 Safari/537.36";
+geturls_ua_midori_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/538.15 (KHTML, like Gecko) Chrome/46.0.2490.86 Safari/538.15 Midori/0.5";
+geturls_ua_palemoon_windows7 = "Mozilla/5.0 (Windows NT 6.1; rv:45.9) Gecko/20100101 Goanna/2.1 Firefox/45.9 PaleMoon/26.3.0";
+geturls_ua_opera_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.84 Safari/537.36 OPR/38.0.2220.31";
+geturls_ua_vivaldi_windows7 = "Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36 Vivaldi/1.2.490.43";
 geturls_ua_internet_explorer_windows7 = "Mozilla/5.0 (Windows NT 6.1; Trident/7.0; rv:11.0) like Gecko";
 geturls_ua_pymotherless_python = "Mozilla/5.0 (compatible; {proname}/{prover}; +{prourl})".format(proname=__project__, prover=__version__, prourl=__project_url__);
 if(platform.python_implementation()!=""):
@@ -92,6 +95,9 @@ geturls_headers_seamonkey_windows7 = {'Referer': "http://motherless.com/", 'User
 geturls_headers_chrome_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_chrome_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_chromium_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_chromium_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_midori_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_midori_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
+geturls_headers_palemoon_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_palemoon_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
+geturls_headers_opera_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_opera_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
+geturls_headers_vivaldi_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_vivaldi_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_internet_explorer_windows7 = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_internet_explorer_windows7, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_pymotherless_python = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_pymotherless_python, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
 geturls_headers_pymotherless_python_alt = {'Referer': "http://motherless.com/", 'User-Agent': geturls_ua_pymotherless_python_alt, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6", 'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"};
@@ -879,9 +885,11 @@ def check_motherless_url(httpurl):
  urlparts = urlsplit(httpurl);
  urltype = None;
  domaintype = None;
+ urlservtype = None;
  if(urlparts.netloc=="motherless.com" or urlparts.netloc=="www.motherless.com"):
   urltype = "motherless-link";
   domaintype = "motherless";
+  urlservtype = "www";
  if(urlparts.netloc=="cdn.avatars.motherlessmedia.com" or urlparts.netloc=="cdn1.avatars.motherlessmedia.com" or urlparts.netloc=="cdn2.avatars.motherlessmedia.com" or urlparts.netloc=="cdn3.avatars.motherlessmedia.com" or urlparts.netloc=="cdn4.avatars.motherlessmedia.com"):
   urltype = "motherless-avatar";
   domaintype = "motherlessmedia";
@@ -894,17 +902,33 @@ def check_motherless_url(httpurl):
  if(urlparts.netloc=="cdn.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn1.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn2.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn3.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn4.thumbs.motherlessmedia.com"):
   urltype = "motherless-thumbnail";
   domaintype = "motherlessmedia";
- if(urltype==None or domaintype==None):
+ if(urlparts.netloc=="cdn.avatars.motherlessmedia.com" or urlparts.netloc=="cdn.images.motherlessmedia.com" or urlparts.netloc=="cdn.videos.motherlessmedia.com" or urlparts.netloc=="cdn.thumbs.motherlessmedia.com"):
+  urlservtype = "cdn";
+ if(urlparts.netloc=="cdn1.avatars.motherlessmedia.com" or urlparts.netloc=="cdn1.images.motherlessmedia.com" or urlparts.netloc=="cdn1.videos.motherlessmedia.com" or urlparts.netloc=="cdn1.thumbs.motherlessmedia.com"):
+  urlservtype = "cdn1";
+ if(urlparts.netloc=="cdn2.avatars.motherlessmedia.com" or urlparts.netloc=="cdn2.images.motherlessmedia.com" or urlparts.netloc=="cdn2.videos.motherlessmedia.com" or urlparts.netloc=="cdn2.thumbs.motherlessmedia.com"):
+  urlservtype = "cdn2";
+ if(urlparts.netloc=="cdn3.avatars.motherlessmedia.com" or urlparts.netloc=="cdn3.images.motherlessmedia.com" or urlparts.netloc=="cdn3.videos.motherlessmedia.com" or urlparts.netloc=="cdn3.thumbs.motherlessmedia.com"):
+  urlservtype = "cdn3";
+ if(urlparts.netloc=="cdn4.avatars.motherlessmedia.com" or urlparts.netloc=="cdn4.images.motherlessmedia.com" or urlparts.netloc=="cdn4.videos.motherlessmedia.com" or urlparts.netloc=="cdn4.thumbs.motherlessmedia.com"):
+  urlservtype = "cdn4";
+ if(urltype==None or domaintype==None or urlservtype==None):
   return False;
- returnval.update({'url': httpurl, 'urltype': urltype, 'domaintype': domaintype, 'urlinfo': {'scheme': urlparts.scheme, 'netloc': urlparts.netloc, 'path': urlparts.path, 'query': urlparts.query, 'fragment': urlparts.fragment}});
+ returnval.update({'url': urlparts.geturl(), 'originalurl': httpurl, 'urltype': urltype, 'urlserv': urlservtype, 'domaintype': domaintype, 'urlinfo': {'scheme': urlparts.scheme, 'netloc': urlparts.netloc, 'path': urlparts.path, 'query': urlparts.query, 'fragment': urlparts.fragment}});
  return returnval;
 
 def fix_motherless_url(httpurl):
- returnval = check_motherless_url(httpurl)['url'];
+ tmpreturnval = check_motherless_url(httpurl);
+ if(tmpreturnval==False):
+  returnval = False
+ else:
+  returnval = tmpreturnval['url'];
  return returnval;
 
 def get_motherless_link_type(httpurl):
  httpurl = fix_motherless_url(httpurl);
+ if(httpurl==False):
+  return False;
  mregex_gettitle = re.escape("http://cdn")+"([1-4])"+re.escape(".");
  httpurl = re.sub(mregex_gettitle, "http://cdn.", httpurl);
  mlessvidqstr = urlparse.parse_qs(urlparse.urlparse(httpurl).query);
