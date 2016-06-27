@@ -1034,6 +1034,8 @@ def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse=
 
 def get_motherless_user_info(username, motherless_serv=None):
  motherless_subdomain = "cdn.";
+ if(motherless_serv==None):
+  motherless_serv = "";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
  returnval = {'username': username};
@@ -1052,6 +1054,8 @@ def get_motherless_user_info(username, motherless_serv=None):
 def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", motherless_serv=None):
  httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
+ if(motherless_serv==None):
+  motherless_serv = "";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
@@ -1174,6 +1178,8 @@ def get_motherless_external_links(httpurl, httpheaders, httpcookie, httplibuse="
 def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1], motherless_serv=None):
  httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
+ if(motherless_serv==None):
+  motherless_serv = "";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
@@ -1314,6 +1320,8 @@ def get_motherless_random_links_alt(httpheaders, httpcookie, httplibuse="urllib"
 def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1], motherless_serv=None):
  httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
+ if(motherless_serv==None):
+  motherless_serv = "";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
@@ -1363,6 +1371,8 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
 def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1], motherless_serv=None):
  httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
+ if(motherless_serv==None):
+  motherless_serv = "";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
@@ -1410,6 +1420,8 @@ def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="ur
 def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="urllib", getposts=[0, -1], motherless_serv=None):
  httpurl = fix_motherless_url(httpurl);
  motherless_subdomain = "cdn.";
+ if(motherless_serv==None):
+  motherless_serv = "";
  if(motherless_serv<5 or motherless_serv>0):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
