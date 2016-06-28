@@ -220,7 +220,7 @@ class GenerateIndexPage(object):
     getpage=1;
    except ValueError:
     getpage=1;
-   getpyurlinfo=pymotherless.get_motherless_galleries_links(getpymotherless, geturls_headers, geturls_cj, page=getpage);
+   getpyurlinfo = pymotherless.get_motherless_galleries_links(getpymotherless, geturls_headers, geturls_cj, page=getpage);
    counti = 0;
    maxi = getpyurlinfo['numoflinks'];
    while(counti<maxi):
@@ -241,7 +241,7 @@ class GenerateIndexPage(object):
     getpage=1;
    except ValueError:
     getpage=1;
-   getpyurlinfo=pymotherless.get_motherless_groups(getpymotherless, geturls_headers, geturls_cj, page=getpage);
+   getpyurlinfo = pymotherless.get_motherless_groups(getpymotherless, geturls_headers, geturls_cj, page=getpage);
    counti = 0;
    maxi = getpyurlinfo['numoflinks'];
    while(counti<maxi):
@@ -262,7 +262,7 @@ class GenerateIndexPage(object):
     getpage=1;
    except ValueError:
     getpage=1;
-   getpyurlinfo=pymotherless.get_motherless_search_members(getpymotherless, geturls_headers, geturls_cj, page=getpage);
+   getpyurlinfo = pymotherless.get_motherless_search_members(getpymotherless, geturls_headers, geturls_cj, page=getpage);
    counti = 0;
    maxi = getpyurlinfo['numoflinks'];
    while(counti<maxi):
@@ -279,9 +279,16 @@ class GenerateIndexPage(object):
    IndexHTMLCode = "";
    getpyurlinfo = pymotherless.get_motherless_links(getpymotherless, geturls_headers, geturls_cj);
    if(getpyurlinfo['type']=="images"):
-    IndexHTMLCode = "<img src=\""+getpyurlinfo['url']+"\" alt=\""+getpyurlinfo['title']+"\" title=\""+getpyurlinfo['title']+"\" />";
+    IndexHTMLCode = "<img src=\""+getpyurlinfo['url']+"\" alt=\""+getpyurlinfo['title']+"\" title=\""+getpyurlinfo['title']+"\" style=\"width: "+str(getpyurlinfo['width'])+"px; height: "+str(getpyurlinfo['height'])+"px;\" />";
    if(getpyurlinfo['type']=="videos"):
     IndexHTMLCode = "<video width=\"632\" height=\"432\" controls><source src=\""+getpyurlinfo['url']+"\" type=\"video/mp4\">Your browser does not support the video tag.</video>";
+   IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n";
+   getpyurlcomet = pymotherless.get_motherless_links_comments(getpymotherless, geturls_headers, geturls_cj);
+   counti = 0;
+   maxi = getpyurlcomet['numofallposts'];
+   while(counti<maxi):
+    IndexHTMLCode = IndexHTMLCode+"<fieldset><legend>"+getpyurlcomet[counti]['username']+"</legend><img src=\""+getpyurlcomet[counti]['avatarurl']+"\" alt=\""+getpyurlcomet[counti]['username']+"\" title=\""+getpyurlcomet[counti]['username']+"\" /><br />"+getpyurlcomet[counti]['post']+"</fieldset>";
+    counti = counti + 1;
   return IndexHTMLCode;
  default.exposed = True;
 

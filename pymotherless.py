@@ -1119,7 +1119,9 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", 
  returnval = False;
  mlessurltype = get_motherless_link_type(mlesslinkone[0]);
  if(mlesslinkonetype[0][1]=="images"):
-  returnval = {'type': mlesslinkonetype[0][1], 'urltype': mlessurltype, 'url': mlesslinkone[0], 'orginurl': httpurl, 'orginurltype': get_motherless_link_type(httpurl), 'thumbnail': mlesslinktwo[0].replace("images", "thumbs"), 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'userinfo': get_motherless_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlessviews[0][1].replace(',', '')), 'numberoffavorites': int(mlessfavorited[0][1].replace(',', ''))};
+  regex_getimgsize = re.escape("style=\"width: ")+"([0-9]+)"+re.escape("px; height: ")+"([0-9]+)"+re.escape("px;\"");
+  mlessgetimgsize = re.findall(regex_getimgsize, mrtext);
+  returnval = {'type': mlesslinkonetype[0][1], 'urltype': mlessurltype, 'url': mlesslinkone[0], 'height': int(mlessgetimgsize[0][1]), 'width': int(mlessgetimgsize[0][0]), 'orginurl': httpurl, 'orginurltype': get_motherless_link_type(httpurl), 'thumbnail': mlesslinktwo[0].replace("images", "thumbs"), 'thumbnailalt': thumbnailalt+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbfilenameext, 'thumbfilename': thumbfilename, 'thumbextension': thumbfileextension, 'thumbnailaltfullfilename': thumbnailaltpart, 'thumbnailaltfilename': thumbnailaltfilename, 'thumbnailaltextension': thumbnailaltfileextension, 'userinfo': get_motherless_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlessviews[0][1].replace(',', '')), 'numberoffavorites': int(mlessfavorited[0][1].replace(',', ''))};
  if(mlesslinkonetype[0][1]=="videos"):
   returnval = {'type': mlesslinkonetype[0][1], 'url': mlesslinkone[0], 'orginurl': httpurl, 'orginurltype': get_motherless_link_type(httpurl), 'thumbnail': thumbnailalt+"?from_helper", 'thumbnailalt': mlesslinktwo[0].replace("images", "thumbs"), 'strip': stripimg+"?from_helper", 'title': mlesstitle[0], 'fullfilename': filenameext, 'filename': filename, 'extension': fileextension, 'thumbfullfilename': thumbnailaltpart, 'thumbfilename': thumbnailaltfilename, 'thumbextension': thumbnailaltfileextension, 'thumbnailaltfullfilename': thumbfilenameext, 'thumbnailaltfilename': thumbfilename, 'thumbnailaltextension': thumbfileextension, 'stripfullfilename': stripimgfilenameext, 'stripfilename': stripimgfilename, 'stripextension': stripimgfileextension, 'userinfo': get_motherless_user_info(mlessuname), 'username': mlessuname, 'avatarurl': mlessavatar, 'avatarfullfilename': avatarfilenameext, 'avatarfilename': avatarfilename, 'avatarextension': avatarfileextension, 'numberofviews': int(mlessviews[0][1].replace(',', '')), 'numberoffavorites': int(mlessfavorited[0][1].replace(',', ''))};
  return returnval;
@@ -1369,6 +1371,9 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  mlesslinkone = re.findall(mregex_geturlone, mrtext_tmp);
  mregex_geturlname = re.escape("<a href=\"")+'?\'?([^"\'>]*)'+re.escape("\" class=\"post-username special-member op-member\" title=\"op\" rel=\"")+'?\'?([^"\'>]*)'+re.escape("\">");
  mlessurlname = re.findall(mregex_geturlname, mrtext);
+ mregex_getdatasrc = re.escape("data-src=\"")+'?\'?([^"\'>]*)'+re.escape("\"");
+ mlessdatasrc = re.findall(mregex_getdatasrc, mrtext_tmp);
+ print(mlessdatasrc);
  mlessavaturl = "http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+mlessurlname[0][1]+"-avatar.jpg";
  avatarfilenameext = os.path.basename(urlparse.urljoin(mlessavaturl, urlparse.urlparse(mlessavaturl).path));
  avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
@@ -1397,7 +1402,8 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  returnval.update({'avatarextension': avatarfileextension});
  while(mli<mlil):
   mlessurltype = get_motherless_link_type("http://motherless.com"+mlesslinkone[mli]);
-  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com"+mlesslinkone[mli]} });
+  mlessdlurltype = get_motherless_link_type(mlessdatasrc[mli]);
+  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com"+mlesslinkone[mli], 'downloadurl': mlessdatasrc[mli], 'downloadurltype': mlessdlurltype} });
   mli = mli + 1;
  return returnval;
 
