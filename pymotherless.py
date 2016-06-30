@@ -1349,7 +1349,7 @@ def get_motherless_random_links_alt(httpheaders, httpcookie, httplibuse="urllib"
    mli = mli + 1;
  return returnval;
 
-def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", getlinks=[0, -1], motherless_serv=None):
+def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", geturlinfo=False, getlinks=[0, -1], motherless_serv=None):
  httpurl = fix_motherless_url(httpurl);
  if(get_motherless_link_type(httpurl)!="board"):
   returnval = False;
@@ -1403,7 +1403,10 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  while(mli<mlil):
   mlessurltype = get_motherless_link_type("http://motherless.com"+mlesslinkone[mli]);
   mlessdlurltype = get_motherless_link_type(mlessdatasrc[mli]);
-  returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com"+mlesslinkone[mli], 'downloadurl': mlessdatasrc[mli], 'downloadurltype': mlessdlurltype} });
+  if(geturlinfo==False):
+   returnval.update({mli: {'urltype': mlessurltype, 'url': "http://motherless.com"+mlesslinkone[mli], 'downloadurl': mlessdatasrc[mli], 'downloadurltype': mlessdlurltype} });
+  if(geturlinfo==True):
+   returnval.update({mli: {'urltype': mlessurltype, 'urlinfo': get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse, motherless_serv), 'url': "http://motherless.com"+mlesslinkone[mli], 'downloadurl': mlessdatasrc[mli], 'downloadurltype': mlessdlurltype} });
   mli = mli + 1;
  return returnval;
 
@@ -1738,13 +1741,13 @@ def get_motherless_sample_links(httpheaders, httpcookie, httplibuse="urllib", nu
   returnval = {'numoflinks': numoflinks, 'orginurl': "http://motherless.com/", 'orginurltype': get_motherless_link_type("http://motherless.com/"), 'videos': {'recent': get_motherless_galleries_links("http://motherless.com/videos/recent", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/videos/favorited", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/videos/viewed", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/videos/commented", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/videos/popular", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/videos", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]) }, 'images': {'recent': get_motherless_galleries_links("http://motherless.com/images/recent", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/images/favorited", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/images/viewed", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/images/commented", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'popular': get_motherless_galleries_links("http://motherless.com/images/popular", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'live': get_motherless_galleries_links("http://motherless.com/live/images", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]) }, 'galleries': {'updated': get_motherless_galleries_links("http://motherless.com/galleries/updated", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'created': get_motherless_galleries_links("http://motherless.com/galleries/created", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'viewed': get_motherless_galleries_links("http://motherless.com/galleries/viewed", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'favorited': get_motherless_galleries_links("http://motherless.com/galleries/favorited", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]), 'commented': get_motherless_galleries_links("http://motherless.com/galleries/commented", httpheaders, httpcookie, httplibuse, 1, [0, numoflinks]) } };
  return returnval;
 
-def get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1]):
+def get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", page=1, getlinks=[0, -1], motherless_serv=None):
  httpurl = fix_motherless_url(httpurl);
  returnval = False;
  if(get_motherless_link_type(httpurl)=="link"):
-  returnval = get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse);
+  returnval = get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse, motherless_serv);
  if(get_motherless_link_type(httpurl)=="gallery"):
-  returnval = get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse, page);
+  returnval = get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse, page, getlinks, motherless_serv);
  if(get_motherless_link_type(httpurl)=="sample-videos"):
   returnval = get_motherless_sample_links(httpheaders, httpcookie, httplibuse, 10, "video");
  if(get_motherless_link_type(httpurl)=="sample-images"):
@@ -1754,13 +1757,13 @@ def get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse="ur
  if(get_motherless_link_type(httpurl)=="sample" or get_motherless_link_type(httpurl)=="sample-all"):
   returnval = get_motherless_sample_links(httpheaders, httpcookie, httplibuse, 10, "all");
  if(get_motherless_link_type(httpurl)=="board"):
-  returnval = get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse);
+  returnval = get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse, False, getlinks, motherless_serv);
  if(get_motherless_link_type(httpurl)=="member"):
-  returnval = get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse, page);
+  returnval = get_motherless_search_members(httpurl, httpheaders, httpcookie, httplibuse, page, getlinks);
  if(get_motherless_link_type(httpurl)=="girls"):
-  returnval = get_motherless_girls(httpheaders, httpcookie, httplibuse);
+  returnval = get_motherless_girls(httpheaders, httpcookie, httplibuse, getlinks);
  if(get_motherless_link_type(httpurl)=="download"):
-  returnval = httpurl;
+  returnval = get_motherless_links_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  return returnval;
 
 def view_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", viewerpro="mpv", prearg=[], proarg=[]):
@@ -1789,12 +1792,12 @@ def download_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urll
  returnval = download_from_url_to_file(mlessurl['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, buffersize, sleep);
  return returnval;
 
-def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=defbuffersizedub, outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
+def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=defbuffersizedub, outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1], motherless_serv=None):
  global geturls_download_sleep;
  httpurl = fix_motherless_url(httpurl);
  if(sleep<0):
   sleep = geturls_download_sleep;
- mlessurl = get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse, page);
+ mlessurl = get_motherless_link_by_type(httpurl, httpheaders, httpcookie, httplibuse, page, getlinks, motherless_serv);
  if(mlessurl['urltype']=="download"):
   outputname = mlessurl['fullfilename'];
   outpathname = outpath.rstrip(os.path.sep);
@@ -1809,12 +1812,12 @@ def download_motherless_links_by_type(httpurl, httpheaders, httpcookie, httplibu
   returnval = mlessurl;
  return returnval;
 
-def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=defbuffersizedub, outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1]):
+def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=defbuffersizedub, outfile="-", outpath=os.getcwd(), usetitlename=False, page=1, getlinks=[0, -1], motherless_serv=None):
  global geturls_download_sleep;
  httpurl = fix_motherless_url(httpurl);
  if(sleep<0):
   sleep = geturls_download_sleep;
- mlessgalleries = get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse, page, getlinks);
+ mlessgalleries = get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse, page, getlinks, motherless_serv);
  mli = 0;
  mlil = mlessgalleries['numoflinks'];
  returnval = {'pages': mlessgalleries['pages']};
@@ -1838,12 +1841,12 @@ def download_motherless_galleries_links(httpurl, httpheaders, httpcookie, httpli
   mli = mli + 1;
  return returnval;
 
-def download_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=defbuffersizedub, outfile="-", outpath=os.getcwd(), usetitlename=False, getlinks=[0, -1]):
+def download_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", sleep=-1, buffersize=defbuffersizedub, outfile="-", outpath=os.getcwd(), usetitlename=False, getlinks=[0, -1], motherless_serv=None):
  global geturls_download_sleep;
  httpurl = fix_motherless_url(httpurl);
  if(sleep<0):
   sleep = geturls_download_sleep;
- mlessgalleries = get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse, getlinks);
+ mlessgalleries = get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse, False, getlinks, motherless_serv);
  mli = 0;
  mlil = mlessgalleries['numoflinks'];
  returnval = {'numoflists': mlessgalleries['numoflinks']};
