@@ -1267,7 +1267,7 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
   stripfilename, stripfileextension = os.path.splitext(stripfilenameext);
   thumbfilenameext = os.path.basename(urlparse.urljoin(mlesslinktwo[mli][0], urlparse.urlparse(mlesslinktwo[mli][0]).path));
   thumbfilename, thumbfileextension = os.path.splitext(thumbfilenameext);
-  mlessurltype = get_motherless_link_type("http://motherless.com/"+mlesslinkone[mli]);
+  mlessurltype = get_motherless_link_type("http://motherless.com"+mlesslinkone[mli]);
   avatarfilenameext = os.path.basename(urlparse.urljoin("http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", urlparse.urlparse("http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg").path));
   avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
   if(mlessmediainfo[mli][3]=="image"):
