@@ -1235,6 +1235,9 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
  mlesscaption = re.findall(mregex_getcaption, mrtext);
  mregex_gethits = re.escape("<div class=\"caption right\">")+"([0-9\,]+)"+re.escape(" Hits</div>");
  mlesshits = re.findall(mregex_gethits, mrtext);
+ if(len(mlesshits)<1):
+  mregex_gethits = re.escape("<div class=\"caption right\">\n        ")+"([0-9\,]+)"+re.escape(" Hits\n    </div>");
+  mlesshits = re.findall(mregex_gethits, mrtext);
  mregex_getuserinfo = re.escape("<a class=\"caption left\" href=\"")+'?\'?([^"\'>]*)'+re.escape("\">");
  mlessuname = re.findall(mregex_getuserinfo, mrtext);
  mregex_getmediainfo = re.escape("data-size=\"")+'?\'?([^"\'>]*)'+re.escape("\" ")+re.escape("data-is-premium=\"")+'?\'?([^"\'>]*)'+re.escape("\" ")+re.escape("data-codename=\"")+'?\'?([^"\'>]*)'+re.escape("\" ")+re.escape("data-mediatype=\"")+'?\'?([^"\'>]*)'+re.escape("\" ")+re.escape("data-gallery-codename=\"")+'?\'?([^"\'>]*)'+re.escape("\" ")+re.escape("data-frames=\"")+'?\'?([^"\'>]*)'+re.escape("\">");
