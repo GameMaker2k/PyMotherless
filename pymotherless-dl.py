@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless-dl.py - Last Update: 8/19/2016 Ver. 0.4.7 RC 2 - Author: cooldude2k $
+    $FileInfo: pymotherless-dl.py - Last Update: 6/16/2016 Ver. 0.4.7 RC 1 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -100,6 +100,7 @@ if(getargs.dump_user_agent==True):
 
 motherless_linktype = pymotherless.get_motherless_link_type(getargs.url);
 motherless_links = [];
+motherless_links_dir = [];
 if(motherless_linktype=="link"):
  motherless_links.append(getargs.url);
 if(motherless_linktype=="gallery"):
@@ -113,6 +114,7 @@ if(motherless_linktype=="gallery"):
    innumcountp = innumcount + 1;
    inmotherless_linktype = pymotherless.get_motherless_link_type(getlinks[innumcount]['url']);
    if(inmotherless_linktype=="link"):
+    motherless_links_dir.append(getargs.url.rsplit('/', 1)[-1]);
     motherless_links.append(getlinks[innumcount]['url']);
    if(inmotherless_linktype=="gallery"):
     ingetlinks = pymotherless.get_motherless_galleries_links(getlinks[innumcount]['url'], getargs_headers, getargs_cj, getargs.use_httplib, page=innumcountp);
@@ -121,6 +123,7 @@ if(motherless_linktype=="gallery"):
     while(ininnumcount < ininnumlinks):
      ininmotherless_linktype = pymotherless.get_motherless_link_type(ingetlinks[ininnumcount]['url']);
      if(ininmotherless_linktype=="link"):
+      motherless_links_dir.append(getlinks[innumcount]['url'].rsplit('/', 1)[-1]);
       motherless_links.append(ingetlinks[ininnumcount]['url']);
      ininnumcount = ininnumcount + 1;
    innumcount = innumcount + 1;
@@ -132,9 +135,10 @@ if(motherless_linktype=="board"):
  while(innumcount < innumlinks):
   inmotherless_linktype = pymotherless.get_motherless_link_type(getlinks[innumcount]['url']);
   if(inmotherless_linktype=="link"):
+   motherless_links_dir.append(getargs.url.rsplit('/', 1)[-1]);
    motherless_links.append(getlinks[innumcount]['url']);
   innumcount = innumcount + 1;
-print(motherless_links);
+
 if(getargs.get_url==True):
  listsize = len(motherless_links);
  listcount = 0;
@@ -193,6 +197,6 @@ if(getargs.get_url==False and getargs.get_pageurl==False and getargs.get_thumbna
   log.info("Downloading URL Number "+str(listcountalt)+" / "+str(listsize)+" "+str(percentage));
   if(motherless_linktype=="link"):
    pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib, buffersize=[getargs.set_buffersize, getargs.set_buffersize], outpath=getargs.output_directory);
-  if(motherless_linktype=="gallery" or motherless_linktype=="board"):
-   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib, buffersize=[getargs.set_buffersize, getargs.set_buffersize], outpath=getargs.output_directory+os.path.sep+getargs.url.rsplit('/', 1)[-1]);
+  if(motherless_linktype=="board" or motherless_linktype=="gallery"):
+   pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib, buffersize=[getargs.set_buffersize, getargs.set_buffersize], outpath=getargs.output_directory+os.path.sep+motherless_links_dir[listcount]);
   listcount = listcount + 1;
