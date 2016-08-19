@@ -13,7 +13,7 @@
     Copyright 2016 Game Maker 2k - http://intdb.sourceforge.net/
     Copyright 2016 Kazuki Przyborowski - https://github.com/KazukiPrzyborowski
 
-    $FileInfo: pymotherless.py - Last Update: 6/16/2016 Ver. 0.4.7 RC 1 - Author: cooldude2k $
+    $FileInfo: pymotherless.py - Last Update: 8/19/2016 Ver. 0.4.7 RC 2 - Author: cooldude2k $
 '''
 
 from __future__ import division, absolute_import, print_function;
@@ -56,8 +56,8 @@ if(sys.version[0]>="3"):
 __program_name__ = "PyMotherless";
 __project__ = __program_name__;
 __project_url__ = "https://github.com/GameMaker2k/PyMotherless";
-__version_info__ = (0, 4, 7, "RC 1", 1);
-__version_date_info__ = (2016, 6, 16, "RC 1", 1);
+__version_info__ = (0, 4, 7, "RC 2", 2);
+__version_date_info__ = (2016, 8, 19, "RC 2", 2);
 __version_date__ = str(__version_date_info__[0])+"."+str(__version_date_info__[1]).zfill(2)+"."+str(__version_date_info__[2]).zfill(2);
 if(__version_info__[4]!=None):
  __version_date_plusrc__ = __version_date__+"-"+str(__version_date_info__[4]);
@@ -1267,7 +1267,7 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
   stripfilename, stripfileextension = os.path.splitext(stripfilenameext);
   thumbfilenameext = os.path.basename(urlparse.urljoin(mlesslinktwo[mli][0], urlparse.urlparse(mlesslinktwo[mli][0]).path));
   thumbfilename, thumbfileextension = os.path.splitext(thumbfilenameext);
-  mlessurltype = get_motherless_link_type("http://motherless.com"+mlesslinkone[mli]);
+  mlessurltype = get_motherless_link_type("http://motherless.com/"+mlesslinkone[mli]);
   avatarfilenameext = os.path.basename(urlparse.urljoin("http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg", urlparse.urlparse("http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+mlessuname[mli]+"-avatar.jpg").path));
   avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
   if(mlessmediainfo[mli][3]=="image"):
