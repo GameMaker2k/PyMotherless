@@ -111,21 +111,24 @@ if(motherless_linktype=="gallery"):
   innumlinks = getlinks['numoflinks'];
   innumcount = 0;
   while(innumcount < innumlinks):
-   innumcountp = innumcount + 1;
    inmotherless_linktype = pymotherless.get_motherless_link_type(getlinks[innumcount]['url']);
    if(inmotherless_linktype=="link"):
     motherless_links_dir.append(getargs.url.rsplit('/', 1)[-1]);
     motherless_links.append(getlinks[innumcount]['url']);
    if(inmotherless_linktype=="gallery"):
-    ingetlinks = pymotherless.get_motherless_galleries_links(getlinks[innumcount]['url'], getargs_headers, getargs_cj, getargs.use_httplib, page=innumcountp);
-    ininnumlinks = ingetlinks['numoflinks'];
-    ininnumcount = 0;
-    while(ininnumcount < ininnumlinks):
-     ininmotherless_linktype = pymotherless.get_motherless_link_type(ingetlinks[ininnumcount]['url']);
-     if(ininmotherless_linktype=="link"):
-      motherless_links_dir.append(getlinks[innumcount]['url'].rsplit('/', 1)[-1]);
-      motherless_links.append(ingetlinks[ininnumcount]['url']);
-     ininnumcount = ininnumcount + 1;
+    innumpages = pymotherless.get_motherless_number_of_pages(getlinks[innumcount]['url'], getargs_headers, getargs_cj, getargs.use_httplib);
+    innumcountpages = 1;
+    while(innumcountpages <= innumpages):
+     ingetlinks = pymotherless.get_motherless_galleries_links(getlinks[innumcount]['url'], getargs_headers, getargs_cj, getargs.use_httplib, page=innumcountpages);
+     ininnumlinks = ingetlinks['numoflinks'];
+     ininnumcount = 0;
+     while(ininnumcount < ininnumlinks):
+      ininmotherless_linktype = pymotherless.get_motherless_link_type(ingetlinks[ininnumcount]['url']);
+      if(ininmotherless_linktype=="link"):
+       motherless_links_dir.append(getlinks[innumcount]['url'].rsplit('/', 1)[-1]);
+       motherless_links.append(ingetlinks[ininnumcount]['url']);
+      ininnumcount = ininnumcount + 1;
+     innumcountpages = innumcountpages + 1;
    innumcount = innumcount + 1;
   numcount = numcount + 1;
 if(motherless_linktype=="board"):
@@ -138,7 +141,7 @@ if(motherless_linktype=="board"):
    motherless_links_dir.append(getargs.url.rsplit('/', 1)[-1]);
    motherless_links.append(getlinks[innumcount]['url']);
   innumcount = innumcount + 1;
-
+exit();
 if(getargs.get_url==True):
  listsize = len(motherless_links);
  listcount = 0;
