@@ -141,7 +141,7 @@ if(motherless_linktype=="board"):
    motherless_links_dir.append(getargs.url.rsplit('/', 1)[-1]);
    motherless_links.append(getlinks[innumcount]['url']);
   innumcount = innumcount + 1;
-exit();
+
 if(getargs.get_url==True):
  listsize = len(motherless_links);
  listcount = 0;
