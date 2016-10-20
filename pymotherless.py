@@ -1042,8 +1042,10 @@ def get_motherless_user_info(username, motherless_serv=None):
  motherless_subdomain = "cdn.";
  if(motherless_serv==None):
   motherless_serv = "";
- if(motherless_serv<5 or motherless_serv>0):
+ if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
+ if(motherless_serv==""):
+  motherless_subdomain = "cdn.";
  returnval = {'username': username};
  avatarfilenameext = os.path.basename(urlparse.urljoin("http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+username+"-avatar.jpg", urlparse.urlparse("http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+username+"-avatar.jpg").path));
  avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
@@ -1065,8 +1067,10 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", 
  motherless_subdomain = "cdn.";
  if(motherless_serv==None):
   motherless_serv = "";
- if(motherless_serv<5 or motherless_serv>0):
+ if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
+ if(motherless_serv==""):
+  motherless_subdomain = "cdn.";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1204,8 +1208,10 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
  motherless_subdomain = "cdn.";
  if(motherless_serv==None):
   motherless_serv = "";
- if(motherless_serv<5 or motherless_serv>0):
+ if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
+ if(motherless_serv==""):
+  motherless_subdomain = "cdn.";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1360,8 +1366,10 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  motherless_subdomain = "cdn.";
  if(motherless_serv==None):
   motherless_serv = "";
- if(motherless_serv<5 or motherless_serv>0):
+ if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
+ if(motherless_serv==""):
+  motherless_subdomain = "cdn.";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1421,8 +1429,10 @@ def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="ur
  motherless_subdomain = "cdn.";
  if(motherless_serv==None):
   motherless_serv = "";
- if(motherless_serv<5 or motherless_serv>0):
+ if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
+ if(motherless_serv==""):
+  motherless_subdomain = "cdn.";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1473,8 +1483,10 @@ def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="
  motherless_subdomain = "cdn.";
  if(motherless_serv==None):
   motherless_serv = "";
- if(motherless_serv<5 or motherless_serv>0):
+ if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
   motherless_subdomain = "cdn"+str(motherless_serv)+".";
+ if(motherless_serv==""):
+  motherless_subdomain = "cdn.";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1869,4 +1881,3 @@ def download_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibus
   returnval.update({mli: {'download': download_from_url_to_file(mlesslink['url'], httpheaders, httpcookie, httplibuse, outputname, outpath, buffersize, sleep), 'linkinfo': mlesslink, 'outputfile': outputname} });
   mli = mli + 1;
  return returnval;
-
