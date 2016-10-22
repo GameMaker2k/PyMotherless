@@ -418,10 +418,12 @@ def download_from_url_file_with_urllib(httpurl, httpheaders, httpcookie, buffers
  myhash = hashlib.new("sha1");
  if(sys.version[0]=="2"):
   myhash.update(httpurl);
+  myhash.update(str(buffersize));
+  myhash.update(str(exec_time_start));
  if(sys.version[0]>="3"):
   myhash.update(httpurl.encode('utf-8'));
- myhash.update(str(buffersize));
- myhash.update(str(exec_time_start));
+  myhash.update(str(buffersize).encode('utf-8'));
+  myhash.update(str(exec_time_start).encode('utf-8'));
  newtmpfilesuffix = tmpfilesuffix + str(myhash.hexdigest());
  if(sleep<0):
   sleep = geturls_download_sleep;
@@ -580,10 +582,12 @@ if(haverequests==True):
   myhash = hashlib.new("sha1");
   if(sys.version[0]=="2"):
    myhash.update(httpurl);
+   myhash.update(str(buffersize));
+   myhash.update(str(exec_time_start));
   if(sys.version[0]>="3"):
    myhash.update(httpurl.encode('utf-8'));
-  myhash.update(str(buffersize));
-  myhash.update(str(exec_time_start));
+   myhash.update(str(buffersize).encode('utf-8'));
+   myhash.update(str(exec_time_start).encode('utf-8'));
   newtmpfilesuffix = tmpfilesuffix + str(myhash.hexdigest());
   if(sleep<0):
    sleep = geturls_download_sleep;
@@ -753,10 +757,12 @@ if(havemechanize==True):
   myhash = hashlib.new("sha1");
   if(sys.version[0]=="2"):
    myhash.update(httpurl);
+   myhash.update(str(buffersize));
+   myhash.update(str(exec_time_start));
   if(sys.version[0]>="3"):
    myhash.update(httpurl.encode('utf-8'));
-  myhash.update(str(buffersize));
-  myhash.update(str(exec_time_start));
+   myhash.update(str(buffersize).encode('utf-8'));
+   myhash.update(str(exec_time_start).encode('utf-8'));
   newtmpfilesuffix = tmpfilesuffix + str(myhash.hexdigest());
   if(sleep<0):
    sleep = geturls_download_sleep;
