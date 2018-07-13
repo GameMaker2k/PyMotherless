@@ -66,7 +66,7 @@ parser.add_argument("url", help="motherless url");
 parser.add_argument("-v", "--version", action="version", version=__program_name__+" "+__version__);
 parser.add_argument("-U", "--update", action="store_true", help="update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)");
 parser.add_argument("-d", "--dump-user-agent", action="store_true", help="display the current browser identification");
-parser.add_argument("-u", "--user-agent", default="Mozilla/5.0 (Windows NT 6.1; rv:47.0) Gecko/20100101 Firefox/47.0", help="specify a custom user agent");
+parser.add_argument("-u", "--user-agent", default=geturls_ua_firefox_windows7, help="specify a custom user agent");
 parser.add_argument("-r", "--referer", default="http://motherless.com/", help="specify a custom referer, use if the video access");
 parser.add_argument("-g", "--get-url", action="store_true", help="simulate, quiet but print URL");
 parser.add_argument("-p", "--get-pageurl", action="store_true", help="simulate, quiet but print URL");
