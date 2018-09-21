@@ -1092,7 +1092,7 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", 
   mrtext = mrtext.decode('ascii', 'replace');
  mregex_gettitle = re.escape("http://cdn")+"([1-4])"+re.escape(".");
  mrtext = re.sub(mregex_gettitle, "http://cdn.", mrtext);
- mregex_gettitle = re.escape("<title>")+"(.*)"+re.escape(" - MOTHERLESS.COM</title>");
+ mregex_gettitle = re.escape("<h1 class=\"ellipsis gold\" id=\"view-upload-title\">\n                        ")+"(.*)"+re.escape("                    </h1>");
  mlesstitle = re.findall(mregex_gettitle, mrtext);
  mregex_geturlone = re.escape("__fileurl = '")+'?\'?([^"\'>]*)'+re.escape("';");
  mlesslinkone = re.findall(mregex_geturlone, mrtext);
