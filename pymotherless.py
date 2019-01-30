@@ -911,28 +911,30 @@ def check_motherless_url(httpurl):
   urltype = "motherless-link";
   domaintype = "motherless";
   urlservtype = "www";
- if(urlparts.netloc=="cdn.avatars.motherlessmedia.com" or urlparts.netloc=="cdn1.avatars.motherlessmedia.com" or urlparts.netloc=="cdn2.avatars.motherlessmedia.com" or urlparts.netloc=="cdn3.avatars.motherlessmedia.com" or urlparts.netloc=="cdn4.avatars.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn-avatars.motherlessmedia.com" or urlparts.netloc=="cdn1-avatars.motherlessmedia.com" or urlparts.netloc=="cdn2-avatars.motherlessmedia.com" or urlparts.netloc=="cdn3-avatars.motherlessmedia.com" or urlparts.netloc=="cdn4-avatars.motherlessmedia.com" or urlparts.netloc=="cdn5-avatars.motherlessmedia.com"):
   urltype = "motherless-avatar";
   domaintype = "motherlessmedia";
- if(urlparts.netloc=="cdn.images.motherlessmedia.com" or urlparts.netloc=="cdn1.images.motherlessmedia.com" or urlparts.netloc=="cdn2.images.motherlessmedia.com" or urlparts.netloc=="cdn3.images.motherlessmedia.com" or urlparts.netloc=="cdn4.images.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn-images.motherlessmedia.com" or urlparts.netloc=="cdn1-images.motherlessmedia.com" or urlparts.netloc=="cdn2-images.motherlessmedia.com" or urlparts.netloc=="cdn3-images.motherlessmedia.com" or urlparts.netloc=="cdn4-images.motherlessmedia.com" or urlparts.netloc=="cdn5-images.motherlessmedia.com"):
   urltype = "motherless-image";
   domaintype = "motherlessmedia";
- if(urlparts.netloc=="cdn.videos.motherlessmedia.com" or urlparts.netloc=="cdn1.videos.motherlessmedia.com" or urlparts.netloc=="cdn2.videos.motherlessmedia.com" or urlparts.netloc=="cdn3.videos.motherlessmedia.com" or urlparts.netloc=="cdn4.videos.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn-videos.motherlessmedia.com" or urlparts.netloc=="cdn1-videos.motherlessmedia.com" or urlparts.netloc=="cdn2-videos.motherlessmedia.com" or urlparts.netloc=="cdn3-videos.motherlessmedia.com" or urlparts.netloc=="cdn4-videos.motherlessmedia.com" or urlparts.netloc=="cdn5-videos.motherlessmedia.com"):
   urltype = "motherless-video";
   domaintype = "motherlessmedia";
- if(urlparts.netloc=="cdn.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn1.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn2.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn3.thumbs.motherlessmedia.com" or urlparts.netloc=="cdn4.thumbs.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn-thumbs.motherlessmedia.com" or urlparts.netloc=="cdn1-thumbs.motherlessmedia.com" or urlparts.netloc=="cdn2-thumbs.motherlessmedia.com" or urlparts.netloc=="cdn3-thumbs.motherlessmedia.com" or urlparts.netloc=="cdn4-thumbs.motherlessmedia.com" or urlparts.netloc=="cdn5-thumbs.motherlessmedia.com"):
   urltype = "motherless-thumbnail";
   domaintype = "motherlessmedia";
- if(urlparts.netloc=="cdn.avatars.motherlessmedia.com" or urlparts.netloc=="cdn.images.motherlessmedia.com" or urlparts.netloc=="cdn.videos.motherlessmedia.com" or urlparts.netloc=="cdn.thumbs.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn-avatars.motherlessmedia.com" or urlparts.netloc=="cdn-images.motherlessmedia.com" or urlparts.netloc=="cdn-videos.motherlessmedia.com" or urlparts.netloc=="cdn-thumbs.motherlessmedia.com"):
   urlservtype = "cdn";
- if(urlparts.netloc=="cdn1.avatars.motherlessmedia.com" or urlparts.netloc=="cdn1.images.motherlessmedia.com" or urlparts.netloc=="cdn1.videos.motherlessmedia.com" or urlparts.netloc=="cdn1.thumbs.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn1-avatars.motherlessmedia.com" or urlparts.netloc=="cdn1-images.motherlessmedia.com" or urlparts.netloc=="cdn1-videos.motherlessmedia.com" or urlparts.netloc=="cdn1-thumbs.motherlessmedia.com"):
   urlservtype = "cdn1";
- if(urlparts.netloc=="cdn2.avatars.motherlessmedia.com" or urlparts.netloc=="cdn2.images.motherlessmedia.com" or urlparts.netloc=="cdn2.videos.motherlessmedia.com" or urlparts.netloc=="cdn2.thumbs.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn2-avatars.motherlessmedia.com" or urlparts.netloc=="cdn2-images.motherlessmedia.com" or urlparts.netloc=="cdn2-videos.motherlessmedia.com" or urlparts.netloc=="cdn2-thumbs.motherlessmedia.com"):
   urlservtype = "cdn2";
- if(urlparts.netloc=="cdn3.avatars.motherlessmedia.com" or urlparts.netloc=="cdn3.images.motherlessmedia.com" or urlparts.netloc=="cdn3.videos.motherlessmedia.com" or urlparts.netloc=="cdn3.thumbs.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn3-avatars.motherlessmedia.com" or urlparts.netloc=="cdn3-images.motherlessmedia.com" or urlparts.netloc=="cdn3-videos.motherlessmedia.com" or urlparts.netloc=="cdn3-thumbs.motherlessmedia.com"):
   urlservtype = "cdn3";
- if(urlparts.netloc=="cdn4.avatars.motherlessmedia.com" or urlparts.netloc=="cdn4.images.motherlessmedia.com" or urlparts.netloc=="cdn4.videos.motherlessmedia.com" or urlparts.netloc=="cdn4.thumbs.motherlessmedia.com"):
+ if(urlparts.netloc=="cdn4-avatars.motherlessmedia.com" or urlparts.netloc=="cdn4-images.motherlessmedia.com" or urlparts.netloc=="cdn4-videos.motherlessmedia.com" or urlparts.netloc=="cdn4-thumbs.motherlessmedia.com"):
   urlservtype = "cdn4";
+ if(urlparts.netloc=="cdn5-avatars.motherlessmedia.com" or urlparts.netloc=="cdn5-images.motherlessmedia.com" or urlparts.netloc=="cdn5-videos.motherlessmedia.com" or urlparts.netloc=="cdn5-thumbs.motherlessmedia.com"):
+  urlservtype = "cdn5";
  if(urltype==None or domaintype==None or urlservtype==None):
   return False;
  returnval.update({'url': urlparts.geturl(), 'originalurl': httpurl, 'urltype': urltype, 'urlserv': urlservtype, 'domaintype': domaintype, 'urlinfo': {'scheme': urlparts.scheme, 'netloc': urlparts.netloc, 'path': urlparts.path, 'query': urlparts.query, 'fragment': urlparts.fragment}});
@@ -950,8 +952,8 @@ def get_motherless_link_type(httpurl):
  httpurl = fix_motherless_url(httpurl);
  if(httpurl==False):
   return False;
- mregex_gettitle = re.escape("http://cdn")+"([1-4])"+re.escape(".");
- httpurl = re.sub(mregex_gettitle, "http://cdn.", httpurl);
+ mregex_gettitle = re.escape("http://cdn")+"([1-5])"+re.escape("-");
+ httpurl = re.sub(mregex_gettitle, "http://cdn-", httpurl);
  mlessvidqstr = urlparse.parse_qs(urlparse.urlparse(httpurl).query);
  mlessvidid_parts = urlparse.urlparse(httpurl);
  mlessvidid = mlessvidid_parts.path.split("/");
@@ -1020,15 +1022,17 @@ def get_motherless_link_type(httpurl):
   returnval = "referers";
  if(mlessvidid[1]=="about" and len(mlessvidid)==2):
   returnval = "team";
- if(mlessvidid_parts.netloc=="cdn.images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn.videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn.thumbs.motherlessmedia.com"):
+ if(mlessvidid_parts.netloc=="cdn-images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn-videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn-thumbs.motherlessmedia.com"):
   returnval = "download";
- if(mlessvidid_parts.netloc=="cdn1.images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn1.videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn1.thumbs.motherlessmedia.com"):
+ if(mlessvidid_parts.netloc=="cdn1-images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn1-videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn1-thumbs.motherlessmedia.com"):
   returnval = "download";
- if(mlessvidid_parts.netloc=="cdn2.images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn2.videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn2.thumbs.motherlessmedia.com"):
+ if(mlessvidid_parts.netloc=="cdn2-images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn2-videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn2-thumbs.motherlessmedia.com"):
   returnval = "download";
- if(mlessvidid_parts.netloc=="cdn3.images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn3.videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn3.thumbs.motherlessmedia.com"):
+ if(mlessvidid_parts.netloc=="cdn3-images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn3-videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn3-thumbs.motherlessmedia.com"):
   returnval = "download";
- if(mlessvidid_parts.netloc=="cdn4.images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn4.videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn4.thumbs.motherlessmedia.com"):
+ if(mlessvidid_parts.netloc=="cdn4-images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn4-videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn4-thumbs.motherlessmedia.com"):
+  returnval = "download";
+ if(mlessvidid_parts.netloc=="cdn5-images.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn5-videos.motherlessmedia.com" or mlessvidid_parts.netloc=="cdn5-thumbs.motherlessmedia.com"):
   returnval = "download";
  if(returnval==False and len(mlessvidid)==2 and re.match("^([0-9A-F]+)$", mlessvidid[1])):
   returnval = "link";
@@ -1054,13 +1058,13 @@ def get_motherless_number_of_pages(httpurl, httpheaders, httpcookie, httplibuse=
  return returnval;
 
 def get_motherless_user_info(username, motherless_serv=None):
- motherless_subdomain = "cdn.";
+ motherless_subdomain = "cdn-";
  if(motherless_serv==None):
   motherless_serv = "";
  if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
-  motherless_subdomain = "cdn"+str(motherless_serv)+".";
+  motherless_subdomain = "cdn"+str(motherless_serv)+"-";
  if(motherless_serv==""):
-  motherless_subdomain = "cdn.";
+  motherless_subdomain = "cdn-";
  returnval = {'username': username};
  avatarfilenameext = os.path.basename(urlparse.urljoin("http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+username+"-avatar.jpg", urlparse.urlparse("http://"+motherless_subdomain+"avatars.motherlessmedia.com/thumbs/"+username+"-avatar.jpg").path));
  avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext);
@@ -1079,28 +1083,28 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", 
  if(get_motherless_link_type(httpurl)!="link"):
   returnval = False;
   return returnval;
- motherless_subdomain = "cdn.";
+ motherless_subdomain = "cdn-";
  if(motherless_serv==None):
   motherless_serv = "";
  if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
-  motherless_subdomain = "cdn"+str(motherless_serv)+".";
+  motherless_subdomain = "cdn"+str(motherless_serv)+"-";
  if(motherless_serv==""):
-  motherless_subdomain = "cdn.";
+  motherless_subdomain = "cdn-";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
   mrtext = mrtext.decode('ascii', 'replace');
- mregex_gettitle = re.escape("http://cdn")+"([1-4])"+re.escape(".");
- mrtext = re.sub(mregex_gettitle, "http://cdn.", mrtext);
+ mregex_gettitle = re.escape("http://cdn")+"([1-5])"+re.escape("-");
+ mrtext = re.sub(mregex_gettitle, "http://cdn-", mrtext);
  mregex_gettitle = re.escape("<h1 class=\"ellipsis gold\" id=\"view-upload-title\">\n                        ")+"(.*)"+re.escape("                    </h1>");
  mlesstitle = re.findall(mregex_gettitle, mrtext);
  mregex_geturlone = re.escape("__fileurl = '")+'?\'?([^"\'>]*)'+re.escape("';");
  mlesslinkone = re.findall(mregex_geturlone, mrtext);
- mregex_geturlonetype = re.escape("https://")+"cdn([0-9]+)\-"+"(images|videos)"+re.escape(".motherlessmedia.com/")+"(images|videos)"+re.escape("/")+"([\w\/\?\&\=\.\-]+)";
+ mregex_geturlonetype = re.escape("https://")+"cdn([1-5]+)\-"+"(images|videos)"+re.escape(".motherlessmedia.com/")+"(images|videos)"+re.escape("/")+"([\w\/\?\&\=\.\-]+)";
  mlesslinkonetype = re.findall(mregex_geturlonetype, mrtext);
  mregex_geturltwo = re.escape("<meta property=\"og:image\" content=\"")+'?\'?([^"\'>]*)'+re.escape("\">");
  mlesslinktwo = re.findall(mregex_geturltwo, mrtext);
- mregex_geturltwotype = re.escape("https://")+"cdn([0-9]+)\-"+"(images|thumbs)"+re.escape(".motherlessmedia.com/")+"(images|thumbs)"+re.escape("/")+"([\w\/\?\&\=\.\-]+)";
+ mregex_geturltwotype = re.escape("https://")+"cdn([1-5]+)\-"+"(images|thumbs)"+re.escape(".motherlessmedia.com/")+"(images|thumbs)"+re.escape("/")+"([\w\/\?\&\=\.\-]+)";
  mlesslinktwotype = re.findall(mregex_geturltwotype, mrtext);
  filenameext = os.path.basename(urlparse.urljoin(mlesslinkone[0], urlparse.urlparse(mlesslinkone[0]).path));
  filename, fileextension = os.path.splitext(filenameext);
@@ -1123,16 +1127,16 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", 
  mlessfavorited = re.findall(mregex_getfavorited, mrtext);
  if(mlesslinkonetype[0][2]=="images"):
   thumbnailaltpart = thumbfilename+"-zoom"+thumbfileextension;
-  thumbnailalt = "http://cdn"+mlesslinktwotype[0][0]+".thumbs.motherlessmedia.com/thumbs/"+thumbnailaltpart;
+  thumbnailalt = "http://cdn"+mlesslinktwotype[0][0]+"-thumbs.motherlessmedia.com/thumbs/"+thumbnailaltpart;
   thumbnailaltfilenameext = os.path.basename(urlparse.urljoin(thumbnailalt, urlparse.urlparse(thumbnailalt).path));
   thumbnailaltfilename, thumbnailaltfileextension = os.path.splitext(thumbnailaltfilenameext);
  if(mlesslinkonetype[0][2]=="videos"):
   thumbnailaltpart = thumbfilename+"-small"+thumbfileextension;
-  thumbnailalt = "http://cdn"+mlesslinktwotype[0][0]+".thumbs.motherlessmedia.com/thumbs/"+thumbnailaltpart;
+  thumbnailalt = "http://cdn"+mlesslinktwotype[0][0]+"-thumbs.motherlessmedia.com/thumbs/"+thumbnailaltpart;
   thumbnailaltfilenameext = os.path.basename(urlparse.urljoin(thumbnailalt, urlparse.urlparse(thumbnailalt).path));
   thumbnailaltfilename, thumbnailaltfileextension = os.path.splitext(thumbnailaltfilenameext);
   stripimgpart = thumbfilename+"-strip"+thumbfileextension;
-  stripimg = "http://cdn"+mlesslinktwotype[0][0]+".thumbs.motherlessmedia.com/thumbs/"+stripimgpart;
+  stripimg = "http://cdn"+mlesslinktwotype[0][0]+"-thumbs.motherlessmedia.com/thumbs/"+stripimgpart;
   stripimgfilenameext = os.path.basename(urlparse.urljoin(stripimg, urlparse.urlparse(stripimg).path));
   stripimgfilename, stripimgfileextension = os.path.splitext(stripimgfilenameext);
  returnval = False;
@@ -1220,13 +1224,13 @@ def get_motherless_galleries_links(httpurl, httpheaders, httpcookie, httplibuse=
  if(get_motherless_link_type(httpurl)!="gallery"):
   returnval = False;
   return returnval;
- motherless_subdomain = "cdn.";
+ motherless_subdomain = "cdn-";
  if(motherless_serv==None):
   motherless_serv = "";
  if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
-  motherless_subdomain = "cdn"+str(motherless_serv)+".";
+  motherless_subdomain = "cdn"+str(motherless_serv)+"-";
  if(motherless_serv==""):
-  motherless_subdomain = "cdn.";
+  motherless_subdomain = "cdn-";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1378,13 +1382,13 @@ def get_motherless_boards_links(httpurl, httpheaders, httpcookie, httplibuse="ur
  if(get_motherless_link_type(httpurl)!="board"):
   returnval = False;
   return returnval;
- motherless_subdomain = "cdn.";
+ motherless_subdomain = "cdn-";
  if(motherless_serv==None):
   motherless_serv = "";
  if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
-  motherless_subdomain = "cdn"+str(motherless_serv)+".";
+  motherless_subdomain = "cdn"+str(motherless_serv)+"-";
  if(motherless_serv==""):
-  motherless_subdomain = "cdn.";
+  motherless_subdomain = "cdn-";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1441,13 +1445,13 @@ def get_motherless_boards_posts(httpurl, httpheaders, httpcookie, httplibuse="ur
  if(get_motherless_link_type(httpurl)!="board"):
   returnval = False;
   return returnval;
- motherless_subdomain = "cdn.";
+ motherless_subdomain = "cdn-";
  if(motherless_serv==None):
   motherless_serv = "";
  if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
-  motherless_subdomain = "cdn"+str(motherless_serv)+".";
+  motherless_subdomain = "cdn"+str(motherless_serv)+"-";
  if(motherless_serv==""):
-  motherless_subdomain = "cdn.";
+  motherless_subdomain = "cdn-";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
@@ -1495,13 +1499,13 @@ def get_motherless_links_comments(httpurl, httpheaders, httpcookie, httplibuse="
  if(get_motherless_link_type(httpurl)!="link"):
   returnval = False;
   return returnval;
- motherless_subdomain = "cdn.";
+ motherless_subdomain = "cdn-";
  if(motherless_serv==None):
   motherless_serv = "";
  if(motherless_serv!="" and (motherless_serv<5 or motherless_serv>0)):
-  motherless_subdomain = "cdn"+str(motherless_serv)+".";
+  motherless_subdomain = "cdn"+str(motherless_serv)+"-";
  if(motherless_serv==""):
-  motherless_subdomain = "cdn.";
+  motherless_subdomain = "cdn-";
  premrtext = download_from_url(httpurl, httpheaders, httpcookie, httplibuse);
  mrtext = premrtext['Content'];
  if(sys.version[0]>="3"):
