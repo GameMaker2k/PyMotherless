@@ -1096,11 +1096,11 @@ def get_motherless_links(httpurl, httpheaders, httpcookie, httplibuse="urllib", 
  mlesstitle = re.findall(mregex_gettitle, mrtext);
  mregex_geturlone = re.escape("__fileurl = '")+'?\'?([^"\'>]*)'+re.escape("';");
  mlesslinkone = re.findall(mregex_geturlone, mrtext);
- mregex_geturlonetype = re.escape("https://")+"cdn([0-9]+)\."+"(images|videos)"+re.escape(".motherlessmedia.com/")+"(images|videos)"+re.escape("/")+"([\w\/\?\&\=\.\-]+)";
+ mregex_geturlonetype = re.escape("https://")+"cdn([0-9]+)\-"+"(images|videos)"+re.escape(".motherlessmedia.com/")+"(images|videos)"+re.escape("/")+"([\w\/\?\&\=\.\-]+)";
  mlesslinkonetype = re.findall(mregex_geturlonetype, mrtext);
  mregex_geturltwo = re.escape("<meta property=\"og:image\" content=\"")+'?\'?([^"\'>]*)'+re.escape("\">");
  mlesslinktwo = re.findall(mregex_geturltwo, mrtext);
- mregex_geturltwotype = re.escape("https://")+"cdn([0-9]+)\."+"(images|thumbs)"+re.escape(".motherlessmedia.com/")+"(images|thumbs)"+re.escape("/")+"([\w\/\?\&\=\.\-]+)";
+ mregex_geturltwotype = re.escape("https://")+"cdn([0-9]+)\-"+"(images|thumbs)"+re.escape(".motherlessmedia.com/")+"(images|thumbs)"+re.escape("/")+"([\w\/\?\&\=\.\-]+)";
  mlesslinktwotype = re.findall(mregex_geturltwotype, mrtext);
  filenameext = os.path.basename(urlparse.urljoin(mlesslinkone[0], urlparse.urlparse(mlesslinkone[0]).path));
  filename, fileextension = os.path.splitext(filenameext);
