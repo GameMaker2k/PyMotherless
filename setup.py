@@ -50,6 +50,7 @@ pymodule['longdescription'] = 'Get urls of images/videos from motherless.';
 pymodule['platforms'] = 'OS Independent';
 pymodule['zipsafe'] = True;
 pymodule['pymodules'] = ['pymotherless'];
+pymodule['scripts'] = ['pymotherless-demo.py', 'pymotherless-dl.py', 'pymotherless-httpd.py'];
 pymodule['classifiers'] = [
  'Development Status :: 5 - Production/Stable',
  'Intended Audience :: Developers',
@@ -109,5 +110,6 @@ setup(
  platforms = pymodule['platforms'],
  zip_safe = pymodule['zipsafe'],
  py_modules = pymodule['pymodules'],
+ scripts = pymodule['scripts'],
  classifiers = pymodule['classifiers']
 )
