@@ -16,13 +16,15 @@
     $FileInfo: pymotherless-dl.py - Last Update: 1/30/2019 Ver. 0.4.7 RC 4 - Author: cooldude2k $
 '''
 
-from __future__ import division, absolute_import, print_function
-import re
-import os
-import sys
-import pymotherless
+from __future__ import absolute_import, division, print_function
+
 import argparse
 import logging as log
+import os
+import re
+import sys
+
+import pymotherless
 
 __project__ = pymotherless.__project__
 __program_name__ = pymotherless.__program_name__
@@ -66,12 +68,17 @@ geturls_headers_googlebot_google_old = pymotherless.geturls_headers_googlebot_go
 geturls_download_sleep = pymotherless.geturls_download_sleep
 
 parser = argparse.ArgumentParser(
-    description="get urls of images/videos from motherless.com", conflict_handler="resolve", add_help=True)
+    description="get urls of images/videos from motherless.com",
+    conflict_handler="resolve",
+    add_help=True)
 parser.add_argument("url", help="motherless url")
 parser.add_argument("-v", "--version", action="version",
-                    version=__program_name__+" "+__version__)
-parser.add_argument("-U", "--update", action="store_true",
-                    help="update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)")
+                    version=__program_name__ + " " + __version__)
+parser.add_argument(
+    "-U",
+    "--update",
+    action="store_true",
+    help="update this program to latest version. Make sure that you have sufficient permissions (run with sudo if needed)")
 parser.add_argument("-d", "--dump-user-agent", action="store_true",
                     help="display the current browser identification")
 parser.add_argument("-u", "--user-agent", default=geturls_ua_firefox_windows7,
@@ -98,63 +105,80 @@ parser.add_argument("-f", "--get-favorites", action="store_true",
                     help="simulate, quiet but print number of favorites")
 parser.add_argument("-o", "--output-directory", default=os.path.realpath(
     os.getcwd()), help="specify a directory to output file to")
-parser.add_argument("-l", "--use-httplib", default="urllib",
-                    help="select library to download file can be urllib or requests or mechanize")
-parser.add_argument("-b", "--set-buffersize", default=524288, type=int,
-                    help="set how big buffersize is in bytes. how much it will download")
+parser.add_argument(
+    "-l",
+    "--use-httplib",
+    default="urllib",
+    help="select library to download file can be urllib or requests or mechanize")
+parser.add_argument(
+    "-b",
+    "--set-buffersize",
+    default=524288,
+    type=int,
+    help="set how big buffersize is in bytes. how much it will download")
 parser.add_argument("-V", "--verbose", action="store_true",
                     help="print various debugging information")
 getargs = parser.parse_args()
 
-if(not pymotherless.check_httplib_support(getargs.use_httplib)):
+if (not pymotherless.check_httplib_support(getargs.use_httplib)):
     getargs.use_httplib = "urllib"
 
 getargs_cj = geturls_cj
-getargs_headers = {'Referer': getargs.referer, 'User-Agent': getargs.user_agent, 'Accept-Encoding': "gzip, deflate", 'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6",
-                   'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7", 'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8", 'Connection': "close"}
+getargs_headers = {
+    'Referer': getargs.referer,
+    'User-Agent': getargs.user_agent,
+    'Accept-Encoding': "gzip, deflate",
+    'Accept-Language': "en-US,en;q=0.8,en-CA,en-GB;q=0.6",
+    'Accept-Charset': "ISO-8859-1,ISO-8859-15,utf-8;q=0.7,*;q=0.7",
+    'Accept': "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
+    'Connection': "close"}
 
 getargs.output_directory = os.path.realpath(getargs.output_directory)
 
-if(getargs.verbose == True):
+if (getargs.verbose):
     log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
 
-if(getargs.dump_user_agent == True):
+if (getargs.dump_user_agent):
     print(getargs.user_agent)
     sys.exit()
 
 motherless_linktype = pymotherless.get_motherless_link_type(getargs.url)
 motherless_links = []
 motherless_links_dir = []
-if(motherless_linktype == "link"):
+if (motherless_linktype == "link"):
     motherless_links.append(getargs.url)
-if(motherless_linktype == "gallery"):
+if (motherless_linktype == "gallery"):
     numpages = pymotherless.get_motherless_number_of_pages(
         getargs.url, getargs_headers, getargs_cj, getargs.use_httplib)
     numcount = 1
-    while(numcount <= numpages):
+    while (numcount <= numpages):
         getlinks = pymotherless.get_motherless_galleries_links(
             getargs.url, getargs_headers, getargs_cj, getargs.use_httplib, page=numcount)
         innumlinks = getlinks['numoflinks']
         innumcount = 0
-        while(innumcount < innumlinks):
+        while (innumcount < innumlinks):
             inmotherless_linktype = pymotherless.get_motherless_link_type(
                 getlinks[innumcount]['url'])
-            if(inmotherless_linktype == "link"):
+            if (inmotherless_linktype == "link"):
                 motherless_links_dir.append(getargs.url.rsplit('/', 1)[-1])
                 motherless_links.append(getlinks[innumcount]['url'])
-            if(inmotherless_linktype == "gallery"):
+            if (inmotherless_linktype == "gallery"):
                 innumpages = pymotherless.get_motherless_number_of_pages(
                     getlinks[innumcount]['url'], getargs_headers, getargs_cj, getargs.use_httplib)
                 innumcountpages = 1
-                while(innumcountpages <= innumpages):
+                while (innumcountpages <= innumpages):
                     ingetlinks = pymotherless.get_motherless_galleries_links(
-                        getlinks[innumcount]['url'], getargs_headers, getargs_cj, getargs.use_httplib, page=innumcountpages)
+                        getlinks[innumcount]['url'],
+                        getargs_headers,
+                        getargs_cj,
+                        getargs.use_httplib,
+                        page=innumcountpages)
                     ininnumlinks = ingetlinks['numoflinks']
                     ininnumcount = 0
-                    while(ininnumcount < ininnumlinks):
+                    while (ininnumcount < ininnumlinks):
                         ininmotherless_linktype = pymotherless.get_motherless_link_type(
                             ingetlinks[ininnumcount]['url'])
-                        if(ininmotherless_linktype == "link"):
+                        if (ininmotherless_linktype == "link"):
                             motherless_links_dir.append(
                                 getlinks[innumcount]['url'].rsplit('/', 1)[-1])
                             motherless_links.append(
@@ -163,87 +187,131 @@ if(motherless_linktype == "gallery"):
                     innumcountpages = innumcountpages + 1
             innumcount = innumcount + 1
         numcount = numcount + 1
-if(motherless_linktype == "board"):
+if (motherless_linktype == "board"):
     getlinks = pymotherless.get_motherless_boards_links(
         getargs.url, getargs_headers, getargs_cj, getargs.use_httplib)
     innumlinks = getlinks['numoflinks']
     innumcount = 0
-    while(innumcount < innumlinks):
+    while (innumcount < innumlinks):
         inmotherless_linktype = pymotherless.get_motherless_link_type(
             getlinks[innumcount]['url'])
-        if(inmotherless_linktype == "link"):
+        if (inmotherless_linktype == "link"):
             motherless_links_dir.append(getargs.url.rsplit('/', 1)[-1])
             motherless_links.append(getlinks[innumcount]['url'])
         innumcount = innumcount + 1
 
-if(getargs.get_url == True):
+if (getargs.get_url):
     listsize = len(motherless_links)
     listcount = 0
-    while(listcount < listsize):
-        print(pymotherless.get_motherless_links(
-            motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['url'])
+    while (listcount < listsize):
+        print(
+            pymotherless.get_motherless_links(
+                motherless_links[listcount],
+                getargs_headers,
+                getargs_cj,
+                getargs.use_httplib)['url'])
         listcount = listcount + 1
 
-if(getargs.get_pageurl == True):
+if (getargs.get_pageurl):
     listsize = len(motherless_links)
     listcount = 0
-    while(listcount < listsize):
+    while (listcount < listsize):
         print(motherless_links[listcount])
         listcount = listcount + 1
 
-if(getargs.get_filename == True):
+if (getargs.get_filename):
     listsize = len(motherless_links)
     listcount = 0
-    while(listcount < listsize):
-        print(pymotherless.get_motherless_links(
-            motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['fullfilename'])
+    while (listcount < listsize):
+        print(
+            pymotherless.get_motherless_links(
+                motherless_links[listcount],
+                getargs_headers,
+                getargs_cj,
+                getargs.use_httplib)['fullfilename'])
         listcount = listcount + 1
 
-if(getargs.get_title == True):
+if (getargs.get_title):
     listsize = len(motherless_links)
     listcount = 0
-    while(listcount < listsize):
-        print(pymotherless.get_motherless_links(
-            motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['title'])
+    while (listcount < listsize):
+        print(
+            pymotherless.get_motherless_links(
+                motherless_links[listcount],
+                getargs_headers,
+                getargs_cj,
+                getargs.use_httplib)['title'])
         listcount = listcount + 1
 
-if(getargs.get_username == True):
+if (getargs.get_username):
     listsize = len(motherless_links)
     listcount = 0
-    while(listcount < listsize):
-        print(pymotherless.get_motherless_links(
-            motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['username'])
+    while (listcount < listsize):
+        print(
+            pymotherless.get_motherless_links(
+                motherless_links[listcount],
+                getargs_headers,
+                getargs_cj,
+                getargs.use_httplib)['username'])
         listcount = listcount + 1
 
-if(getargs.get_views == True):
+if (getargs.get_views):
     listsize = len(motherless_links)
     listcount = 0
-    while(listcount < listsize):
-        print(pymotherless.get_motherless_links(
-            motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['numberofviews'])
+    while (listcount < listsize):
+        print(
+            pymotherless.get_motherless_links(
+                motherless_links[listcount],
+                getargs_headers,
+                getargs_cj,
+                getargs.use_httplib)['numberofviews'])
         listcount = listcount + 1
 
-if(getargs.get_favorites == True):
+if (getargs.get_favorites):
     listsize = len(motherless_links)
     listcount = 0
-    while(listcount < listsize):
-        print(pymotherless.get_motherless_links(
-            motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib)['numberoffavorites'])
+    while (listcount < listsize):
+        print(
+            pymotherless.get_motherless_links(
+                motherless_links[listcount],
+                getargs_headers,
+                getargs_cj,
+                getargs.use_httplib)['numberoffavorites'])
         listcount = listcount + 1
 
-if(getargs.get_url == False and getargs.get_pageurl == False and getargs.get_thumbnail == False and getargs.get_filename == False and getargs.get_title == False and getargs.get_username == False and getargs.get_views == False and getargs.get_favorites == False):
+if (getargs.get_url == False and getargs.get_pageurl == False and getargs.get_thumbnail == False and getargs.get_filename ==
+        False and getargs.get_title == False and getargs.get_username == False and getargs.get_views == False and getargs.get_favorites == False):
     listsize = len(motherless_links)
     listcount = 0
-    while(listcount < listsize):
+    while (listcount < listsize):
         listcountalt = listcount + 1
-        percentage = str("{0:.2f}".format(
-            float(float(listcountalt / listsize) * 100))).rstrip('0').rstrip('.')+"%"
-        log.info("Downloading URL Number "+str(listcountalt) +
-                 " / "+str(listsize)+" "+str(percentage))
-        if(motherless_linktype == "link"):
-            pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib, buffersize=[
-                                                   getargs.set_buffersize, getargs.set_buffersize], outpath=getargs.output_directory)
-        if(motherless_linktype == "board" or motherless_linktype == "gallery"):
-            pymotherless.download_motherless_links(motherless_links[listcount], getargs_headers, getargs_cj, getargs.use_httplib, buffersize=[
-                                                   getargs.set_buffersize, getargs.set_buffersize], outpath=getargs.output_directory+os.path.sep+motherless_links_dir[listcount])
+        percentage = str(
+            "{0:.2f}".format(
+                float(
+                    float(
+                        listcountalt / listsize) * 100))).rstrip('0').rstrip('.') + "%"
+        log.info("Downloading URL Number " + str(listcountalt) +
+                 " / " + str(listsize) + " " + str(percentage))
+        if (motherless_linktype == "link"):
+            pymotherless.download_motherless_links(
+                motherless_links[listcount],
+                getargs_headers,
+                getargs_cj,
+                getargs.use_httplib,
+                buffersize=[
+                    getargs.set_buffersize,
+                    getargs.set_buffersize],
+                outpath=getargs.output_directory)
+        if (motherless_linktype == "board" or motherless_linktype == "gallery"):
+            pymotherless.download_motherless_links(
+                motherless_links[listcount],
+                getargs_headers,
+                getargs_cj,
+                getargs.use_httplib,
+                buffersize=[
+                    getargs.set_buffersize,
+                    getargs.set_buffersize],
+                outpath=getargs.output_directory +
+                os.path.sep +
+                motherless_links_dir[listcount])
         listcount = listcount + 1
