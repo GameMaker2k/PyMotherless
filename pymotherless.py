@@ -1998,7 +1998,8 @@ def get_motherless_links(
     mlessuname = re.findall(mregex_getuname, mrtext)
     mlessuname = mlessuname[0]
     mregex_geturlname = re.escape("<td class=\"thumb-member-avatar\">\n		<a href=\"") + \
-        '?\'?([^"\'>]*)' + re.escape("\" target=\"_blank\">\n                <img")
+        '?\'?([^"\'>]*)' + \
+        re.escape("\" target=\"_blank\">\n                <img")
     mlessurlname = re.findall(mregex_geturlname, mrtext)
     mlessurlname = mlessurlname[0].replace("/m/", "")
     mregex_getavatar = re.escape("<img\n            src=\"") + '?\'?([^"\'>]*)' + re.escape(
@@ -2580,7 +2581,8 @@ def get_motherless_boards_links(
     mlessdatasrc = re.findall(mregex_getdatasrc, mrtext_tmp)
     print(mlessdatasrc)
     mlessavaturl = "http://" + motherless_subdomain + \
-        "avatars.motherlessmedia.com/thumbs/" + mlessurlname[0][1] + "-avatar.jpg"
+        "avatars.motherlessmedia.com/thumbs/" + \
+        mlessurlname[0][1] + "-avatar.jpg"
     avatarfilenameext = os.path.basename(urlparse.urljoin(
         mlessavaturl, urlparse.urlparse(mlessavaturl).path))
     avatarfilename, avatarfileextension = os.path.splitext(avatarfilenameext)

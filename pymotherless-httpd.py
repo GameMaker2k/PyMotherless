@@ -347,7 +347,9 @@ class GenerateIndexPage(object):
                 getpymotherless, geturls_headers, geturls_cj)
             if (getpyurlinfo['type'] == "images"):
                 IndexHTMLCode = "<img src=\"" + getpyurlinfo['url'] + "\" alt=\"" + getpyurlinfo['title'] + "\" title=\"" + getpyurlinfo['title'] + \
-                    "\" style=\"width: " + str(getpyurlinfo['width']) + "px; height: " + str(getpyurlinfo['height']) + "px;\" />"
+                    "\" style=\"width: " + \
+                    str(getpyurlinfo['width']) + "px; height: " + \
+                    str(getpyurlinfo['height']) + "px;\" />"
             if (getpyurlinfo['type'] == "videos"):
                 IndexHTMLCode = "<video width=\"632\" height=\"432\" controls><source src=\"" + \
                     getpyurlinfo['url'] + \
