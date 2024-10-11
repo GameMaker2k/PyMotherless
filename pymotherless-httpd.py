@@ -15,33 +15,29 @@
     $FileInfo: httpd.py - Last Update: 1/30/2019 Ver. 0.4.7 RC 4  - Author: cooldude2k $
 '''
 
-import argparse
-import datetime
-import os
-import re
-import sys
 import tempfile
-import time
 import uuid
-
+import re
+import os
+import sys
 import cherrypy
-
 import pymotherless
-
-if (sys.version[0] == "2"):
+import argparse
+import time
+import datetime
+if(sys.version[0] == "2"):
     try:
         from cStringIO import StringIO
     except ImportError:
         from StringIO import StringIO
     # From http://python-future.org/compatible_idioms.html
+    from urlparse import urlparse, urlunparse, urlsplit, urlunsplit, urljoin
     from urllib import urlencode
-
-    import cookielib
+    from urllib2 import urlopen, Request, HTTPError
     import urllib2
     import urlparse
-    from urllib2 import HTTPError, Request, urlopen
-    from urlparse import urljoin, urlparse, urlsplit, urlunparse, urlunsplit
-if (sys.version[0] >= "3"):
+    import cookielib
+if(sys.version[0] >= "3"):
     from io import StringIO, BytesIO
     # From http://python-future.org/compatible_idioms.html
     from urllib.parse import urlparse, urlunparse, urlsplit, urlunsplit, urljoin, urlencode
@@ -50,7 +46,6 @@ if (sys.version[0] >= "3"):
     import urllib.request as urllib2
     import urllib.parse as urlparse
     import http.cookiejar as cookielib
-
 import logging as log
 
 __project__ = pymotherless.__project__
@@ -112,35 +107,32 @@ parser.add_argument("--errorlog", "--errorlog-file",
                     help="location to store error log file.")
 parser.add_argument("--timeout", "--response-timeout", default=6000,
                     help="the number of seconds to allow responses to run.")
-parser.add_argument(
-    "--environment",
-    "--server-environment",
-    default="production",
-    help="The server.environment entry controls how CherryPy should run.")
+parser.add_argument("--environment", "--server-environment", default="production",
+                    help="The server.environment entry controls how CherryPy should run.")
 getargs = parser.parse_args()
-if (getargs.verbose):
+if(getargs.verbose == True):
     log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
-if (getargs.port is not None):
+if(getargs.port is not None):
     port = int(getargs.port)
 else:
     port = 8080
-if (getargs.host is not None):
+if(getargs.host is not None):
     host = str(getargs.host)
 else:
     host = "127.0.0.1"
-if (getargs.timeout is not None):
+if(getargs.timeout is not None):
     timeout = int(getargs.timeout)
 else:
     timeout = 6000
-if (getargs.accesslog is not None):
+if(getargs.accesslog is not None):
     accesslog = str(getargs.accesslog)
 else:
     accesslog = "./access.log"
-if (getargs.errorlog is not None):
+if(getargs.errorlog is not None):
     errorlog = str(getargs.errorlog)
 else:
     errorlog = "./errors.log"
-if (getargs.environment is not None):
+if(getargs.environment is not None):
     serv_environ = str(getargs.environment)
 else:
     serv_environ = "production"
@@ -151,18 +143,18 @@ radsta = 0
 radmax = 360
 radinc = 5
 radout = "\n"
-while (radsta <= radmax):
-    if (radsta == 0):
+while(radsta <= radmax):
+    if(radsta == 0):
         radout += "<option value=\"" + \
-            str(radsta) + "\" selected=\"selected\">" + \
-            str(radsta) + " &#176;</option>\n"
-    if (radsta > 0):
+            str(radsta)+"\" selected=\"selected\">" + \
+            str(radsta)+" &#176;</option>\n"
+    if(radsta > 0):
         radout += "<option value=\"" + \
-            str(radsta) + "\">" + str(radsta) + " &#176;</option>\n"
+            str(radsta)+"\">"+str(radsta)+" &#176;</option>\n"
     radsta = radsta + radinc
 ServerSignature = "<address><a href=\"https://github.com/GameMaker2k/PyUPC-EAN\" title=\"PyUPC-EAN barcode generator\">PyUPC-EAN</a>/%s (<a href=\"http://www.cherrypy.org/\" title=\"CherryPy python web server\">CherryPy</a>/%s)</address>" % (
     pymotherless.__version__, cherrypy.__version__)
-IndexHTMLCode = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">\n<head>\n<title> " + pro_app_name + " " + pro_app_subname + " </title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n<meta http-equiv=\"Content-Language\" content=\"en\" />\n<meta name=\"generator\" content=\"CherryPy\" />\n<meta name=\"author\" content=\"Game Maker 2k\" />\n<meta name=\"keywords\" content=\"barcode,upc,ean,stf,itf,itf14,upca,upce,ean2,ean5,ean8,ean13,code11,code39,code93,codabar,msi\" />\n<meta name=\"description\" content=\"Barcode Generator with PyUPC-EAN\" /><meta name=\"resource-type\" content=\"document\" />\n<meta name=\"distribution\" content=\"global\" />\n<link rel=\"Generator\" href=\"http://www.cherrypy.org/\" title=\"CherryPy\" />\n</head>\n<body>\n<form name=\"pymotherless\" id=\"pymotherless\" method=\"get\" action=\"/pymotherless/\" onsubmit=\"location.href='/generate/'+pymotherless.bctype.value+'/'+pymotherless.size.value+'/'+pymotherless.rotate.value+'/'+pymotherless.upc.value+'.'+pymotherless.imgtype.value; return false;\">\n<fieldset>\n<legend>Barcode Info: </legend>\n<label style=\"cursor: pointer;\" for=\"upc\">Enter UPC/EAN: </label><br />\n<input type=\"text\" id=\"upc\" name=\"upc\" /><br />\n<label style=\"cursor: pointer;\" for=\"imgtype\">Select a image type: </label><br />\n<select id=\"imgtype\" name=\"imgtype\">\n<option value=\"png\" selected=\"selected\">PNG Image</option>\n<option value=\"gif\">GIF Image</option>\n<option value=\"jpeg\">JPEG Image</option>\n<option value=\"bmp\">BMP Image</option>\n<option value=\"tiff\">TIFF Image</option>\n</select><br />\n<label style=\"cursor: pointer;\" for=\"size\">Select barcode size: </label><br />\n<select id=\"size\" name=\"size\">\n<option value=\"1\" selected=\"selected\">1x</option>\n<option value=\"2\">2x</option>\n<option value=\"3\">3x</option>\n<option value=\"4\">4x</option>\n<option value=\"5\">5x</option>\n<option value=\"6\">6x</option>\n<option value=\"7\">7x</option>\n<option value=\"8\">8x</option>\n<option value=\"9\">9x</option>\n<option value=\"10\">10x</option>\n</select><br />\n<label style=\"cursor: pointer;\" for=\"bctype\">Select barcode type: </label><br />\n<select id=\"bctype\" name=\"bctype\">\n<option value=\"upca\" selected=\"selected\">UPC-A</option>\n<option value=\"upce\">UPC-E</option>\n<option value=\"ean13\">EAN-13</option>\n<option value=\"ean8\">EAN-8</option>\n<option value=\"ean2\">EAN-2</option>\n<option value=\"ean5\">EAN-5</option>\n<option value=\"stf\">STF</option>\n<option value=\"itf\">ITF</option>\n<option value=\"itf14\">ITF-14</option>\n<option value=\"code11\">Code 11</option>\n<option value=\"code39\">Code 39</option>\n<option value=\"code93\">Code 93</option>\n<option value=\"codabar\">Codabar</option>\n<option value=\"msi\">MSI</option>\n</select><br />\n<label style=\"cursor: pointer;\" for=\"rotate\">Select degrees to rotate image by: </label><br />\n<select id=\"rotate\" name=\"rotate\">" + radout + "</select><br />\n<input type=\"submit\" value=\"Generate\" />\n</fieldset>\n</form><br />\n" + ServerSignature + "\n</body>\n</html>"
+IndexHTMLCode = "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n<html xmlns=\"http://www.w3.org/1999/xhtml\" lang=\"en\" xml:lang=\"en\">\n<head>\n<title> "+pro_app_name+" "+pro_app_subname+" </title><meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\" />\n<meta http-equiv=\"Content-Language\" content=\"en\" />\n<meta name=\"generator\" content=\"CherryPy\" />\n<meta name=\"author\" content=\"Game Maker 2k\" />\n<meta name=\"keywords\" content=\"barcode,upc,ean,stf,itf,itf14,upca,upce,ean2,ean5,ean8,ean13,code11,code39,code93,codabar,msi\" />\n<meta name=\"description\" content=\"Barcode Generator with PyUPC-EAN\" /><meta name=\"resource-type\" content=\"document\" />\n<meta name=\"distribution\" content=\"global\" />\n<link rel=\"Generator\" href=\"http://www.cherrypy.org/\" title=\"CherryPy\" />\n</head>\n<body>\n<form name=\"pymotherless\" id=\"pymotherless\" method=\"get\" action=\"/pymotherless/\" onsubmit=\"location.href='/generate/'+pymotherless.bctype.value+'/'+pymotherless.size.value+'/'+pymotherless.rotate.value+'/'+pymotherless.upc.value+'.'+pymotherless.imgtype.value; return false;\">\n<fieldset>\n<legend>Barcode Info: </legend>\n<label style=\"cursor: pointer;\" for=\"upc\">Enter UPC/EAN: </label><br />\n<input type=\"text\" id=\"upc\" name=\"upc\" /><br />\n<label style=\"cursor: pointer;\" for=\"imgtype\">Select a image type: </label><br />\n<select id=\"imgtype\" name=\"imgtype\">\n<option value=\"png\" selected=\"selected\">PNG Image</option>\n<option value=\"gif\">GIF Image</option>\n<option value=\"jpeg\">JPEG Image</option>\n<option value=\"bmp\">BMP Image</option>\n<option value=\"tiff\">TIFF Image</option>\n</select><br />\n<label style=\"cursor: pointer;\" for=\"size\">Select barcode size: </label><br />\n<select id=\"size\" name=\"size\">\n<option value=\"1\" selected=\"selected\">1x</option>\n<option value=\"2\">2x</option>\n<option value=\"3\">3x</option>\n<option value=\"4\">4x</option>\n<option value=\"5\">5x</option>\n<option value=\"6\">6x</option>\n<option value=\"7\">7x</option>\n<option value=\"8\">8x</option>\n<option value=\"9\">9x</option>\n<option value=\"10\">10x</option>\n</select><br />\n<label style=\"cursor: pointer;\" for=\"bctype\">Select barcode type: </label><br />\n<select id=\"bctype\" name=\"bctype\">\n<option value=\"upca\" selected=\"selected\">UPC-A</option>\n<option value=\"upce\">UPC-E</option>\n<option value=\"ean13\">EAN-13</option>\n<option value=\"ean8\">EAN-8</option>\n<option value=\"ean2\">EAN-2</option>\n<option value=\"ean5\">EAN-5</option>\n<option value=\"stf\">STF</option>\n<option value=\"itf\">ITF</option>\n<option value=\"itf14\">ITF-14</option>\n<option value=\"code11\">Code 11</option>\n<option value=\"code39\">Code 39</option>\n<option value=\"code93\">Code 93</option>\n<option value=\"codabar\">Codabar</option>\n<option value=\"msi\">MSI</option>\n</select><br />\n<label style=\"cursor: pointer;\" for=\"rotate\">Select degrees to rotate image by: </label><br />\n<select id=\"rotate\" name=\"rotate\">"+radout+"</select><br />\n<input type=\"submit\" value=\"Generate\" />\n</fieldset>\n</form><br />\n"+ServerSignature+"\n</body>\n</html>"
 
 
 class GenerateIndexPage(object):
@@ -170,103 +162,101 @@ class GenerateIndexPage(object):
     def default(self, *args, **kwargs):
         cherrypy.response.headers['Content-Type'] = 'text/html; charset=UTF-8'
         getpyurlpath = urlparse.urlparse(cherrypy.url()).path
-        getpymotherless = "http://motherless.com" + getpyurlpath
+        getpymotherless = "http://motherless.com"+getpyurlpath
         pymotherlessinfo = pymotherless.get_motherless_link_type_alt(
             getpymotherless)
-        IndexHTMLCode = getpyurlpath + " - " + \
-            pymotherlessinfo['motherlessinfo']
-        if (pymotherlessinfo['motherlessinfo'] ==
-                "sample" or pymotherlessinfo['motherlessinfo'] == "sample-videos"):
+        IndexHTMLCode = getpyurlpath+" - "+pymotherlessinfo['motherlessinfo']
+        if(pymotherlessinfo['motherlessinfo'] == "sample" or pymotherlessinfo['motherlessinfo'] == "sample-videos"):
             IndexHTMLCode = ""
             getpyurlinfo = pymotherless.get_motherless_sample_links(
                 geturls_headers, geturls_cj, numoflinks=15, urltype="video")
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['videos']['recent'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['videos'][
-                    'recent'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['videos']['recent'][counti]['title'] + "\" title=\"" + getpyurlinfo['videos']['recent'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['videos']['recent'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['videos'][
+                    'recent'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['videos']['recent'][counti]['title']+"\" title=\""+getpyurlinfo['videos']['recent'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['videos']['favorited'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['videos']['favorited'][
-                    counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['videos']['favorited'][counti]['title'] + "\" title=\"" + getpyurlinfo['videos']['favorited'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['videos']['favorited'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['videos']['favorited'][
+                    counti]['thumbnail']+"\" alt=\""+getpyurlinfo['videos']['favorited'][counti]['title']+"\" title=\""+getpyurlinfo['videos']['favorited'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['videos']['viewed'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['videos'][
-                    'viewed'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['videos']['viewed'][counti]['title'] + "\" title=\"" + getpyurlinfo['videos']['viewed'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['videos']['viewed'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['videos'][
+                    'viewed'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['videos']['viewed'][counti]['title']+"\" title=\""+getpyurlinfo['videos']['viewed'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['videos']['commented'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['videos']['commented'][
-                    counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['videos']['commented'][counti]['title'] + "\" title=\"" + getpyurlinfo['videos']['commented'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['videos']['commented'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['videos']['commented'][
+                    counti]['thumbnail']+"\" alt=\""+getpyurlinfo['videos']['commented'][counti]['title']+"\" title=\""+getpyurlinfo['videos']['commented'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['videos']['popular'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['videos'][
-                    'popular'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['videos']['popular'][counti]['title'] + "\" title=\"" + getpyurlinfo['videos']['popular'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['videos']['popular'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['videos'][
+                    'popular'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['videos']['popular'][counti]['title']+"\" title=\""+getpyurlinfo['videos']['popular'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['videos']['live'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['videos'][
-                    'live'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['videos']['live'][counti]['title'] + "\" title=\"" + getpyurlinfo['videos']['live'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['videos']['live'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['videos'][
+                    'live'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['videos']['live'][counti]['title']+"\" title=\""+getpyurlinfo['videos']['live'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['videos']['random'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['videos'][
-                    'random'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['videos']['random'][counti]['title'] + "\" title=\"" + getpyurlinfo['videos']['random'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['videos']['random'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['videos'][
+                    'random'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['videos']['random'][counti]['title']+"\" title=\""+getpyurlinfo['videos']['random'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-        if (pymotherlessinfo['motherlessinfo'] == "sample-images"):
+        if(pymotherlessinfo['motherlessinfo'] == "sample-images"):
             IndexHTMLCode = ""
             getpyurlinfo = pymotherless.get_motherless_sample_links(
                 geturls_headers, geturls_cj, numoflinks=15, urltype="image")
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['images']['recent'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['images'][
-                    'recent'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['images']['recent'][counti]['title'] + "\" title=\"" + getpyurlinfo['images']['recent'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['images']['recent'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['images'][
+                    'recent'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['images']['recent'][counti]['title']+"\" title=\""+getpyurlinfo['images']['recent'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['images']['favorited'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['images']['favorited'][
-                    counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['images']['favorited'][counti]['title'] + "\" title=\"" + getpyurlinfo['images']['favorited'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['images']['favorited'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['images']['favorited'][
+                    counti]['thumbnail']+"\" alt=\""+getpyurlinfo['images']['favorited'][counti]['title']+"\" title=\""+getpyurlinfo['images']['favorited'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['images']['viewed'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['images'][
-                    'viewed'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['images']['viewed'][counti]['title'] + "\" title=\"" + getpyurlinfo['images']['viewed'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['images']['viewed'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['images'][
+                    'viewed'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['images']['viewed'][counti]['title']+"\" title=\""+getpyurlinfo['images']['viewed'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['images']['commented'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['images']['commented'][
-                    counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['images']['commented'][counti]['title'] + "\" title=\"" + getpyurlinfo['images']['commented'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['images']['commented'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['images']['commented'][
+                    counti]['thumbnail']+"\" alt=\""+getpyurlinfo['images']['commented'][counti]['title']+"\" title=\""+getpyurlinfo['images']['commented'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['images']['popular'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['images'][
-                    'popular'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['images']['popular'][counti]['title'] + "\" title=\"" + getpyurlinfo['images']['popular'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['images']['popular'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['images'][
+                    'popular'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['images']['popular'][counti]['title']+"\" title=\""+getpyurlinfo['images']['popular'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['images']['live'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['images'][
-                    'live'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['images']['live'][counti]['title'] + "\" title=\"" + getpyurlinfo['images']['live'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['images']['live'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['images'][
+                    'live'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['images']['live'][counti]['title']+"\" title=\""+getpyurlinfo['images']['live'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 0
-            while (counti < 15):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo['images']['random'][counti]['url'].replace('http://motherless.com', '') + "\"><img src=\"" + getpyurlinfo['images'][
-                    'random'][counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo['images']['random'][counti]['title'] + "\" title=\"" + getpyurlinfo['images']['random'][counti]['title'] + "\" /></a>\n"
+            while(counti < 15):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo['images']['random'][counti]['url'].replace('http://motherless.com', '')+"\"><img src=\""+getpyurlinfo['images'][
+                    'random'][counti]['thumbnail']+"\" alt=\""+getpyurlinfo['images']['random'][counti]['title']+"\" title=\""+getpyurlinfo['images']['random'][counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-        if (pymotherlessinfo['motherlessinfo'] == "gallery"):
+        if(pymotherlessinfo['motherlessinfo'] == "gallery"):
             IndexHTMLCode = ""
             try:
                 getpage = int(cherrypy.request.params.get('page', None))
@@ -278,20 +268,19 @@ class GenerateIndexPage(object):
                 getpymotherless, geturls_headers, geturls_cj, page=getpage)
             counti = 0
             maxi = getpyurlinfo['numoflinks']
-            while (counti < maxi):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo[counti]['url'].replace(
-                    'http://motherless.com',
-                    '') + "\"><img src=\"" + getpyurlinfo[counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo[counti]['title'] + "\" title=\"" + getpyurlinfo[counti]['title'] + "\" /></a>\n"
+            while(counti < maxi):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo[counti]['url'].replace(
+                    'http://motherless.com', '')+"\"><img src=\""+getpyurlinfo[counti]['thumbnail']+"\" alt=\""+getpyurlinfo[counti]['title']+"\" title=\""+getpyurlinfo[counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 1
             maxi = getpyurlinfo['pages']
             print(str(maxi))
-            while (counti < maxi):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"?page=" + \
-                    str(counti) + "\">" + str(counti) + "</a>\n"
+            while(counti < maxi):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\"?page=" + \
+                    str(counti)+"\">"+str(counti)+"</a>\n"
                 counti = counti + 1
-        if (pymotherlessinfo['motherlessinfo'] == "group"):
+        if(pymotherlessinfo['motherlessinfo'] == "group"):
             IndexHTMLCode = ""
             try:
                 getpage = int(cherrypy.request.params.get('page', None))
@@ -303,20 +292,19 @@ class GenerateIndexPage(object):
                 getpymotherless, geturls_headers, geturls_cj, page=getpage)
             counti = 0
             maxi = getpyurlinfo['numoflinks']
-            while (counti < maxi):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo[counti]['url'].replace(
-                    'http://motherless.com',
-                    '') + "\"><img src=\"" + getpyurlinfo[counti]['thumbnail'] + "\" alt=\"" + getpyurlinfo[counti]['title'] + "\" title=\"" + getpyurlinfo[counti]['title'] + "\" /></a>\n"
+            while(counti < maxi):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo[counti]['url'].replace(
+                    'http://motherless.com', '')+"\"><img src=\""+getpyurlinfo[counti]['thumbnail']+"\" alt=\""+getpyurlinfo[counti]['title']+"\" title=\""+getpyurlinfo[counti]['title']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 1
             maxi = getpyurlinfo['pages']
             print(str(maxi))
-            while (counti < maxi):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"?page=" + \
-                    str(counti) + "\">" + str(counti) + "</a>\n"
+            while(counti < maxi):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\"?page=" + \
+                    str(counti)+"\">"+str(counti)+"</a>\n"
                 counti = counti + 1
-        if (pymotherlessinfo['motherlessinfo'] == "member"):
+        if(pymotherlessinfo['motherlessinfo'] == "member"):
             IndexHTMLCode = ""
             try:
                 getpage = int(cherrypy.request.params.get('page', None))
@@ -328,42 +316,41 @@ class GenerateIndexPage(object):
                 getpymotherless, geturls_headers, geturls_cj, page=getpage)
             counti = 0
             maxi = getpyurlinfo['numoflinks']
-            while (counti < maxi):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"" + getpyurlinfo[counti]['url'].replace(
-                    'http://motherless.com',
-                    '') + "\"><img src=\"" + getpyurlinfo[counti]['avatarurl'] + "\" alt=\"" + getpyurlinfo[counti]['username'] + "\" title=\"" + getpyurlinfo[counti]['username'] + "\" /></a>\n"
+            while(counti < maxi):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\""+getpyurlinfo[counti]['url'].replace(
+                    'http://motherless.com', '')+"\"><img src=\""+getpyurlinfo[counti]['avatarurl']+"\" alt=\""+getpyurlinfo[counti]['username']+"\" title=\""+getpyurlinfo[counti]['username']+"\" /></a>\n"
                 counti = counti + 1
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             counti = 1
             maxi = getpyurlinfo['pages']
             print(str(maxi))
-            while (counti < maxi):
-                IndexHTMLCode = IndexHTMLCode + " <a href=\"?page=" + \
-                    str(counti) + "\">" + str(counti) + "</a>\n"
+            while(counti < maxi):
+                IndexHTMLCode = IndexHTMLCode+" <a href=\"?page=" + \
+                    str(counti)+"\">"+str(counti)+"</a>\n"
                 counti = counti + 1
-        if (pymotherlessinfo['motherlessinfo'] == "link"):
+        if(pymotherlessinfo['motherlessinfo'] == "link"):
             IndexHTMLCode = ""
             getpyurlinfo = pymotherless.get_motherless_links(
                 getpymotherless, geturls_headers, geturls_cj)
-            if (getpyurlinfo['type'] == "images"):
-                IndexHTMLCode = "<img src=\"" + getpyurlinfo['url'] + "\" alt=\"" + getpyurlinfo['title'] + "\" title=\"" + getpyurlinfo['title'] + \
+            if(getpyurlinfo['type'] == "images"):
+                IndexHTMLCode = "<img src=\""+getpyurlinfo['url']+"\" alt=\""+getpyurlinfo['title']+"\" title=\""+getpyurlinfo['title'] + \
                     "\" style=\"width: " + \
-                    str(getpyurlinfo['width']) + "px; height: " + \
-                    str(getpyurlinfo['height']) + "px;\" />"
-            if (getpyurlinfo['type'] == "videos"):
+                    str(getpyurlinfo['width'])+"px; height: " + \
+                    str(getpyurlinfo['height'])+"px;\" />"
+            if(getpyurlinfo['type'] == "videos"):
                 IndexHTMLCode = "<video width=\"632\" height=\"432\" controls><source src=\"" + \
                     getpyurlinfo['url'] + \
                     "\" type=\"video/mp4\">Your browser does not support the video tag.</video>"
-            IndexHTMLCode = IndexHTMLCode + "<div><br />&nbsp;<br /></div>\n"
+            IndexHTMLCode = IndexHTMLCode+"<div><br />&nbsp;<br /></div>\n"
             getpyurlcomet = pymotherless.get_motherless_links_comments(
                 getpymotherless, geturls_headers, geturls_cj)
             counti = 0
             maxi = getpyurlcomet['numofallposts']
-            while (counti < maxi):
-                IndexHTMLCode = IndexHTMLCode + "<fieldset><legend>" + getpyurlcomet[counti]['username'] + "</legend><img src=\"" + getpyurlcomet[counti]['avatarurl'] + \
-                    "\" alt=\"" + getpyurlcomet[counti]['username'] + "\" title=\"" + \
-                    getpyurlcomet[counti]['username'] + "\" /><br />" + \
-                    getpyurlcomet[counti]['post'] + "</fieldset>"
+            while(counti < maxi):
+                IndexHTMLCode = IndexHTMLCode+"<fieldset><legend>"+getpyurlcomet[counti]['username']+"</legend><img src=\""+getpyurlcomet[counti]['avatarurl'] + \
+                    "\" alt=\""+getpyurlcomet[counti]['username']+"\" title=\"" + \
+                    getpyurlcomet[counti]['username']+"\" /><br />" + \
+                    getpyurlcomet[counti]['post']+"</fieldset>"
                 counti = counti + 1
         return IndexHTMLCode
     default.exposed = True

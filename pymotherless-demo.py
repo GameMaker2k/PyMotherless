@@ -16,15 +16,13 @@
     $FileInfo: pymotherless-demo.py - Last Update: 1/30/2019 Ver. 0.4.7 RC 4 - Author: cooldude2k $
 '''
 
-from __future__ import absolute_import, division, print_function
-
+from __future__ import division, absolute_import, print_function
+import re
+import os
+import sys
+import pymotherless
 import argparse
 import logging as log
-import os
-import re
-import sys
-
-import pymotherless
 
 __project__ = pymotherless.__project__
 __program_name__ = pymotherless.__program_name__
@@ -68,14 +66,12 @@ geturls_headers_googlebot_google_old = pymotherless.geturls_headers_googlebot_go
 geturls_download_sleep = pymotherless.geturls_download_sleep
 
 parser = argparse.ArgumentParser(
-    description="get urls of images/videos from motherless.com",
-    conflict_handler="resolve",
-    add_help=True)
+    description="get urls of images/videos from motherless.com", conflict_handler="resolve", add_help=True)
 parser.add_argument('-v', '--version', action='version',
-                    version=__program_name__ + " " + __version__)
+                    version=__program_name__+" "+__version__)
 parser.add_argument("-V", "--verbose", action="store_true",
                     help="print various debugging information")
 getargs = parser.parse_args()
 
-if (getargs.verbose):
+if(getargs.verbose == True):
     log.basicConfig(format="%(levelname)s: %(message)s", level=log.DEBUG)
